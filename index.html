@@ -8,6 +8,7 @@
         <link rel="shortcut icon" href="assets/img/favicon.ico">
     </head>
     <body>
+        <div class="notification"><div class="warning webgl">Your browser doesn't support WebGL</div></div>
         <div id="container"></div>
         <div id="sphere_asset" style="display: none;"><svg version="1.1" id="sphere_svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="640px" height="640px" viewBox="0 0 640 640" enable-background="new 0 0 640 640" xml:space="preserve">
             <defs><radialGradient id="sphere_gradient" cx="292.3262" cy="287.4077" r="249.2454" fx="147.7949" fy="274.5532" gradientTransform="matrix(1.0729 0 0 1.0729 -23.3359 -23.3359)" gradientUnits="userSpaceOnUse">
@@ -26,7 +27,9 @@
         <script type="text/javascript" src="assets/js/d3-3.5.2.min.js"></script>
         <script type="text/javascript" src="assets/js/dat.gui.min.js"></script>
         <script type="text/javascript">
-            
+
+        var cubeMaker = function () {
+
             var count_properties = function(obj) {
                 var count = 0;
                 for (var prop in obj) {
@@ -671,6 +674,31 @@
                 }
                 renderer.render(scene, camera);
             }
+        }
+
+        var checkWebGL = function () {
+            var canvas = document.createElement("canvas");
+            try {
+                gl = canvas.getContext("webgl");
+            } catch (x) {
+                gl = null;
+            }
+
+            if (gl == null) {
+                try {
+                    gl = canvas.getContext("experimental-webgl");
+                } catch (x) {
+                    gl = null;
+                }
+            }
+            if (gl) return true;
+            $(".notification .warning.webgl").show();
+
+            return false;
+        }
+
+        if (checkWebGL()) cubeMaker();
+
         </script>
     </body>
 </html>
