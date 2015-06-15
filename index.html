@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link rel="stylesheet" href="assets/css/style.css" type="text/css" />
+        <link rel="stylesheet" href="assets/fonts/typicons.min.css" type="text/css" />
+        <title>Cubemaker</title>
+        <link rel="shortcut icon" href="assets/img/favicon.ico">
+    </head>
+    <body>
+        <div id="container"></div>
+        <div id="sphere_asset" style="display: none;"><svg version="1.1" id="sphere_svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="640px" height="640px" viewBox="0 0 640 640" enable-background="new 0 0 640 640" xml:space="preserve">
+            <defs><radialGradient id="sphere_gradient" cx="292.3262" cy="287.4077" r="249.2454" fx="147.7949" fy="274.5532" gradientTransform="matrix(1.0729 0 0 1.0729 -23.3359 -23.3359)" gradientUnits="userSpaceOnUse">
+                <stop id="sphere_gradient_0" offset="0" style="stop-color:#F37D7F"/>
+                <stop id="sphere_gradient_1" offset="0.4847" style="stop-color:#ED1F24"/>
+                <stop id="sphere_gradient_2" offset="1" style="stop-color:#7E1416"/>
+            </radialGradient></defs>
+            <circle fill="url(#sphere_gradient)" cx="320" cy="320" r="320"/>
+        </svg></div>
+        <script type="text/javascript" src="assets/js/jquery-2.1.3.min.js"></script>
+        <script type="text/javascript" src="assets/js/three.min.js"></script>
+        <script type="text/javascript" src="assets/js/three.orbit-controls.js"></script>
+        <script type="text/javascript" src="assets/js/gabelerner.rgbcolor.js"></script> 
+        <script type="text/javascript" src="assets/js/gabelerner.stackblur.js"></script>
+        <script type="text/javascript" src="assets/js/gabelerner.canvg.js"></script>
+        <script type="text/javascript" src="assets/js/d3-3.5.2.min.js"></script>
+        <script type="text/javascript" src="assets/js/dat.gui.min.js"></script>
+        <script type="text/javascript">
+            
+            var count_properties = function(obj) {
+                var count = 0;
+                for (var prop in obj) {
+                    if (obj.hasOwnProperty(prop))
+                        ++count;
+                }
+                return count;
+            }
+            
+            var rgb_array_to_str = function(arr) {
+                return "rgb(" + arr.join(",") + ")";
+            };
+            
+            var rescaled_xyz = function(x, y, z, min_x, max_x, offset_x, min_y, max_y, offset_y, min_z, max_z, offset_z) {
+                var result = new Array();
+                result.push(rescale_val(x, min_x, max_x, offset_x));
+                result.push(rescale_val(y, min_y, max_y, offset_y));
+                result.push(rescale_val(z, min_z, max_z, offset_z));
+                return result;
+            };
+            
+            var rescale_val = function(val, min_val, max_val, offset) {
+                return offset + (val - min_val) / (max_val - min_val);
+            };
+            
+            var get_url_parameter = function(name) {
+                return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
+            };
+            
+            var sample = {
+                "metadata" : {
+                    "title" : "Cubemaker",
+                    "subtitle" : "Use mouse to rotate cube (or equivalent arrow keys) and use scrollwheel to zoom",
+                    "axis" : {
+                        "x" : "PC1",
+                        "y" : "PC2",
+                        "z" : "PC3"
+                    },
+                    "class" : {
+                        "Paraxial mesoderm deratives" : { "rgb" : [238, 23, 23] },
+                        "Lymphoid" : { "rgb" : [222,  99,  20] },
+                        "Primitive" : { "rgb" : [ 128,  128, 255] },
+                        "Ectoderm" : { "rgb" : [  0,   0, 255] }
+                    },
+                    "range" : {
+                        "x" : [-324.249475042631, 141.153439249043],
+                        "y" : [-126.375284207152, 229.090197881056],
+                        "z" : [-97.4840574820861, 430.242836265501]
+                    }
+                },
+                "subsets" : {
+                    "Paraxial mesoderm deratives" : {
+                        "points" : [
+                            {
+                                "id" : "AG04449-DS12319",
+                                "x" : -276.412663905422,
+                                "y" : -83.1758800539113,
+                                "z" : -25.0089776269546
+                            },
+                            {
+                                "id" : "AG04450-DS12270",
+                                "x" : -225.16928363426,
+                                "y" : -64.2873181026024,
+                                "z" : -56.2128084230765
+                            },
+                            {
+                                "id" : "AG09309-DS12352",
+                                "x" : -324.249475042631,
+                                "y" : -120.763294672146,
+                                "z" : -50.4869757834736
+                            },
+                            {
+                                "id" : "AG09319-DS12291",
+                                "x" : -223.953698282166,
+                                "y" : -83.9964379641139,
+                                "z" : -97.4840574820861
+                            },
+                            {
+                                "id" : "AG10803-DS12384",
+                                "x" : -287.265505588092,
+                                "y" : -109.849418312057,
+                                "z" : -79.2499113283234
+                            },
+                            {
+                                "id" : "SkMC-DS11949",
+                                "x" : -302.061733136259,
+                                "y" : -126.375284207152,
+                                "z" : -29.6595604981266
+                            }
+                        ]
+                    },
+                    "Lymphoid" : {
+                        "points" : [
+                            {
+                                "id" : "CD19-DS17281",
+                                "x" : 136.01389377205,
+                                "y" : 214.940307097836,
+                                "z" : -22.6768465513087
+                            },
+                            {
+                                "id" : "CD20-DS17541",
+                                "x" : 141.153439249043,
+                                "y" : 222.008601154387,
+                                "z" : -25.9975593793299
+                            },
+                            {
+                                "id" : "CD34-DS12274",
+                                "x" : 100.474071131398,
+                                "y" : 229.090197881056,
+                                "z" : -52.6553280422026
+                            },
+                            {
+                                "id" : "hTH1-DS7840",
+                                "x" : 115.924864675695,
+                                "y" : 209.289425464383,
+                                "z" : -7.72061603054014
+                            },
+                            {
+                                "id" : "hTH2-DS7842",
+                                "x" : 114.435503466346,
+                                "y" : 204.757615642075,
+                                "z" : -6.19822633673763
+                            }
+                        ]
+                    },
+                    "Primitive" : {
+                        "points" : [
+                            {
+                                "id" : "hESCT0-DS11909",
+                                "x" : 111.185659772123,
+                                "y" : -1.98890275613638,
+                                "z" : 16.9654205670039
+                            }
+                           ]
+                    },
+                    "Ectoderm" : {
+                        "points" : [
+                            {
+                                "id" : "Skin_Keratinocytes-DS18692",
+                                "x" : -152.758667376666,
+                                "y" : 10.7650810128968,
+                                "z" : 430.242836265501
+                            },
+                            {
+                                "id" : "Skin_Keratinocytes-DS18695",
+                                "x" : -149.305110222447,
+                                "y" : 14.7866787526815,
+                                "z" : 422.939200493901
+                            },
+                            {
+                                "id" : "vHMEC-DS18438",
+                                "x" : -123.49178394839,
+                                "y" : 28.7804673565906,
+                                "z" : 303.912892981827
+                            }
+                        ]
+                    }
+                }
+            };
+            
+            var container, stats;
+            var camera, scene, raycaster, renderer;
+            var mouse = new THREE.Vector2(), INTERSECTED;
+            var cube = null;
+            var cube_materials = null;
+            var opaque_cube_lines = new Array(6);
+            var cube_line_geometry = null;
+            var opaque_cube_line_material = new THREE.LineBasicMaterial({ color: 0xbbbbbb, opacity: 0.25, linewidth: 3 });
+            var red_cube_line_material = new THREE.LineBasicMaterial({ color: 0xff0000, opacity: 0.25, linewidth: 3 });
+            var green_cube_line_material = new THREE.LineBasicMaterial({ color: 0x00ff00, opacity: 0.25, linewidth: 3 });
+            var blue_cube_line_material = new THREE.LineBasicMaterial({ color: 0x0000ff, opacity: 0.25, linewidth: 3 });
+            var cube_line_materials = new Array(6);
+            for (var cube_line_materials_idx = 0; cube_line_materials_idx < cube_line_materials.length; cube_line_materials_idx++) {
+                cube_line_materials[cube_line_materials_idx] = new THREE.LineBasicMaterial().clone(opaque_cube_line_material);
+            }
+            var bounding_boxes = [];
+            var horizontal_fudge = 1.75;
+            var x_deg = 70;
+            var x_rad = Math.PI / 180 * x_deg;
+            var y_deg = 45;
+            var y_rad = Math.PI / 180 * y_deg;
+            var z_rad = 2.8;
+            var id_label = null;
+            var flag = true;
+            var dp_line_geos = new Array(6);
+            var dp_lines = new Array(6);
+            var dp_line_names = new Array(6);
+            
+            init();
+            animate();
+            
+            function init() {
+                container = document.createElement('div');
+                document.body.appendChild(container);
+                camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 5000);
+                scene = new THREE.Scene();
+                
+                var cube_geometry = new THREE.BoxGeometry(1.005, 1.005, 1.005);
+                cube_materials = [
+                    new THREE.MeshBasicMaterial({color:0xf7f7f7, transparent:true, opacity:1, side:THREE.BackSide}),
+                    new THREE.MeshBasicMaterial({color:0xf7f7f7, transparent:true, opacity:1, side:THREE.BackSide}),
+                    new THREE.MeshBasicMaterial({color:0xf7f7f7, transparent:true, opacity:1, side:THREE.BackSide}),
+                    new THREE.MeshBasicMaterial({color:0xf7f7f7, transparent:true, opacity:1, side:THREE.BackSide}),
+                    new THREE.MeshBasicMaterial({color:0xf4f4f4, transparent:true, opacity:1, side:THREE.BackSide}),
+                    new THREE.MeshBasicMaterial({color:0xf4f4f4, transparent:true, opacity:1, side:THREE.BackSide}),
+                    new THREE.MeshBasicMaterial({color:0xf4f4f4, transparent:true, opacity:1, side:THREE.BackSide}),
+                    new THREE.MeshBasicMaterial({color:0xf4f4f4, transparent:true, opacity:1, side:THREE.BackSide}),
+                    new THREE.MeshBasicMaterial({color:0xf1f1f1, transparent:true, opacity:1, side:THREE.BackSide}),
+                    new THREE.MeshBasicMaterial({color:0xf1f1f1, transparent:true, opacity:1, side:THREE.BackSide}),
+                    new THREE.MeshBasicMaterial({color:0xf1f1f1, transparent:true, opacity:1, side:THREE.BackSide}),
+                    new THREE.MeshBasicMaterial({color:0xf1f1f1, transparent:true, opacity:1, side:THREE.BackSide})
+                ];            
+                var cube_material = new THREE.MeshFaceMaterial(cube_materials); 
+                cube = new THREE.Mesh(cube_geometry, cube_material);
+                for (var idx = 0; idx < cube.geometry.faces.length; idx++) {
+                    cube.geometry.faces[idx].materialIndex = idx;
+                }
+                scene.add(cube);
+                
+                for (var cube_line_idx = 0; cube_line_idx < opaque_cube_lines.length; cube_line_idx++) {
+                    cube_line_geometry = new THREE.Geometry();
+                    switch (cube_line_idx % opaque_cube_lines.length) {
+                        case 0:
+                            cube_line_geometry.vertices.push(new THREE.Vector3( -0.5, -0.5,  0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3(  0.5, -0.5,  0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3(  0.5, -0.5, -0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3( -0.5, -0.5, -0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3( -0.5, -0.5,  0.5 ));
+                            break;
+                        case 1:
+                            cube_line_geometry.vertices.push(new THREE.Vector3(  0.5,  0.5, -0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3( -0.5,  0.5, -0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3( -0.5,  0.5,  0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3(  0.5,  0.5,  0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3(  0.5,  0.5, -0.5 ));
+                            break;
+                        case 2:
+                            cube_line_geometry.vertices.push(new THREE.Vector3( -0.5,  0.5,  0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3( -0.5, -0.5,  0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3( -0.5, -0.5, -0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3( -0.5,  0.5, -0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3( -0.5,  0.5,  0.5 ));
+                            break;
+                        case 3:
+                            cube_line_geometry.vertices.push(new THREE.Vector3(  0.5,  0.5, -0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3(  0.5, -0.5, -0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3(  0.5, -0.5,  0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3(  0.5,  0.5,  0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3(  0.5,  0.5, -0.5 ));
+                            break;
+                        case 4:
+                            cube_line_geometry.vertices.push(new THREE.Vector3( -0.5,  0.5,  0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3(  0.5,  0.5,  0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3(  0.5, -0.5,  0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3( -0.5, -0.5,  0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3( -0.5,  0.5,  0.5 ));
+                            break;
+                        case 5:
+                            cube_line_geometry.vertices.push(new THREE.Vector3( -0.5,  0.5, -0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3(  0.5,  0.5, -0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3(  0.5, -0.5, -0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3( -0.5, -0.5, -0.5 ));
+                            cube_line_geometry.vertices.push(new THREE.Vector3( -0.5,  0.5, -0.5 ));
+                            break;
+                    }
+                    
+                    var opaque_cube_line = new THREE.Line(cube_line_geometry, opaque_cube_line_material);
+                    opaque_cube_lines[cube_line_idx] = opaque_cube_line;
+                    scene.add(opaque_cube_line);
+                    /*
+                    line_bounding_boxes[cube_line_idx] = new THREE.Box3().setFromObject(opaque_cube_lines[cube_line_idx]);
+                    line_bbox_cubes[cube_line_idx] = new THREE.Mesh(line_bbox_geometry, line_bbox_materials[cube_line_idx]);
+                    line_bbox_cubes[cube_line_idx].position.x = (line_bounding_boxes[cube_line_idx] .max.x + line_bounding_boxes[cube_line_idx] .min.x) / 2;
+                    line_bbox_cubes[cube_line_idx].position.y = (line_bounding_boxes[cube_line_idx] .max.y + line_bounding_boxes[cube_line_idx] .min.y) / 2;
+                    line_bbox_cubes[cube_line_idx].position.z = (line_bounding_boxes[cube_line_idx] .max.z + line_bounding_boxes[cube_line_idx] .min.z) / 2;
+                    scene.add(line_bbox_cubes[cube_line_idx]);
+                    */
+                }
+
+                var offset_x = offset_y = offset_z = -0.5;
+                $.each(sample.metadata.class, function(class_key, class_value) {
+                    var class_name = class_key;
+                    var class_rgb = rgb_array_to_str(class_value.rgb);
+                    var subset = sample.subsets[class_name];
+                    
+                    var particles = new THREE.Geometry();                    
+                    var class_d3_rgb = d3.rgb(class_rgb);
+                    d3.select("#sphere_gradient_0").style("stop-color", class_d3_rgb.brighter().brighter().toString());
+                    d3.select("#sphere_gradient_1").style("stop-color", class_d3_rgb.brighter().toString());
+                    d3.select("#sphere_gradient_2").style("stop-color", class_d3_rgb.darker().toString());
+                    var svg_html = new String($('#sphere_asset').html());
+                    var svg_canvas = document.createElement("canvas");
+                    canvg(svg_canvas, svg_html);
+                    var svg_texture = new THREE.Texture(svg_canvas);
+                    svg_texture.needsUpdate = true;
+                    var particle_material = new THREE.PointCloudMaterial({ 
+                        map: svg_texture, 
+                        transparent: true, 
+                        size: 0.2, 
+                        alphaTest: 0.15
+                    });
+                    
+                    // A particle has basically zero radius, so we build a bounding box around the particle, which we can 
+                    // use with the raycaster to better mimic mouseover and mouseout events. For example, a mouseover might
+                    // append a text label to left of the sphere particle describing the point ID or parent class.
+                
+                    var bounding_box_geometry = new THREE.BoxGeometry(0.075, 0.075, 0.075);
+                    for (var point_idx = 0; point_idx < subset.points.length; point_idx++) {
+                        var point = subset.points[point_idx];
+                        var id = point.id;
+                        var rescaled_point_xyz = rescaled_xyz(point.x, point.y, point.z, sample.metadata.range.x[0], sample.metadata.range.x[1], offset_x, sample.metadata.range.y[0], sample.metadata.range.y[1], offset_y, sample.metadata.range.z[0], sample.metadata.range.z[1], offset_z);
+                        var bounding_box = new THREE.Mesh(
+                            bounding_box_geometry, 
+                            new THREE.MeshLambertMaterial({ 
+                                opacity: 0.33, 
+                                transparent: true,
+                                alphaTest: 0.5
+                            })
+                        );
+                        bounding_box.position.x = 0.9 * rescaled_point_xyz[0];
+                        bounding_box.position.y = 0.9 * rescaled_point_xyz[1];
+                        bounding_box.position.z = 0.9 * rescaled_point_xyz[2];
+                        bounding_box.name = id;
+                        bounding_box.subname = class_name;
+                        scene.add(bounding_box);
+                        bounding_boxes.push(bounding_box);
+                        var particle = new THREE.Vector3(bounding_box.position.x, bounding_box.position.y, bounding_box.position.z);
+                        particles.vertices.push(particle);
+                    }
+                    
+                    var particle_system = new THREE.PointCloud(particles, particle_material);
+                    scene.add(particle_system);
+                });
+
+                raycaster = new THREE.Raycaster();
+                renderer = new THREE.WebGLRenderer({antialias: true});
+                renderer.setClearColor(0xffffff, 0);
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                renderer.sortObjects = false;
+                container.appendChild(renderer.domElement);
+
+                document.addEventListener('mousemove', onDocumentMouseMove, false);
+                window.addEventListener('resize', onWindowResize, false);
+                
+                controls = new THREE.OrbitControls(camera, renderer.domElement);
+                controls.minDistance = 1;
+                controls.maxDistance = 5;
+                controls.noPan = true;
+                controls.addEventListener('change', render);
+                
+                update_position();
+                
+                // Defaults help ensure there is no initial and unwanted "mouseover" event
+                
+                mouse.x = -2000;
+                mouse.y = -2000;
+                
+                update_title();
+                update_key();
+            }
+            
+            function update_title() {
+                if (!sample.metadata.title)
+                    return;
+                
+                $('#graph_title').remove();
+                var title_label = document.createElement('div');
+                title_label.id = "graph_title";
+                title_label.style.position = 'absolute';
+                title_label.style.top = parseInt(Math.floor(0.05 * window.innerHeight)) + 'px';
+                title_label.style.left = '0px';
+                title_label.style.width = parseInt(window.innerWidth) + 'px';
+                title_label.innerHTML = '<center><span class="title_label">' + sample.metadata.title + '<br><span class="title_sublabel">' + sample.metadata.subtitle + '</span></span></center>';
+                container.appendChild(title_label);
+            }
+            
+            function update_key() {
+                if (!sample.metadata.class) 
+                    return;
+                
+                var content = document.createElement('div');
+                content.id = "class_key_content";
+                
+                for (var class_name in sample.metadata.class) {
+                    if (sample.metadata.class.hasOwnProperty(class_name)) {
+                        class_color = rgb_array_to_str(sample.metadata.class[class_name].rgb);
+                        var class_rect_div = document.createElement('div');
+                        class_rect_div.id = "class_rect_parent_" + class_name.replace(/\s/g, '');
+                        class_rect_div.style.width = "15px";
+                        class_rect_div.style.height = "15px";
+                        class_rect_div.style.borderWidth = "1px";
+                        class_rect_div.style.borderColor = "black";
+                        class_rect_div.style.borderStyle = "solid";
+                        class_rect_div.style.backgroundColor = class_color;
+                        class_rect_div.style.display = "inline-block";
+                        class_rect_div.style.margin = "3px";
+                        class_rect_div.style.position = "relative";
+                        class_rect_div.style.top = "-1px"; 
+                        class_rect_div.innerHTML = "&nbsp;";                    
+                            
+                        var class_name_div = document.createElement('div');
+                        class_name_div.innerHTML = class_name;
+                        class_name_div.style.display = "inline-block";
+                        class_name_div.style.margin = "3px";
+                        class_name_div.style.marginRight = "16px";
+                        class_name_div.style.position = "relative";
+                        class_name_div.style.top = "-3px"; 
+                        
+                        var class_parent = document.createElement('div');
+                        class_parent.id = "class_parent_" + class_name.replace(/\s/g, '');
+                        class_parent.style.display = "inline-block";
+                        class_parent.appendChild(class_rect_div);
+                        class_parent.appendChild(class_name_div);
+                        content.appendChild(class_parent);
+                    }
+                }
+                
+                $('#graph_key').remove();
+                var graph_key = document.createElement('div');
+                graph_key.id = "graph_key";
+                graph_key.style.position = 'absolute';
+                graph_key.style.bottom = parseInt(Math.floor(0.05 * window.innerHeight)) + 'px';
+                graph_key.style.left = '0px';
+                graph_key.style.width = parseInt(window.innerWidth) + 'px';    
+                graph_key.style.textAlign = "center";        
+                graph_key.appendChild(content);
+                container.appendChild(graph_key);
+            }
+            
+            function update_position() {
+                if (get_url_parameter("xdeg"))
+                    x_rad = Math.PI / 180.0 * get_url_parameter("xdeg");
+                if (get_url_parameter("ydeg"))
+                    y_rad = Math.PI / 180.0 * get_url_parameter("ydeg");
+                controls.rotateLeft(x_rad);
+                controls.rotateUp(y_rad);
+                camera.position.z = z_rad;
+                controls.update();
+            }
+            
+            function onWindowResize() {
+                camera.aspect = window.innerWidth / window.innerHeight;
+                camera.updateProjectionMatrix();
+                renderer.setSize(window.innerWidth, window.innerHeight);
+                update_title();
+                update_key();
+            }
+            
+            function onDocumentMouseMove(event) {
+                event.preventDefault();
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
+                if (!INTERSECTED) {
+                    $(".particle_label").remove();
+                }
+            }
+            
+            function midpoint_vertices(v) {
+                var _vector = new THREE.Vector3();
+                _vector.x = (v[0].x + v[1].x) / 2;
+                _vector.y = (v[0].y + v[1].y) / 2;
+                _vector.z = (v[0].z + v[1].z) / 2;
+                return _vector;
+            }
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                controls.update();
+                render();
+            }
+            
+            function render() {
+                
+                // Make foreground cube lines transparent
+                
+                /*
+                    
+                for (var cube_line_group_idx = 0; cube_line_group_idx < opaque_cube_lines.length; cube_line_group_idx++) {
+                    var face_to_camera = new THREE.Vector3();
+                    face_to_camera.copy(camera.position);
+                    var bbox = new THREE.Box3().setFromObject(opaque_cube_lines[cube_line_group_idx]);
+                    face_to_camera.sub(bbox.min);
+                    var dp = face.normal.dot(face_to_camera);
+                    if (flag)
+                        console.log(bbox), flag = false;
+                }
+                    
+                */
+                
+                /*
+                    
+                for (var cube_line_idx = 0; cube_line_idx < opaque_cube_lines.length; cube_line_idx++) {
+                    var _face_to_camera = new THREE.Vector3();
+                    _face_to_camera.copy(camera.position);
+                    var _bbox = line_bounding_boxes[cube_line_idx];
+                    var _cube = line_bbox_cubes[cube_line_idx];
+                    var _face = _cube.geometry.faces[cube_line_idx];
+                    _face_to_camera.sub(_cube.geometry.vertices[_face.a]);
+                    var _dp = _face.normal.dot(_face_to_camera);
+                    if (_dp > 0) {
+                        line_bbox_materials[cube_line_idx] = new THREE.MeshBasicMaterial({color: 0x00ffff});
+                    }
+                    else {
+                        line_bbox_materials[cube_line_idx] = new THREE.MeshBasicMaterial({color: 0xffff00});
+                    }
+                }
+                
+                */
+                
+                for (var cube_face_idx = 0; cube_face_idx < cube.geometry.faces.length; cube_face_idx++) {
+                    var face = cube.geometry.faces[cube_face_idx];
+                    var face_to_camera = new THREE.Vector3();
+                    face_to_camera.copy(camera.position);
+                    face_to_camera.sub(cube.geometry.vertices[face.a]);
+                    var dp = face.normal.dot(face_to_camera);
+                    if (flag) {
+                        console.log(Math.floor(cube_face_idx/2.0), dp, '{', cube.geometry.vertices[face.a].x, cube.geometry.vertices[face.a].y, cube.geometry.vertices[face.a].z, '}');
+                    }
+                    var cube_line_idx = Math.floor(cube_face_idx/2.0);
+                    if (cube_face_idx % 2 == 0) {
+                        dp_line_geos[cube_line_idx] = new THREE.Geometry();
+                        dp_line_geos[cube_line_idx].vertices.push(new THREE.Vector3(1.1*cube.geometry.vertices[face.a].x, 1.1*cube.geometry.vertices[face.a].y, 1.1*cube.geometry.vertices[face.a].z));
+                    }
+                    if (cube_face_idx % 2 == 1) {
+                        dp_line_geos[cube_line_idx].vertices.push(new THREE.Vector3(1.1*cube.geometry.vertices[face.b].x, 1.1*cube.geometry.vertices[face.b].y, 1.1*cube.geometry.vertices[face.b].z));
+                        var cube_line = new THREE.Line(dp_line_geos[cube_line_idx], (cube_face_idx % 3 == 0) ? red_cube_line_material : (cube_face_idx % 3 == 1) ? green_cube_line_material : blue_cube_line_material);
+                        cube_line.name = "cube_line_idx" + cube_line_idx;
+                        dp_lines[cube_line_idx] = cube_line;
+                        dp_line_names[cube_line_idx] = cube_line.name;
+                    }
+                    if (dp > 0) {
+                        if ((!scene.getObjectByName(dp_line_names[cube_line_idx])) && (dp_lines[cube_line_idx] !== undefined)) {
+                            console.log("adding id", dp_line_names[cube_line_idx]);
+                            scene.add(dp_lines[cube_line_idx]);
+                            var _midpt = midpoint_vertices(dp_lines[cube_line_idx].geometry.vertices);
+                            var _geometry = new THREE.BoxGeometry( 0.075, 0.075, 0.075 );
+                            var _material = new THREE.MeshBasicMaterial( { 
+                                color : dp_lines[cube_line_idx].material.color, 
+                                opacity: 0.5, 
+                                transparent: true,
+                                alphaTest: 0.5
+                            });
+                            var _mesh = new THREE.Mesh( _geometry, _material );
+                            _mesh.name = dp_line_names[cube_line_idx] + "_bb";
+                            _mesh.position.x = _midpt.x;
+                            _mesh.position.y = _midpt.y;
+                            _mesh.position.z = _midpt.z;
+                            scene.add( _mesh );
+                            scene.updateMatrixWorld();
+                            var _width = window.innerWidth, _height = window.innerHeight;
+                            var _v = new THREE.Vector3();
+                            var _projector = new THREE.Projector();
+                            _projector.projectVector(_v.setFromMatrixPosition( _mesh.matrixWorld ), camera);
+                            if (flag)
+                                console.log(cube_line_idx, _v);
+                            var _percX = (_v.x + 1) / 2;
+                            var _percY = (_v.y + 1) / 2;
+                            var _left = _percX * _width;
+                            var _top = _percY * _height;
+                            if (flag)
+                                console.log(cube_line_idx, _left, _top);
+                        }
+                    }
+                    else {
+                        if (scene.getObjectByName(dp_line_names[cube_line_idx])) {
+                            console.log("removing id", dp_line_names[cube_line_idx]);
+                            scene.remove(scene.getObjectByName(dp_line_names[cube_line_idx]));
+                            scene.remove(scene.getObjectByName(dp_line_names[cube_line_idx] + "_bb"));
+                        }
+                    }
+                    /*
+                    if (dp > 0) {
+                        cube_materials[ cube_face_idx ] = new THREE.MeshBasicMaterial({color:0xff0000, transparent:true, opacity:0.1, side:THREE.FrontSide});
+                    }
+                    else {
+                        cube_materials[ cube_face_idx ] = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:1, side:THREE.BackSide});
+                    }
+                    */
+                }
+                flag = false;
+                
+                // Find intersections with mouse pointer screen position and world objects
+                
+                var mouse_vector = new THREE.Vector3(mouse.x, mouse.y, 1).unproject(camera);
+                raycaster.set(camera.position, mouse_vector.sub(camera.position).normalize());
+                // cf. http://stackoverflow.com/a/27796523/19410
+                var scene_right = new THREE.Vector3().crossVectors(raycaster.ray.origin, camera.up).setLength(0.0375);
+                var bounding_box_intersections = raycaster.intersectObjects(bounding_boxes);
+                if (bounding_box_intersections.length > 0) { 
+                    if (INTERSECTED != bounding_box_intersections[0].object) {
+                        INTERSECTED = bounding_box_intersections[0].object;
+                        $(".particle_label").remove();
+                        id_label = null;
+                        
+                        var width = window.innerWidth, height = window.innerHeight;
+                        var widthHalf = width / 2, heightHalf = height / 2;
+                        var screen_object_center = new THREE.Vector3();
+                        var projector = new THREE.Projector();
+                        projector.projectVector(screen_object_center.setFromMatrixPosition(INTERSECTED.matrixWorld), camera);
+                        screen_object_center.x = (screen_object_center.x * widthHalf) + widthHalf;
+                        screen_object_center.y = -(screen_object_center.y * heightHalf) + heightHalf;
+                        
+                        // The screen_object_center instance shows the screen coordinates of the intersected object, while the
+                        // z position of the intersected object shows how relatively far away the object is in world coordinates.
+                        // We can use these two pieces of information to draw the point ID (or other label) and perhaps scale the 
+                        // label font size by world object depth.
+                        
+                        var INTERSECTED_matrix_copy = new THREE.Matrix4().copy(INTERSECTED.matrixWorld);
+                        INTERSECTED_matrix_copy.setPosition(new THREE.Vector3(INTERSECTED.position.x + scene_right.x, INTERSECTED.position.y + scene_right.y, INTERSECTED.position.z + scene_right.z));
+                        var screen_object_edge = new THREE.Vector3();
+                        projector.projectVector(screen_object_edge.setFromMatrixPosition(INTERSECTED_matrix_copy), camera);
+                        screen_object_edge.x = (screen_object_edge.x * widthHalf) + widthHalf;
+                        screen_object_edge.y = -(screen_object_edge.y * heightHalf) + heightHalf;
+                        
+                        if (!id_label) {
+                            id_label = document.createElement('div');
+                            id_label.id = INTERSECTED.name;
+                            id_label.style.position = 'absolute';
+                            id_label.style.top = '-10000px';
+                            id_label.style.left = '-10000px';
+                            id_label.innerHTML = '<span class="particle_label">' + INTERSECTED.name + '<br><span class="particle_sublabel">' + INTERSECTED.subname + '</span></span>';
+                            container.appendChild(id_label);
+                            var id_label_rect = id_label.getBoundingClientRect();
+                            id_label.style.top = (screen_object_center.y - 0.85 * (id_label_rect.height / 2)) + 'px';
+                            if (mouse.x < 0) {
+                                id_label.style.left = (screen_object_center.x - horizontal_fudge * (screen_object_edge.x - screen_object_center.x)) + 'px';
+                            }
+                            else {
+                                id_label.style.left = (screen_object_center.x + horizontal_fudge * (screen_object_edge.x - screen_object_center.x) - id_label_rect.width) + 'px';
+                                id_label.style.textAlign = 'right';
+                            }
+                        }
+                    }
+                } else {
+                    // mouseout
+                    if (INTERSECTED) {
+                        //console.log(INTERSECTED);
+                        $(".particle_label").remove();
+                        id_label = null;
+                    }
+                    INTERSECTED = null;
+                }
+                renderer.render(scene, camera);
+            }
+        </script>
+    </body>
+</html>
