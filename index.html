@@ -2,6 +2,7 @@
 
 <html lang="en">
     <head>
+        <link rel="stylesheet" href="assets/css/jquery.minicolors.css" type="text/css" />
         <link rel="stylesheet" href="assets/css/style.css" type="text/css" />
         <link rel="stylesheet" href="assets/fonts/typicons.min.css" type="text/css" />
         <title>Cubemaker</title>
@@ -26,8 +27,9 @@
         <script type="text/javascript" src="assets/js/d3-3.5.2.min.js"></script>
         <script type="text/javascript" src="assets/js/dat.gui.min.js"></script>
         <script type="text/javascript" src="assets/js/jquery.editinplace.js"></script>
+        <script type="text/javascript" src="assets/js/jquery.minicolors.min.js"></script>
         <script type="text/javascript">
-            
+
             var count_properties = function(obj) {
                 var count = 0;
                 for (var prop in obj) {
@@ -36,11 +38,20 @@
                 }
                 return count;
             }
-            
+
             var rgb_array_to_str = function(arr) {
                 return "rgb(" + arr.join(",") + ")";
             };
-            
+
+            var rgb_array_to_hex = function (arr) {
+                return "#" + ((1 << 24) + (arr[0] << 16) + (arr[1] << 8) + arr[2]).toString(16).slice(1);
+            };
+
+            var hex_to_rgb_array = function (hex) {
+                var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+                return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)];
+            };
+
             var rescaled_xyz = function(x, y, z, min_x, max_x, offset_x, min_y, max_y, offset_y, min_z, max_z, offset_z) {
                 var result = new Array();
                 result.push(rescale_val(x, min_x, max_x, offset_x));
@@ -417,27 +428,31 @@
             }
             
             function update_key() {
-                if (!sample.metadata.class) 
+                var sample_class = sample.metadata.class;
+                if (!sample_class)
                     return;
                 
                 var content = document.createElement('div');
                 content.id = "class_key_content";
                 
-                for (var class_name in sample.metadata.class) {
-                    if (sample.metadata.class.hasOwnProperty(class_name)) {
-                        class_color = rgb_array_to_str(sample.metadata.class[class_name].rgb);
-                        var class_rect_div = document.createElement('div');
+                for (var class_name in sample_class) {
+                    if (sample_class.hasOwnProperty(class_name)) {
+                        var sample_class_styles = sample_class[class_name];
+                        class_color = rgb_array_to_str(sample_class_styles.rgb);
+                        var class_rect_div = document.createElement('input');
                         class_rect_div.id = "class_rect_parent_" + class_name.replace(/\s/g, '');
-                        class_rect_div.style.width = "15px";
-                        class_rect_div.style.height = "15px";
+                        class_rect_div.type = "hidden";
+                        class_rect_div.style.width = "13px";
+                        class_rect_div.style.height = "13px";
                         class_rect_div.style.borderWidth = "1px";
                         class_rect_div.style.borderColor = "black";
                         class_rect_div.style.borderStyle = "solid";
                         class_rect_div.style.backgroundColor = class_color;
+                        class_rect_div.value = rgb_array_to_hex(sample_class_styles.rgb);
                         class_rect_div.style.display = "inline-block";
                         class_rect_div.style.margin = "3px";
                         class_rect_div.style.position = "relative";
-                        class_rect_div.style.top = "-1px"; 
+                        class_rect_div.style.top = "-3px";
                         class_rect_div.innerHTML = "&nbsp;";                    
                             
                         var class_name_div = document.createElement('div');
@@ -454,6 +469,14 @@
                         class_parent.appendChild(class_rect_div);
                         class_parent.appendChild(class_name_div);
                         content.appendChild(class_parent);
+
+                        $(class_rect_div).minicolors({
+                            position: "top left",
+                            change: function(hex) {
+                                var rgb = hex_to_rgb_array(hex);
+                                sample_class_styles.rgb = rgb;
+                                render();
+                            }});
                     }
                 }
                 

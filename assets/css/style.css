@@ -95,6 +95,20 @@ body {
     color: #cccccc !important;
 }
 
+
+.minicolors input[type=hidden] + .minicolors-swatch {
+    width: 13px;
+    height: 13px;
+    border: 1px solid black;
+    display: inline-block;
+    margin: 3px;
+    position: relative;
+    top: -4px;
+}
+
+.minicolors {
+    margin-right: 3px;
+}
 /*
  * Top navigation
  * Hide default border to remove 1px line.
