@@ -58,7 +58,25 @@
             var get_url_parameter = function(name) {
                 return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
             };
-            
+
+            function downloadURI(uri, name) {
+                var link = document.createElement("a");
+                link.download = name;
+                link.href = uri;
+                link.click();
+            }
+
+            function exportAsJson() {
+                var data = 'data:text/json;charset=utf-8,';
+                data += escape(JSON.stringify(sample));
+                downloadURI(data, "data.json");
+            }
+
+            function exportAsPng() {
+                var data = renderer.domElement.toDataURL("image/png");
+                downloadURI(data, "cube.png");
+            }
+
             var sample = {
                 "metadata" : {
                     "title" : "Cubemaker",
