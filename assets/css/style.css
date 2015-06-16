@@ -37,17 +37,47 @@ body {
     font-weight: 500;
 }
 
-.stamlab_label, .title_label, .title_sublabel {
-	font-size: 22px;
-	font-weight: 500;
+.stamlab_label, .title_label, .title_label input, .title_sublabel {
 	color: black;
 	text-align: center;
 	line-height: 0.33em;
+    display: inline-block;
+}
+
+.title_label, .title_label input {
+    font-size: 22px;
+    font-weight: 500;
+}
+
+.title_label input {
+    width: 300px;
+}
+
+.title_label {
+    padding-bottom: 12px;
+    padding-top: 13px;
+}
+
+.title_label.editInPlace-active {
+    padding: 0px;
+}
+
+.title_sublabel, .title_sublabel input {
+	font-size: 14px;
+	font-weight: 400;
+}
+
+.title_sublabel input {
+    width: 550px;
 }
 
 .title_sublabel {
-	font-size: 14px;
-	font-weight: 400;
+    padding-top: 10px;
+    padding-bottom: 5px;
+
+}
+.title_sublabel.editInPlace-active {
+    padding: 0px;
 }
 
 /*

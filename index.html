@@ -25,6 +25,7 @@
         <script type="text/javascript" src="assets/js/gabelerner.canvg.js"></script>
         <script type="text/javascript" src="assets/js/d3-3.5.2.min.js"></script>
         <script type="text/javascript" src="assets/js/dat.gui.min.js"></script>
+        <script type="text/javascript" src="assets/js/jquery.editinplace.js"></script>
         <script type="text/javascript">
             
             var count_properties = function(obj) {
@@ -399,8 +400,20 @@
                 title_label.style.top = parseInt(Math.floor(0.05 * window.innerHeight)) + 'px';
                 title_label.style.left = '0px';
                 title_label.style.width = parseInt(window.innerWidth) + 'px';
-                title_label.innerHTML = '<center><span class="title_label">' + sample.metadata.title + '<br><span class="title_sublabel">' + sample.metadata.subtitle + '</span></span></center>';
+                title_label.innerHTML = '<center><span class="title_label">' + sample.metadata.title + '</span><br><span class="title_sublabel">' + sample.metadata.subtitle + '</span></center>';
                 container.appendChild(title_label);
+                $(title_label).find(".title_label").editInPlace({
+                    callback: function (unused, value) {
+                        sample.metadata.title = value;
+                        return value;
+                    }
+                });
+                $(title_label).find(".title_sublabel").editInPlace({
+                    callback: function (unused, value) {
+                        sample.metadata.subtitle = value;
+                        return value;
+                    }
+                });
             }
             
             function update_key() {
