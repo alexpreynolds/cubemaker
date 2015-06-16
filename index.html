@@ -67,7 +67,21 @@
             var get_url_parameter = function(name) {
                 return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
             };
-            
+
+            function createVertexTexture(rgb){
+                var class_rgb = rgb_array_to_str(rgb);
+                var class_d3_rgb = d3.rgb(class_rgb);
+                d3.select("#sphere_gradient_0").style("stop-color", class_d3_rgb.brighter().brighter().toString());
+                d3.select("#sphere_gradient_1").style("stop-color", class_d3_rgb.brighter().toString());
+                d3.select("#sphere_gradient_2").style("stop-color", class_d3_rgb.darker().toString());
+                var svg_html = new String($('#sphere_asset').html());
+                var svg_canvas = document.createElement("canvas");
+                canvg(svg_canvas, svg_html);
+                var svg_texture = new THREE.Texture(svg_canvas);
+                svg_texture.needsUpdate = true;
+                return svg_texture;
+            }
+
             var sample = {
                 "metadata" : {
                     "title" : "Cubemaker",
@@ -214,6 +228,7 @@
             for (var cube_line_materials_idx = 0; cube_line_materials_idx < cube_line_materials.length; cube_line_materials_idx++) {
                 cube_line_materials[cube_line_materials_idx] = new THREE.LineBasicMaterial().clone(opaque_cube_line_material);
             }
+            var vertex_materials = {};
             var bounding_boxes = [];
             var horizontal_fudge = 1.75;
             var x_deg = 70;
@@ -226,10 +241,10 @@
             var dp_line_geos = new Array(6);
             var dp_lines = new Array(6);
             var dp_line_names = new Array(6);
-            
+
             init();
             animate();
-            
+
             function init() {
                 container = document.createElement('div');
                 document.body.appendChild(container);
@@ -321,26 +336,19 @@
                 var offset_x = offset_y = offset_z = -0.5;
                 $.each(sample.metadata.class, function(class_key, class_value) {
                     var class_name = class_key;
-                    var class_rgb = rgb_array_to_str(class_value.rgb);
                     var subset = sample.subsets[class_name];
                     
                     var particles = new THREE.Geometry();                    
-                    var class_d3_rgb = d3.rgb(class_rgb);
-                    d3.select("#sphere_gradient_0").style("stop-color", class_d3_rgb.brighter().brighter().toString());
-                    d3.select("#sphere_gradient_1").style("stop-color", class_d3_rgb.brighter().toString());
-                    d3.select("#sphere_gradient_2").style("stop-color", class_d3_rgb.darker().toString());
-                    var svg_html = new String($('#sphere_asset').html());
-                    var svg_canvas = document.createElement("canvas");
-                    canvg(svg_canvas, svg_html);
-                    var svg_texture = new THREE.Texture(svg_canvas);
-                    svg_texture.needsUpdate = true;
-                    var particle_material = new THREE.PointCloudMaterial({ 
-                        map: svg_texture, 
+
+                    var particle_material = new THREE.PointCloudMaterial({
+                        map: createVertexTexture(class_value.rgb),
                         transparent: true, 
                         size: 0.2, 
                         alphaTest: 0.15
                     });
-                    
+
+                    vertex_materials[class_name] = particle_material;
+
                     // A particle has basically zero radius, so we build a bounding box around the particle, which we can 
                     // use with the raycaster to better mimic mouseover and mouseout events. For example, a mouseover might
                     // append a text label to left of the sphere particle describing the point ID or parent class.
@@ -470,11 +478,16 @@
                         class_parent.appendChild(class_name_div);
                         content.appendChild(class_parent);
 
+                        $(class_rect_div).data("classname", class_name);
                         $(class_rect_div).minicolors({
                             position: "top left",
                             change: function(hex) {
                                 var rgb = hex_to_rgb_array(hex);
                                 sample_class_styles.rgb = rgb;
+                                var associated_class_name = $(this).data("classname");
+                                vertex_materials[associated_class_name].map = createVertexTexture(rgb);
+                                vertex_materials[associated_class_name].needsUpdate = true;
+
                                 render();
                             }});
                     }
