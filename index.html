@@ -77,6 +77,13 @@
                 downloadURI(data, "cube.png");
             }
 
+            function importJson(uri){
+               return $.get(uri, function(data){
+                    sample = JSON.parse(data);
+                    //todo: add error handler
+                });
+            }
+
             var sample = {
                 "metadata" : {
                     "title" : "Cubemaker",
@@ -207,7 +214,7 @@
                     }
                 }
             };
-            
+
             var container, stats;
             var camera, scene, raycaster, renderer;
             var mouse = new THREE.Vector2(), INTERSECTED;
@@ -235,10 +242,21 @@
             var dp_line_geos = new Array(6);
             var dp_lines = new Array(6);
             var dp_line_names = new Array(6);
-            
+
+            function load() {
+                var source = get_url_parameter("source");
+                if (source) {
+                    return importJson(source);
+                }
+                return $.Deferred().resolve().promise();
+            }
+
+            load()
+                    .done(function(){
             init();
             animate();
-            
+                    });
+
             function init() {
                 container = document.createElement('div');
                 document.body.appendChild(container);
