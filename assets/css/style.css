@@ -232,3 +232,72 @@ a.close:hover {
     -moz-transition: color 1s ease;
     transition: color 1s ease;
 }
+
+/*
+ * Button styles
+ */
+
+.btn-footer {
+    position: absolute;
+    bottom: 5px;
+    left: 0px;
+    width: 1278px;
+    padding-left: 8px;
+    text-align: left;
+    font-size: 12px;
+}
+
+.btn-footer > label:not(:first-child){
+    margin-left: 10px;
+}
+
+.btn-group {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.btn-group > .btn{
+    position: relative;
+    float: left;
+}
+.btn-group > .btn:first-child:not(:last-child){
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+.btn-group > .btn:first-child {
+    margin-left: 0;
+}
+
+.btn-group > .btn:not(:first-child):not(:last-child){
+    border-radius: 0;
+}
+
+.btn-group > .btn:last-child:not(:first-child){
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+}
+
+.btn-action {
+    background-color: hsl(225, 100%, 45%) !important;
+    background-repeat: repeat-x;
+    border-color: #003f99 #003f99 hsl(225, 100%, 45%);
+    color: #fff !important;
+    text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
+    -webkit-font-smoothing: antialiased;
+    font-weight: bolder;
+}
+.btn-xs {
+    padding: 1px 5px;
+}
+.btn-xs {
+    padding: 5px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+}
+.btn-primary {
+    color: #ffffff;
+    background-color: #428bca;
+    border-color: #357ebd;
+}

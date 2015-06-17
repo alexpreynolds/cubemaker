@@ -9,7 +9,6 @@
     </head>
     <body>
         <div class="notification"><div class="warning webgl">Your browser doesn't support WebGL</div></div>
-        <!--<a class="js-open-modal btn" href="#" data-modal-id="import-json-dialog">Import</a>-->
         <div id="import-json-dialog" class="modal-box">
             <header> <a href="#" class="js-modal-close close">&#x00D7;</a>
                 <h3>Import Cube JSON</h3>
@@ -89,6 +88,7 @@
 
             function importSample(jsonString){
                 sample = JSON.parse(jsonString);
+                //todo: verify the sample object structure
             }
 
             function importJson(uri){
@@ -510,7 +510,7 @@
                 var graph_key = document.createElement('div');
                 graph_key.id = "graph_key";
                 graph_key.style.position = 'absolute';
-                graph_key.style.bottom = parseInt(Math.floor(0.05 * window.innerHeight)) + 'px';
+                graph_key.style.bottom = parseInt(Math.floor(0.1 * window.innerHeight)) + 'px';
                 graph_key.style.left = '0px';
                 graph_key.style.width = parseInt(window.innerWidth) + 'px';    
                 graph_key.style.textAlign = "center";        
@@ -741,6 +741,14 @@
                 init();
                 animate();
             });
+
+            $("#export-json-btn").click(function(){
+               exportAsJson();
+            });
+
+            $("#export-png-btn").click(function(){
+                exportAsPng();
+            });
         }
 
         var checkWebGL = function () {
@@ -767,5 +775,17 @@
         if (checkWebGL()) cubeMaker();
 
         </script>
+        <div class="btn-footer">
+            <label for="import-buttons">Import</label>
+            <div class="btn-group" id="import-buttons">
+                <button value="json" class="btn btn-primary btn-xs btn-action js-open-modal"  data-modal-id="import-json-dialog" name="json">json</button>
+            </div>
+            <label for="export-buttons">Export</label>
+            <div class="btn-group"  id="export-buttons">
+                <button id="export-json-btn" value="json" class="btn btn-primary btn-xs btn-action" name="json">json</button>
+                <button id="export-png-btn" value="png" class="btn btn-primary btn-xs btn-action" name="png">png</button>
+                <button id="export-link-btn" value="link" class="btn btn-primary btn-xs btn-action" name="link">link</button>
+            </div>
+        </div>
     </body>
 </html>
