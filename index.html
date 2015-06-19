@@ -696,12 +696,20 @@
 
             var KeyCodes = {LEFT : '37', RIGHT : '39', ESC : '27'}
             var lastKey = null;
-            $(document).keyup(function(event){
+            $(document).keydown(function(event) {
+
                 var key = (event.keyCode ? event.keyCode : event.which);
                 if (key == KeyCodes.LEFT){
-                    rotateRight = false;
+                    if (rotateRight){
+                        rotateRight = false;
+                        event.stopPropagation();
+                    }
                 }else if (key == KeyCodes.RIGHT){
-                    rotateLeft = false;
+                    if (rotateLeft){
+                        rotateLeft = false;
+                        event.stopPropagation();
+                    }
+
                 } else if (key == KeyCodes.ESC){
                     rotateRight = false;
                     rotateLeft = false;
