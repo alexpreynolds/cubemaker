@@ -734,20 +734,22 @@
                 renderer.render(scene, camera);
             }
 
-            $("#import-btn").click(function(){
-                var data = $("#import-data").val();
-                importSample(data);
-                clear();
-                init();
-                animate();
-            });
+            $( document ).ready(function(){
+                $("#import-btn").click(function () {
+                    var data = $("#import-data").val();
+                    importSample(data);
+                    clear();
+                    init();
+                    animate();
+                });
 
-            $("#export-json-btn").click(function(){
-               exportAsJson();
-            });
+                $("#export-json-btn").click(function () {
+                    exportAsJson();
+                });
 
-            $("#export-png-btn").click(function(){
-                exportAsPng();
+                $("#export-png-btn").click(function () {
+                    exportAsPng();
+                });
             });
         }
 
