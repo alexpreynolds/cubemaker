@@ -115,3 +115,13 @@ canvas {
     border-radius:5px;
     display: none;
 }
+
+.key_title {
+    font-size: 18px;
+    font-weight: bolder;
+    margin-bottom: 4px;
+}
+
+.key_element {
+    font-size: 13px;
+}
