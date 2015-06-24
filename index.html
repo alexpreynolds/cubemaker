@@ -433,7 +433,7 @@
                     var particles = new THREE.Geometry();                    
 
                     var particle_material = new THREE.PointCloudMaterial({
-                        map: createVertexTexture(class_value.rgb),
+                        map: createVertexTexture(point_type.rgb),
                         transparent: true, 
                         size: 0.2, 
                         alphaTest: 0.15
@@ -550,8 +550,9 @@
                 class_title_div.className = "key_title";
                 class_title_div.innerHTML = selected_class;
                 content.appendChild(class_title_div);
-                
-                $.each(sample.metadata.classes[selected_class], function(class_index, class_value) {
+
+                var classes = sample.metadata.classes[selected_class];
+                $.each(classes, function(class_index, class_value) {
                     class_name = class_value.name;
                     class_color = rgb_array_to_str(class_value.rgb);
                     var class_rect_div = document.createElement('div');
@@ -587,12 +588,16 @@
                     content.appendChild(class_parent);
 
                     $(class_rect_div).data("classname", class_name);
+                    $(class_rect_div).data("classindex", class_index);
                     $(class_rect_div).minicolors({
                         position: "top left",
                         change: function(hex) {
                             var rgb = hex_to_rgb_array(hex);
                             var associated_class_name = $(this).data("classname");
-                            sample.metadata.classes[selected_class][associated_class_name].rgb = rgb;
+                            var associated_class_index = $(this).data("classindex");
+
+                            var associated_class = classes[associated_class_index];
+                            associated_class.rgb = rgb;
                             vertex_materials[selected_class][associated_class_name].map = createVertexTexture(rgb);
                             vertex_materials[selected_class][associated_class_name].needsUpdate = true;
 
