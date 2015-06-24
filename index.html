@@ -8,7 +8,7 @@
         <link rel="shortcut icon" href="assets/img/favicon.ico">
     </head>
     <body>
-        <div class="notification"><div class="warning webgl">Your browser doesn't support WebGL</div></div>
+        <div class="notification"><div class="warning webgl"><span class="typcn typcn-info-outline" style="font-size: xx-large; position: relative; top: 3px;"></span> Your browser does not appear to support <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>. The <a href="https://get.webgl.org/">WebGL test site</a> may offer help with configuration.</div></div>
         <div id="import-json-dialog" class="modal-box">
             <header> <a href="#" class="js-modal-close close">&#x00D7;</a>
                 <h3>Import Cube JSON</h3>
@@ -26,6 +26,7 @@
             </radialGradient></defs>
             <circle fill="url(#sphere_gradient)" cx="320" cy="320" r="320"/>
         </svg></div>
+        <div id="container"></div>
         <script type="text/javascript" src="assets/js/jquery-2.1.3.min.js"></script>
         <script type="text/javascript" src="assets/js/three.min.js"></script>
         <script type="text/javascript" src="assets/js/three.orbit-controls.js"></script>
@@ -110,11 +111,50 @@
                         "y" : "PC2",
                         "z" : "PC3"
                     },
-                    "class" : {
-                        "Paraxial mesoderm deratives" : { "rgb" : [238, 23, 23] },
-                        "Lymphoid" : { "rgb" : [222,  99,  20] },
-                        "Primitive" : { "rgb" : [ 128,  128, 255] },
-                        "Ectoderm" : { "rgb" : [  0,   0, 255] }
+                    "default_class" : "Lineage",
+                    "classes" : {
+                        "Lineage" :
+                            [
+                                {
+                                    "name" : "Paraxial mesoderm deratives",
+                                    "rgb" : [238, 23, 23]
+                                },
+                                {
+                                    "name" : "Lymphoid", 
+                                    "rgb" : [222, 99, 20] 
+                                },
+                                {
+                                    "name" : "Primitive",
+                                    "rgb" : [128, 128, 255]
+                                },
+                                {
+                                    "name" : "Ectoderm",
+                                    "rgb" : [0, 0, 255]
+                                }
+                            ],
+                        "Tissue" :
+                            [
+                                {
+                                    "name" : "Skin",
+                                    "rgb" : [127, 255, 0]
+                                },
+                                {
+                                    "name" : "Muscle",
+                                    "rgb" : [178, 34, 34]
+                                },
+                                {
+                                    "name" : "Immune",
+                                    "rgb" : [218, 165, 32]
+                                },
+                                {
+                                    "name" : "Gingival",
+                                    "rgb" : [188, 143, 143]
+                                },
+                                {
+                                    "name" : "Stem",
+                                    "rgb" : [70, 130, 180]
+                                }
+                            ]
                     },
                     "range" : {
                         "x" : [-324.249475042631, 141.153439249043],
@@ -122,114 +162,158 @@
                         "z" : [-97.4840574820861, 430.242836265501]
                     }
                 },
-                "subsets" : {
-                    "Paraxial mesoderm deratives" : {
-                        "points" : [
-                            {
-                                "id" : "AG04449-DS12319",
-                                "x" : -276.412663905422,
-                                "y" : -83.1758800539113,
-                                "z" : -25.0089776269546
-                            },
-                            {
-                                "id" : "AG04450-DS12270",
-                                "x" : -225.16928363426,
-                                "y" : -64.2873181026024,
-                                "z" : -56.2128084230765
-                            },
-                            {
-                                "id" : "AG09309-DS12352",
-                                "x" : -324.249475042631,
-                                "y" : -120.763294672146,
-                                "z" : -50.4869757834736
-                            },
-                            {
-                                "id" : "AG09319-DS12291",
-                                "x" : -223.953698282166,
-                                "y" : -83.9964379641139,
-                                "z" : -97.4840574820861
-                            },
-                            {
-                                "id" : "AG10803-DS12384",
-                                "x" : -287.265505588092,
-                                "y" : -109.849418312057,
-                                "z" : -79.2499113283234
-                            },
-                            {
-                                "id" : "SkMC-DS11949",
-                                "x" : -302.061733136259,
-                                "y" : -126.375284207152,
-                                "z" : -29.6595604981266
-                            }
-                        ]
+                "data" : [
+                    {
+                        "type" : { 
+                            "Lineage" : 0,
+                            "Tissue" : 0
+                        },
+                        "id" : "AG04449-DS12319",
+                        "x" : -276.412663905422,
+                        "y" : -83.1758800539113,
+                        "z" : -25.0089776269546
                     },
-                    "Lymphoid" : {
-                        "points" : [
-                            {
-                                "id" : "CD19-DS17281",
-                                "x" : 136.01389377205,
-                                "y" : 214.940307097836,
-                                "z" : -22.6768465513087
-                            },
-                            {
-                                "id" : "CD20-DS17541",
-                                "x" : 141.153439249043,
-                                "y" : 222.008601154387,
-                                "z" : -25.9975593793299
-                            },
-                            {
-                                "id" : "CD34-DS12274",
-                                "x" : 100.474071131398,
-                                "y" : 229.090197881056,
-                                "z" : -52.6553280422026
-                            },
-                            {
-                                "id" : "hTH1-DS7840",
-                                "x" : 115.924864675695,
-                                "y" : 209.289425464383,
-                                "z" : -7.72061603054014
-                            },
-                            {
-                                "id" : "hTH2-DS7842",
-                                "x" : 114.435503466346,
-                                "y" : 204.757615642075,
-                                "z" : -6.19822633673763
-                            }
-                        ]
+                    {
+                        "type" : { 
+                            "Lineage" : 0,
+                            "Tissue" : 0
+                        },
+                        "id" : "AG04450-DS12270",
+                        "x" : -225.16928363426,
+                        "y" : -64.2873181026024,
+                        "z" : -56.2128084230765
                     },
-                    "Primitive" : {
-                        "points" : [
-                            {
-                                "id" : "hESCT0-DS11909",
-                                "x" : 111.185659772123,
-                                "y" : -1.98890275613638,
-                                "z" : 16.9654205670039
-                            }
-                           ]
+                    {
+                        "type" : { 
+                            "Lineage" : 0,
+                            "Tissue" : 0
+                        },
+                        "id" : "AG09309-DS12352",
+                        "x" : -324.249475042631,
+                        "y" : -120.763294672146,
+                        "z" : -50.4869757834736
                     },
-                    "Ectoderm" : {
-                        "points" : [
-                            {
-                                "id" : "Skin_Keratinocytes-DS18692",
-                                "x" : -152.758667376666,
-                                "y" : 10.7650810128968,
-                                "z" : 430.242836265501
-                            },
-                            {
-                                "id" : "Skin_Keratinocytes-DS18695",
-                                "x" : -149.305110222447,
-                                "y" : 14.7866787526815,
-                                "z" : 422.939200493901
-                            },
-                            {
-                                "id" : "vHMEC-DS18438",
-                                "x" : -123.49178394839,
-                                "y" : 28.7804673565906,
-                                "z" : 303.912892981827
-                            }
-                        ]
+                    {
+                        "type" : { 
+                            "Lineage" : 0,
+                            "Tissue" : 3
+                        },
+                        "id" : "AG09319-DS12291",
+                        "x" : -223.953698282166,
+                        "y" : -83.9964379641139,
+                        "z" : -97.4840574820861
+                    },
+                    {
+                        "type" : { 
+                            "Lineage" : 0,
+                            "Tissue" : 0
+                        },
+                        "id" : "AG10803-DS12384",
+                        "x" : -287.265505588092,
+                        "y" : -109.849418312057,
+                        "z" : -79.2499113283234
+                    },
+                    {
+                        "type" : {
+                            "Lineage" : 0,
+                            "Tissue" : 1
+                        },
+                        "id" : "SkMC-DS11949",
+                        "x" : -302.061733136259,
+                        "y" : -126.375284207152,
+                        "z" : -29.6595604981266
+                    },
+                    {
+                        "type" : {
+                            "Lineage" : 1,
+                            "Tissue" : 2
+                        },
+                        "id" : "CD19-DS17281",
+                        "x" : 136.01389377205,
+                        "y" : 214.940307097836,
+                        "z" : -22.6768465513087
+                    },
+                    {
+                        "type" : {
+                            "Lineage" : 1,
+                            "Tissue" : 2
+                        },
+                        "id" : "CD20-DS17541",
+                        "x" : 141.153439249043,
+                        "y" : 222.008601154387,
+                        "z" : -25.9975593793299
+                    },
+                    {
+                        "type" : {
+                            "Lineage" : 1,
+                            "Tissue" : 4
+                        },
+                        "id" : "CD34-DS12274",
+                        "x" : 100.474071131398,
+                        "y" : 229.090197881056,
+                        "z" : -52.6553280422026
+                    },
+                    {
+                        "type" : {
+                            "Lineage" : 1,
+                            "Tissue" : 2
+                        },
+                        "id" : "hTH1-DS7840",
+                        "x" : 115.924864675695,
+                        "y" : 209.289425464383,
+                        "z" : -7.72061603054014
+                    },
+                    {
+                        "type" : {
+                            "Lineage" : 1,
+                            "Tissue" : 2
+                        },
+                        "id" : "hTH2-DS7842",
+                        "x" : 114.435503466346,
+                        "y" : 204.757615642075,
+                        "z" : -6.19822633673763
+                    },
+                    {
+                        "type" : {
+                            "Lineage" : 2,
+                            "Tissue" : 4
+                        },
+                        "id" : "hESCT0-DS11909",
+                        "x" : 111.185659772123,
+                        "y" : -1.98890275613638,
+                        "z" : 16.9654205670039
+                    },
+                    {
+                        "type" : {
+                            "Lineage" : 3,
+                            "Tissue" : 0
+                        },
+                        "id" : "Skin_Keratinocytes-DS18692",
+                        "x" : -152.758667376666,
+                        "y" : 10.7650810128968,
+                        "z" : 430.242836265501
+                    },
+                    {
+                        "type" : {
+                            "Lineage" : 3,
+                            "Tissue" : 0
+                        },
+                        "id" : "Skin_Keratinocytes-DS18695",
+                        "x" : -149.305110222447,
+                        "y" : 14.7866787526815,
+                        "z" : 422.939200493901
+                    },
+                    {
+                        "type" : {
+                            "Lineage" : 3,
+                            "Tissue" : 0
+                        },
+                        "id" : "vHMEC-DS18438",
+                        "x" : -123.49178394839,
+                        "y" : 28.7804673565906,
+                        "z" : 303.912892981827
                     }
-                }
+                ]
             };
 
             var container, stats;
@@ -259,6 +343,8 @@
             var dp_line_geos = new Array(6);
             var dp_lines = new Array(6);
             var dp_line_names = new Array(6);
+            var selected_class = sample.metadata.default_class;
+            
 
             function load() {
                 var source = get_url_parameter("source");
@@ -367,12 +453,16 @@
                     scene.add(line_bbox_cubes[cube_line_idx]);
                     */
                 }
-
+                
                 var offset_x = offset_y = offset_z = -0.5;
-                $.each(sample.metadata.class, function(class_key, class_value) {
-                    var class_name = class_key;
-                    var class_rgb = rgb_array_to_str(class_value.rgb);
-                    var subset = sample.subsets[class_name];
+                
+                $.each(sample.data, function(point_index, point_data) 
+                {
+                    var point_type_index = point_data["type"][selected_class];
+                    var point_type = sample.metadata.classes[selected_class][point_type_index];
+                    
+                    var class_name = point_type.name;
+                    var class_rgb = rgb_array_to_str(point_type.rgb);
                     
                     var particles = new THREE.Geometry();                    
                     var class_d3_rgb = d3.rgb(class_rgb);
@@ -395,41 +485,49 @@
                     // use with the raycaster to better mimic mouseover and mouseout events. For example, a mouseover might
                     // append a text label to left of the sphere particle describing the point ID or parent class.
                 
-                    var bounding_box_geometry = new THREE.BoxGeometry(0.075, 0.075, 0.075);
-                    for (var point_idx = 0; point_idx < subset.points.length; point_idx++) {
-                        var point = subset.points[point_idx];
-                        var id = point.id;
-                        var rescaled_point_xyz = rescaled_xyz(point.x, point.y, point.z, sample.metadata.range.x[0], sample.metadata.range.x[1], offset_x, sample.metadata.range.y[0], sample.metadata.range.y[1], offset_y, sample.metadata.range.z[0], sample.metadata.range.z[1], offset_z);
-                        var bounding_box = new THREE.Mesh(
-                            bounding_box_geometry, 
-                            new THREE.MeshLambertMaterial({ 
-                                opacity: 0.33, 
-                                transparent: true,
-                                alphaTest: 0.5
-                            })
-                        );
-                        bounding_box.position.x = 0.9 * rescaled_point_xyz[0];
-                        bounding_box.position.y = 0.9 * rescaled_point_xyz[1];
-                        bounding_box.position.z = 0.9 * rescaled_point_xyz[2];
-                        bounding_box.name = id;
-                        bounding_box.subname = class_name;
-                        scene.add(bounding_box);
-                        bounding_boxes.push(bounding_box);
-                        var particle = new THREE.Vector3(bounding_box.position.x, bounding_box.position.y, bounding_box.position.z);
-                        particles.vertices.push(particle);
-                    }
+                    var bounding_box_geometry = new THREE.BoxGeometry(0.125, 0.125, 0.125);
+                    var id = point_data.id;
+                    var rescaled_point_xyz = rescaled_xyz(point_data.x, 
+                                                          point_data.y, 
+                                                          point_data.z, 
+                                                          sample.metadata.range.x[0], 
+                                                          sample.metadata.range.x[1], 
+                                                          offset_x, 
+                                                          sample.metadata.range.y[0], 
+                                                          sample.metadata.range.y[1], 
+                                                          offset_y, 
+                                                          sample.metadata.range.z[0], 
+                                                          sample.metadata.range.z[1], 
+                                                          offset_z);
+                    var bounding_box = new THREE.Mesh(bounding_box_geometry, 
+                                                      new THREE.MeshLambertMaterial({ 
+                                                          opacity: 0.33, 
+                                                          transparent: true,
+                                                          alphaTest: 0.5
+                                                      }) );
+                    bounding_box.position.x = 0.9 * rescaled_point_xyz[0];
+                    bounding_box.position.y = 0.9 * rescaled_point_xyz[1];
+                    bounding_box.position.z = 0.9 * rescaled_point_xyz[2];
+                    bounding_box.name = id;
+                    bounding_box.subname = class_name;
+                    scene.add(bounding_box);
+                    bounding_boxes.push(bounding_box);
+                    var particle = new THREE.Vector3(bounding_box.position.x, 
+                                                     bounding_box.position.y, 
+                                                     bounding_box.position.z);
+                    particles.vertices.push(particle);
                     
                     var particle_system = new THREE.PointCloud(particles, particle_material);
                     scene.add(particle_system);
                 });
-
+                
                 raycaster = new THREE.Raycaster();
                 renderer = new THREE.WebGLRenderer({antialias: true});
                 renderer.setClearColor(0xffffff, 0);
                 renderer.setSize(window.innerWidth, window.innerHeight);
                 renderer.sortObjects = false;
                 container.appendChild(renderer.domElement);
-
+                
                 document.addEventListener('mousemove', onDocumentMouseMove, false);
                 window.addEventListener('resize', onWindowResize, false);
                 
@@ -466,45 +564,51 @@
             }
             
             function update_key() {
-                if (!sample.metadata.class) 
+                if (!sample.metadata.classes) 
                     return;
                 
                 var content = document.createElement('div');
                 content.id = "class_key_content";
                 
-                for (var class_name in sample.metadata.class) {
-                    if (sample.metadata.class.hasOwnProperty(class_name)) {
-                        class_color = rgb_array_to_str(sample.metadata.class[class_name].rgb);
-                        var class_rect_div = document.createElement('div');
-                        class_rect_div.id = "class_rect_parent_" + class_name.replace(/\s/g, '');
-                        class_rect_div.style.width = "15px";
-                        class_rect_div.style.height = "15px";
-                        class_rect_div.style.borderWidth = "1px";
-                        class_rect_div.style.borderColor = "black";
-                        class_rect_div.style.borderStyle = "solid";
-                        class_rect_div.style.backgroundColor = class_color;
-                        class_rect_div.style.display = "inline-block";
-                        class_rect_div.style.margin = "3px";
-                        class_rect_div.style.position = "relative";
-                        class_rect_div.style.top = "-1px"; 
-                        class_rect_div.innerHTML = "&nbsp;";                    
-                            
-                        var class_name_div = document.createElement('div');
-                        class_name_div.innerHTML = class_name;
-                        class_name_div.style.display = "inline-block";
-                        class_name_div.style.margin = "3px";
-                        class_name_div.style.marginRight = "16px";
-                        class_name_div.style.position = "relative";
-                        class_name_div.style.top = "-3px"; 
+                var class_title_div = document.createElement('div');
+                class_title_div.id = "class_title";
+                class_title_div.className = "key_title";
+                class_title_div.innerHTML = selected_class;
+                content.appendChild(class_title_div);
+                
+                $.each(sample.metadata.classes[selected_class], function(class_index, class_value) {
+                    class_name = class_value.name;
+                    class_color = rgb_array_to_str(class_value.rgb);
+                    var class_rect_div = document.createElement('div');
+                    class_rect_div.id = "class_rect_parent_" + class_name.replace(/\s/g, '');
+                    class_rect_div.style.width = "15px";
+                    class_rect_div.style.height = "15px";
+                    class_rect_div.style.borderWidth = "1px";
+                    class_rect_div.style.borderColor = "black";
+                    class_rect_div.style.borderStyle = "solid";
+                    class_rect_div.style.backgroundColor = class_color;
+                    class_rect_div.style.display = "inline-block";
+                    class_rect_div.style.margin = "3px";
+                    class_rect_div.style.position = "relative";
+                    class_rect_div.style.top = "-1px"; 
+                    class_rect_div.innerHTML = "&nbsp;";
                         
-                        var class_parent = document.createElement('div');
-                        class_parent.id = "class_parent_" + class_name.replace(/\s/g, '');
-                        class_parent.style.display = "inline-block";
-                        class_parent.appendChild(class_rect_div);
-                        class_parent.appendChild(class_name_div);
-                        content.appendChild(class_parent);
-                    }
-                }
+                    var class_name_div = document.createElement('div');
+                    class_name_div.innerHTML = class_name;
+                    class_name_div.className = "key_element";
+                    class_name_div.style.display = "inline-block";
+                    class_name_div.style.margin = "3px";
+                    class_name_div.style.marginRight = "16px";
+                    class_name_div.style.position = "relative";
+                    class_name_div.style.top = "-3px"; 
+                    
+                    var class_parent = document.createElement('div');
+                    class_parent.id = "class_parent_" + class_name.replace(/\s/g, '');
+                    class_parent.style.display = "inline-block";
+                    class_parent.appendChild(class_rect_div);
+                    class_parent.appendChild(class_name_div);
+                    content.appendChild(class_parent);
+                });
                 
                 $('#graph_key').remove();
                 var graph_key = document.createElement('div');
