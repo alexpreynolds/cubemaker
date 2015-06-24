@@ -555,7 +555,7 @@
                 $.each(classes, function(class_index, class_value) {
                     class_name = class_value.name;
                     class_color = rgb_array_to_str(class_value.rgb);
-                    var class_rect_div = document.createElement('div');
+                    var class_rect_div = document.createElement('input');
                     class_rect_div.id = "class_rect_parent_" + class_name.replace(/\s/g, '');
                     class_rect_div.type = "hidden";
                     class_rect_div.style.width = "13px";
