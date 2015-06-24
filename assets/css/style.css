@@ -104,14 +104,25 @@ canvas {
 }
 
 .warning {
-    border: 1px solid;
-    margin: 10px 0px;
-    padding:15px 30px 15px 35px;
-    background-repeat: no-repeat;
-    background-position: 10px center;
-    color: #9F6000;
-    background-color: #FEEFB3;
-    background-image: url('../img/warning.png');
-    border-radius:5px;
+    font-size: medium;
+    padding-top: 0px;
+    padding-bottom: 10px;    
+    width: 100%;
+    position: absolute;
+    top: 50%;
+    transform: translate(-10px, -50%);
+    text-align: center;
+    background: rgb(33, 33, 33); /* for IE */
+	background: rgba(33, 33, 33, 0.0933);
     display: none;
+}
+
+.key_title {
+    font-size: 20px;
+    font-weight: bolder;
+    margin-bottom: 4px;
+}
+
+.key_element {
+    font-size: 13px;
 }
