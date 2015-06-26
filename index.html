@@ -597,22 +597,35 @@
                 return _vector;
             }
 
-            var rotateLeft = false, rotateRight = false;
+            var rotate = false;
+            var Direction = {UP : "up", DOWN : "down", RIGHT : "right", LEFT : "left"};
+            var rotationDirection;
+
             var rotationSpeed = 0.005;
-            function updateRotation(){
+            function updateRotation() {
 
                 var x = camera.position.x,
-                    y = camera.position.y,
-                    z = camera.position.z;
+                        y = camera.position.y,
+                        z = camera.position.z;
 
-                if (rotateLeft){
-                    camera.position.x = x * Math.cos(rotationSpeed) + z * Math.sin(rotationSpeed);
-                    camera.position.z = z * Math.cos(rotationSpeed) - x * Math.sin(rotationSpeed);
-                } else if (rotateRight){
-                    camera.position.x = x * Math.cos(rotationSpeed) - z * Math.sin(rotationSpeed);
-                    camera.position.z = z * Math.cos(rotationSpeed) + x * Math.sin(rotationSpeed);
+                var cos = Math.cos(rotationSpeed);
+                var sin = Math.sin(rotationSpeed);
+                if (rotate) {
+
+                    if (rotationDirection == Direction.LEFT) {
+                        camera.position.x = x * cos + z * sin;
+                        camera.position.z = z * cos - x * sin;
+                    } else if (rotationDirection == Direction.RIGHT) {
+                        camera.position.x = x * cos - z * sin;
+                        camera.position.z = z * cos + x * sin;
+                    } else if (rotationDirection == Direction.UP) {
+                        camera.position.x = x * cos - y * sin;
+                        camera.position.y = y * cos + x * sin;
+                    } else if (rotationDirection == Direction.DOWN) {
+                        camera.position.x = x * cos - y * sin;
+                        camera.position.y = y * cos + x * sin;
+                    }
                 }
-
             }
 
             function animate() {
@@ -796,40 +809,50 @@
                 renderer.render(scene, camera);
             }
 
-            var KeyCodes = {LEFT : '37', RIGHT : '39', ESC : '27'}
+            var KeyCodes = {LEFT : '37', UP : '38', RIGHT : '39', DOWN : '40', ESC : '27'}
             var lastKey = null;
             $(document).keydown(function(event) {
 
-                var key = (event.keyCode ? event.keyCode : event.which);
-                if (key == KeyCodes.LEFT){
-                    if (rotateRight){
-                        rotateRight = false;
-                        event.stopPropagation();
-                    }
-                }else if (key == KeyCodes.RIGHT){
-                    if (rotateLeft){
-                        rotateLeft = false;
-                        event.stopPropagation();
-                    }
 
-                } else if (key == KeyCodes.ESC){
-                    rotateRight = false;
-                    rotateLeft = false;
+                var key = (event.keyCode ? event.keyCode : event.which);
+                if (rotate && (key == KeyCodes.LEFT || key == KeyCodes.RIGHT || key == KeyCodes.UP || key == KeyCodes.DOWN || key == KeyCodes.ESC)) {
+                    rotate = false;
+                    event.stopPropagation();
                 }
-                if (lastKey && lastKey == key){
-                    if (key == KeyCodes.LEFT){
-                        rotateLeft = true;
-                    }else if (key == KeyCodes.RIGHT){
-                        rotateRight = true;
+                if (lastKey && lastKey == key) {
+                    if (key == KeyCodes.LEFT) {
+                        rotate = true;
+                        rotationDirection = Direction.LEFT;
+                    } else if (key == KeyCodes.RIGHT) {
+                        rotate = true;
+                        rotationDirection = Direction.RIGHT;
+                    } else if (key == KeyCodes.UP) {
+                        rotate = true;
+                        rotationDirection = Direction.UP;
+                    } else if (key == KeyCodes.DOWN) {
+                        rotate = true;
+                        rotationDirection = Direction.DOWN;
                     }
-                }else{
-                    setTimeout(function(){
-                        lastKey = null;
-                    }, 1000);
                 }
                 lastKey = key;
+                setTimeout(function () {
+                    lastKey = null;
+                }, 1000);
 
             });
+
+            var mousedown = false;
+            $(document).mousedown(function () {
+                        mousedown = true;
+                    })
+                    .mousemove(function () {
+                        if (mousedown) {
+                            rotate = false;
+                        }
+                    })
+                    .mouseup(function () {
+                        mousedown = false;
+                    });
         }
 
         var checkWebGL = function () {
