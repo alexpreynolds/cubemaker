@@ -273,7 +273,15 @@ a.close:hover {
     text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.5);
     -webkit-font-smoothing: antialiased;
     font-weight: bolder;
+    cursor: pointer;
 }
+.btn-action:disabled {
+    cursor: default;
+    background-color: #7d8bbb !important;
+    background-repeat: repeat-x;
+    border-color: #003f99 #003f99 hsl(225, 100%, 45%);
+}
+
 .btn-xs {
     padding: 1px 5px;
 }

@@ -18,6 +18,15 @@
             </div>
             <footer><a id="import-btn" href="#" class="btn btn-small js-modal-close">Import</a></footer>
         </div>
+        <div id="export-link-dialog" class="modal-box">
+            <header> <a href="#" class="js-modal-close close">&#x00D7;</a>
+                <h3>Copy link</h3>
+            </header>
+            <div class="modal-body">
+                <textarea id="link" style="width:100%" rows="1"></textarea>
+            </div>
+            <footer><a href="#" class="btn btn-small js-modal-close">Close</a></footer>
+        </div>
         <div id="sphere_asset" style="display: none;"><svg version="1.1" id="sphere_svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="640px" height="640px" viewBox="0 0 640 640" enable-background="new 0 0 640 640" xml:space="preserve">
             <defs><radialGradient id="sphere_gradient" cx="292.3262" cy="287.4077" r="249.2454" fx="147.7949" fy="274.5532" gradientTransform="matrix(1.0729 0 0 1.0729 -23.3359 -23.3359)" gradientUnits="userSpaceOnUse">
                 <stop id="sphere_gradient_0" offset="0" style="stop-color:#F37D7F"/>
@@ -29,7 +38,7 @@
         <div id="import-footer">
             <label for="import-buttons">Import</label>
             <div class="btn-group" id="import-buttons">
-                <button value="json" class="btn btn-primary btn-xs btn-action js-open-modal"  data-modal-id="import-json-dialog" name="json">json</button>
+                <button value="json" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="import-json-dialog" name="json">json</button>
             </div>
         </div>
         <div id="export-footer">
@@ -37,7 +46,7 @@
             <div class="btn-group"  id="export-buttons">
                 <button id="export-json-btn" value="json" class="btn btn-primary btn-xs btn-action" name="json">json</button>
                 <button id="export-png-btn" value="png" class="btn btn-primary btn-xs btn-action" name="png">png</button>
-                <button id="export-link-btn" value="link" class="btn btn-primary btn-xs btn-action" name="link">link</button>
+                <button id="export-link-btn" value="link" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="export-link-dialog" name="link" disabled="disabled">link</button>
             </div>
         </div>
         <div id="container"></div>
@@ -78,10 +87,40 @@
             var rescale_val = function(val, min_val, max_val, offset) {
                 return offset + (val - min_val) / (max_val - min_val);
             };
-            
+
+            var get_xyz_url_parameter = function(name) {
+                var value = get_url_parameter(name);
+                if (value){
+                    var coords = value.split(":");
+                    return {
+                        x : parseFloat(coords[0]),
+                        y : parseFloat(coords[1]),
+                        z : parseFloat(coords[2])
+                    }
+                }
+                return undefined;
+            }
+
+            var xyz_to_str = function(coords) {
+                 return coords.x+":"+coords.y+":"+coords.z;
+            }
+
             var get_url_parameter = function(name) {
                 return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
             };
+
+
+            function generateLink() {
+                var result = location.href;
+                if (result.indexOf('?')){
+                    result = result.substr(0, result.indexOf('?'));
+                }
+                result = result + "?source=" + encodeURI(sample.source)
+                        + "&camPosition=" + xyz_to_str(camera.position)
+                        + "&camRotation=" + xyz_to_str(camera.rotation)
+                        + "&center=" + xyz_to_str(controls.center);
+               return result;
+            }
 
             function downloadURI(uri, name) {
                 var link = document.createElement("a");
@@ -101,15 +140,19 @@
                 downloadURI(data, "cube.png");
             }
 
-            function importSample(jsonString){
+            function importSample(jsonString, source){
                 sample = JSON.parse(jsonString);
+                if (source){
+                    sample.source = encodeURI(source);
+                }
                 //todo: verify the sample object structure
+                $(document).trigger("source-change");
             }
 
             function importJson(uri){
                var d = $.Deferred()
                return $.get(uri, function(data){
-                   importSample(data);
+                   importSample(data, uri);
                    d.resolve();
                     //todo: add error handler
                 });
@@ -642,18 +685,40 @@
                 graph_key.appendChild(content);
                 container.appendChild(graph_key);
             }
-            
+
             function update_position() {
-                if (get_url_parameter("xdeg"))
-                    x_rad = Math.PI / 180.0 * get_url_parameter("xdeg");
-                if (get_url_parameter("ydeg"))
-                    y_rad = Math.PI / 180.0 * get_url_parameter("ydeg");
-                controls.rotateLeft(x_rad);
-                controls.rotateUp(y_rad);
-                camera.position.z = z_rad;
+                var position = get_xyz_url_parameter("camPosition");
+                var rotation = get_xyz_url_parameter("camRotation");
+                var controlCenter = get_xyz_url_parameter("center");
+                var xdeg = get_url_parameter("xdeg");
+                var ydeg = get_url_parameter("ydeg");
+                if (position || rotation || controlCenter) {
+                    if (position) {
+                        camera.position.set(position.x, position.y, position.z);
+                    }
+                    if (rotation) {
+                        camera.rotation.set(rotation.x, rotation.y, rotation.z);
+                    }
+                    if (controlCenter) {
+                        controls.center.set(controlCenter.x, controlCenter.y, controlCenter.z);
+                    }
+                } else {
+                    if (xdeg) {
+                        x_rad = Math.PI / 180.0 * xdeg;
+                    }
+                    if (ydeg) {
+                        y_rad = Math.PI / 180.0 * ydeg;
+
+                    }
+                    controls.rotateLeft(x_rad);
+                    controls.rotateUp(y_rad);
+                    camera.position.z = z_rad;
+                }
                 controls.update();
+
+                render();
             }
-            
+
             function onWindowResize() {
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
@@ -859,7 +924,7 @@
                 renderer.render(scene, camera);
             }
 
-            $( document ).ready(function(){
+            $(document).ready(function() {
                 $("#import-btn").click(function () {
                     var data = $("#import-data").val();
                     importSample(data);
@@ -874,6 +939,31 @@
 
                 $("#export-png-btn").click(function () {
                     exportAsPng();
+                });
+
+                $("#export-link-btn").click(function () {
+                    $("#link").val(generateLink());
+                });
+
+                $("#link").click(function() {
+                    var $this = $(this);
+                    $this.focus();
+                    $this.select();
+
+                    // Work around Chrome's little problem
+                    $this.mouseup(function() {
+                        // Prevent further mouseup intervention
+                        $this.unbind("mouseup");
+                        return false;
+                    });
+                });
+
+                $(document).on("source-change", function(){
+                   if (sample.source){
+                       $("#export-link-btn").removeAttr("disabled");
+                   }else{
+                       $("#export-link-btn").attr("disabled","disabled");
+                   }
                 });
             });
         }
