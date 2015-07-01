@@ -87,6 +87,10 @@
                 downloadURI(data, "cube.png");
             }
 
+            function switchCategory(category){
+                selected_class = category;
+            }
+
             function importSample(jsonString){
                 sample = JSON.parse(jsonString);
                 //todo: verify the sample object structure
@@ -560,7 +564,23 @@
                 title_label.style.left = '0px';
                 title_label.style.width = parseInt(window.innerWidth) + 'px';
                 title_label.innerHTML = '<center><span class="title_label">' + sample.metadata.title + '<br><span class="title_sublabel">' + sample.metadata.subtitle + '</span></span></center>';
+
+                var selected_class_combo = document.createElement('select');
+                selected_class_combo.className = "right";
+
+                $.each(sample.metadata.classes, function(category) {
+                    $(selected_class_combo).append(new Option(category, category));
+                });
+                $(selected_class_combo).val(selected_class);
+                title_label.insertBefore(selected_class_combo, title_label.childNodes[0]);
+                $(selected_class_combo).change(function(){
+                    switchCategory($(this).val());
+                    clear();
+                    init();
+                    animate();
+                });
                 container.appendChild(title_label);
+
             }
             
             function update_key() {
@@ -575,7 +595,7 @@
                 class_title_div.className = "key_title";
                 class_title_div.innerHTML = selected_class;
                 content.appendChild(class_title_div);
-                
+
                 $.each(sample.metadata.classes[selected_class], function(class_index, class_value) {
                     class_name = class_value.name;
                     class_color = rgb_array_to_str(class_value.rgb);

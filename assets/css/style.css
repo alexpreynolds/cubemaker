@@ -312,3 +312,13 @@ a.close:hover {
 .key_element {
     font-size: 13px;
 }
+
+.right {
+    position: relative;
+    float: right;
+    margin-right: 40px;
+}
+
+select {
+    border: 1px solid #CCC;
+}
