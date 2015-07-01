@@ -238,20 +238,6 @@ a.close:hover {
  * Button styles
  */
 
-.btn-footer {
-    position: absolute;
-    bottom: 5px;
-    left: 0px;
-    width: 1278px;
-    padding-left: 8px;
-    text-align: left;
-    font-size: 12px;
-}
-
-.btn-footer > label:not(:first-child){
-    margin-left: 10px;
-}
-
 .btn-group {
     position: relative;
     display: inline-block;
@@ -311,4 +297,19 @@ a.close:hover {
 
 .key_element {
     font-size: 13px;
+}
+
+
+#export-footer {
+    position: relative;
+    float: right;
+    margin-top: 20px;
+    margin-right: 40px;
+}
+
+#import-footer {
+    position: relative;
+    float: left;
+    margin-top: 20px;
+    margin-left: 20px;
 }

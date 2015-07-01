@@ -26,6 +26,20 @@
             </radialGradient></defs>
             <circle fill="url(#sphere_gradient)" cx="320" cy="320" r="320"/>
         </svg></div>
+        <div id="import-footer">
+            <label for="import-buttons">Import</label>
+            <div class="btn-group" id="import-buttons">
+                <button value="json" class="btn btn-primary btn-xs btn-action js-open-modal"  data-modal-id="import-json-dialog" name="json">json</button>
+            </div>
+        </div>
+        <div id="export-footer">
+            <label for="export-buttons">Export</label>
+            <div class="btn-group"  id="export-buttons">
+                <button id="export-json-btn" value="json" class="btn btn-primary btn-xs btn-action" name="json">json</button>
+                <button id="export-png-btn" value="png" class="btn btn-primary btn-xs btn-action" name="png">png</button>
+                <button id="export-link-btn" value="link" class="btn btn-primary btn-xs btn-action" name="link">link</button>
+            </div>
+        </div>
         <div id="container"></div>
         <script type="text/javascript" src="assets/js/jquery-2.1.3.min.js"></script>
         <script type="text/javascript" src="assets/js/three.min.js"></script>
@@ -609,7 +623,11 @@
                     class_parent.appendChild(class_name_div);
                     content.appendChild(class_parent);
                 });
-                
+
+                var import_footer = $("#import-footer");
+                import_footer.appendTo(content);
+                var export_footer = $("#export-footer");
+                export_footer.appendTo(content);
                 $('#graph_key').remove();
                 var graph_key = document.createElement('div');
                 graph_key.id = "graph_key";
@@ -617,7 +635,10 @@
                 graph_key.style.bottom = parseInt(Math.floor(0.1 * window.innerHeight)) + 'px';
                 graph_key.style.left = '0px';
                 graph_key.style.width = parseInt(window.innerWidth) + 'px';    
-                graph_key.style.textAlign = "center";        
+                graph_key.style.textAlign = "center";
+                import_footer.appendTo(graph_key);
+                export_footer.appendTo(graph_key);
+                export_footer.appendTo(graph_key);
                 graph_key.appendChild(content);
                 container.appendChild(graph_key);
             }
@@ -881,17 +902,5 @@
         if (checkWebGL()) cubeMaker();
 
         </script>
-        <div class="btn-footer">
-            <label for="import-buttons">Import</label>
-            <div class="btn-group" id="import-buttons">
-                <button value="json" class="btn btn-primary btn-xs btn-action js-open-modal"  data-modal-id="import-json-dialog" name="json">json</button>
-            </div>
-            <label for="export-buttons">Export</label>
-            <div class="btn-group"  id="export-buttons">
-                <button id="export-json-btn" value="json" class="btn btn-primary btn-xs btn-action" name="json">json</button>
-                <button id="export-png-btn" value="png" class="btn btn-primary btn-xs btn-action" name="png">png</button>
-                <button id="export-link-btn" value="link" class="btn btn-primary btn-xs btn-action" name="link">link</button>
-            </div>
-        </div>
     </body>
 </html>
