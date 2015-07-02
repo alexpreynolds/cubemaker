@@ -18,6 +18,15 @@
             </div>
             <footer><a id="import-btn" href="#" class="btn btn-small js-modal-close">Import</a></footer>
         </div>
+        <div id="export-link-dialog" class="modal-box">
+            <header> <a href="#" class="js-modal-close close">&#x00D7;</a>
+                <h3>Copy link</h3>
+            </header>
+            <div class="modal-body">
+                <textarea id="link" style="width:100%" rows="1"></textarea>
+            </div>
+            <footer><a href="#" class="btn btn-small js-modal-close">Close</a></footer>
+        </div>
         <div id="sphere_asset" style="display: none;"><svg version="1.1" id="sphere_svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="640px" height="640px" viewBox="0 0 640 640" enable-background="new 0 0 640 640" xml:space="preserve">
             <defs><radialGradient id="sphere_gradient" cx="292.3262" cy="287.4077" r="249.2454" fx="147.7949" fy="274.5532" gradientTransform="matrix(1.0729 0 0 1.0729 -23.3359 -23.3359)" gradientUnits="userSpaceOnUse">
                 <stop id="sphere_gradient_0" offset="0" style="stop-color:#F37D7F"/>
@@ -26,6 +35,20 @@
             </radialGradient></defs>
             <circle fill="url(#sphere_gradient)" cx="320" cy="320" r="320"/>
         </svg></div>
+        <div id="import-footer">
+            <label for="import-buttons">Import</label>
+            <div class="btn-group" id="import-buttons">
+                <button value="json" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="import-json-dialog" name="json">json</button>
+            </div>
+        </div>
+        <div id="export-footer">
+            <label for="export-buttons">Export</label>
+            <div class="btn-group"  id="export-buttons">
+                <button id="export-json-btn" value="json" class="btn btn-primary btn-xs btn-action" name="json">json</button>
+                <button id="export-png-btn" value="png" class="btn btn-primary btn-xs btn-action" name="png">png</button>
+                <button id="export-link-btn" value="link" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="export-link-dialog" name="link" disabled="disabled">link</button>
+            </div>
+        </div>
         <div id="container"></div>
         <script type="text/javascript" src="assets/js/jquery-2.1.3.min.js"></script>
         <script type="text/javascript" src="assets/js/three.min.js"></script>
@@ -64,10 +87,40 @@
             var rescale_val = function(val, min_val, max_val, offset) {
                 return offset + (val - min_val) / (max_val - min_val);
             };
-            
+
+            var get_xyz_url_parameter = function(name) {
+                var value = get_url_parameter(name);
+                if (value){
+                    var coords = value.split(":");
+                    return {
+                        x : parseFloat(coords[0]),
+                        y : parseFloat(coords[1]),
+                        z : parseFloat(coords[2])
+                    }
+                }
+                return undefined;
+            }
+
+            var xyz_to_str = function(coords) {
+                 return coords.x+":"+coords.y+":"+coords.z;
+            }
+
             var get_url_parameter = function(name) {
                 return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
             };
+
+
+            function generateLink() {
+                var result = location.href;
+                if (result.indexOf('?')){
+                    result = result.substr(0, result.indexOf('?'));
+                }
+                result = result + "?source=" + encodeURI(sample.source)
+                        + "&camPosition=" + xyz_to_str(camera.position)
+                        + "&camRotation=" + xyz_to_str(camera.rotation)
+                        + "&center=" + xyz_to_str(controls.center);
+               return result;
+            }
 
             function downloadURI(uri, name) {
                 var link = document.createElement("a");
@@ -91,15 +144,19 @@
                 selected_class = category;
             }
 
-            function importSample(jsonString){
+            function importSample(jsonString, source){
                 sample = JSON.parse(jsonString);
+                if (source){
+                    sample.source = encodeURI(source);
+                }
                 //todo: verify the sample object structure
+                $(document).trigger("source-change");
             }
 
             function importJson(uri){
                var d = $.Deferred()
                return $.get(uri, function(data){
-                   importSample(data);
+                   importSample(data, uri);
                    d.resolve();
                     //todo: add error handler
                 });
@@ -322,32 +379,29 @@
 
             var container, stats;
             var camera, scene, raycaster, renderer;
-            var mouse = new THREE.Vector2(), INTERSECTED;
-            var cube = null;
-            var cube_materials = null;
-            var opaque_cube_lines = new Array(6);
-            var cube_line_geometry = null;
-            var opaque_cube_line_material = new THREE.LineBasicMaterial({ color: 0xbbbbbb, opacity: 0.25, linewidth: 3 });
-            var red_cube_line_material = new THREE.LineBasicMaterial({ color: 0xff0000, opacity: 0.25, linewidth: 3 });
-            var green_cube_line_material = new THREE.LineBasicMaterial({ color: 0x00ff00, opacity: 0.25, linewidth: 3 });
-            var blue_cube_line_material = new THREE.LineBasicMaterial({ color: 0x0000ff, opacity: 0.25, linewidth: 3 });
-            var cube_line_materials = new Array(6);
-            for (var cube_line_materials_idx = 0; cube_line_materials_idx < cube_line_materials.length; cube_line_materials_idx++) {
-                cube_line_materials[cube_line_materials_idx] = new THREE.LineBasicMaterial().clone(opaque_cube_line_material);
-            }
-            var bounding_boxes = [];
-            var horizontal_fudge = 1.75;
-            var x_deg = 70;
-            var x_rad = Math.PI / 180 * x_deg;
-            var y_deg = 45;
-            var y_rad = Math.PI / 180 * y_deg;
-            var z_rad = 2.8;
-            var id_label = null;
-            var flag = true;
-            var dp_line_geos = new Array(6);
-            var dp_lines = new Array(6);
-            var dp_line_names = new Array(6);
-            var selected_class = sample.metadata.default_class;
+            var mouse, INTERSECTED;
+            var cube;
+            var cube_materials;
+            var opaque_cube_lines;
+            var cube_line_geometry;
+            var opaque_cube_line_material;
+            var red_cube_line_material;
+            var green_cube_line_material;
+            var blue_cube_line_material;
+            var cube_line_materials;
+            var bounding_boxes;
+            var horizontal_fudge;
+            var x_deg;
+            var x_rad;
+            var y_deg;
+            var y_rad;
+            var z_rad;
+            var id_label;
+            var flag;
+            var dp_line_geos;
+            var dp_lines;
+            var dp_line_names;
+            var selected_class;
             
 
             function load() {
@@ -371,6 +425,31 @@
             }
 
             function init() {
+
+                mouse = new THREE.Vector2();
+                opaque_cube_lines = new Array(6);
+                opaque_cube_line_material = new THREE.LineBasicMaterial({ color: 0xbbbbbb, opacity: 0.25, linewidth: 3 });
+                red_cube_line_material = new THREE.LineBasicMaterial({ color: 0xff0000, opacity: 0.25, linewidth: 3 });
+                green_cube_line_material = new THREE.LineBasicMaterial({ color: 0x00ff00, opacity: 0.25, linewidth: 3 });
+                blue_cube_line_material = new THREE.LineBasicMaterial({ color: 0x0000ff, opacity: 0.25, linewidth: 3 });
+                cube_line_materials = new Array(6);
+                for (var cube_line_materials_idx = 0; cube_line_materials_idx < cube_line_materials.length; cube_line_materials_idx++) {
+                    cube_line_materials[cube_line_materials_idx] = new THREE.LineBasicMaterial().clone(opaque_cube_line_material);
+                }
+                bounding_boxes = [];
+                horizontal_fudge = 1.75;
+                x_deg = 70;
+                x_rad = Math.PI / 180 * x_deg;
+                y_deg = 45;
+                y_rad = Math.PI / 180 * y_deg;
+                z_rad = 2.8;
+                id_label = null;
+                flag = true;
+                dp_line_geos = new Array(6);
+                dp_lines = new Array(6);
+                dp_line_names = new Array(6);
+                selected_class = sample.metadata.default_class;
+
                 container = document.createElement('div');
                 document.body.appendChild(container);
                 camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 5000);
@@ -629,7 +708,11 @@
                     class_parent.appendChild(class_name_div);
                     content.appendChild(class_parent);
                 });
-                
+
+                var import_footer = $("#import-footer");
+                import_footer.appendTo(content);
+                var export_footer = $("#export-footer");
+                export_footer.appendTo(content);
                 $('#graph_key').remove();
                 var graph_key = document.createElement('div');
                 graph_key.id = "graph_key";
@@ -637,22 +720,47 @@
                 graph_key.style.bottom = parseInt(Math.floor(0.1 * window.innerHeight)) + 'px';
                 graph_key.style.left = '0px';
                 graph_key.style.width = parseInt(window.innerWidth) + 'px';    
-                graph_key.style.textAlign = "center";        
+                graph_key.style.textAlign = "center";
+                import_footer.appendTo(graph_key);
+                export_footer.appendTo(graph_key);
+                export_footer.appendTo(graph_key);
                 graph_key.appendChild(content);
                 container.appendChild(graph_key);
             }
-            
+
             function update_position() {
-                if (get_url_parameter("xdeg"))
-                    x_rad = Math.PI / 180.0 * get_url_parameter("xdeg");
-                if (get_url_parameter("ydeg"))
-                    y_rad = Math.PI / 180.0 * get_url_parameter("ydeg");
-                controls.rotateLeft(x_rad);
-                controls.rotateUp(y_rad);
-                camera.position.z = z_rad;
+                var position = get_xyz_url_parameter("camPosition");
+                var rotation = get_xyz_url_parameter("camRotation");
+                var controlCenter = get_xyz_url_parameter("center");
+                var xdeg = get_url_parameter("xdeg");
+                var ydeg = get_url_parameter("ydeg");
+                if (position || rotation || controlCenter) {
+                    if (position) {
+                        camera.position.set(position.x, position.y, position.z);
+                    }
+                    if (rotation) {
+                        camera.rotation.set(rotation.x, rotation.y, rotation.z);
+                    }
+                    if (controlCenter) {
+                        controls.center.set(controlCenter.x, controlCenter.y, controlCenter.z);
+                    }
+                } else {
+                    if (xdeg) {
+                        x_rad = Math.PI / 180.0 * xdeg;
+                    }
+                    if (ydeg) {
+                        y_rad = Math.PI / 180.0 * ydeg;
+
+                    }
+                    controls.rotateLeft(x_rad);
+                    controls.rotateUp(y_rad);
+                    camera.position.z = z_rad;
+                }
                 controls.update();
+
+                render();
             }
-            
+
             function onWindowResize() {
                 camera.aspect = window.innerWidth / window.innerHeight;
                 camera.updateProjectionMatrix();
@@ -858,7 +966,7 @@
                 renderer.render(scene, camera);
             }
 
-            $( document ).ready(function(){
+            $(document).ready(function() {
                 $("#import-btn").click(function () {
                     var data = $("#import-data").val();
                     importSample(data);
@@ -873,6 +981,31 @@
 
                 $("#export-png-btn").click(function () {
                     exportAsPng();
+                });
+
+                $("#export-link-btn").click(function () {
+                    $("#link").val(generateLink());
+                });
+
+                $("#link").click(function() {
+                    var $this = $(this);
+                    $this.focus();
+                    $this.select();
+
+                    // Work around Chrome's little problem
+                    $this.mouseup(function() {
+                        // Prevent further mouseup intervention
+                        $this.unbind("mouseup");
+                        return false;
+                    });
+                });
+
+                $(document).on("source-change", function(){
+                   if (sample.source){
+                       $("#export-link-btn").removeAttr("disabled");
+                   }else{
+                       $("#export-link-btn").attr("disabled","disabled");
+                   }
                 });
             });
         }
@@ -901,17 +1034,5 @@
         if (checkWebGL()) cubeMaker();
 
         </script>
-        <div class="btn-footer">
-            <label for="import-buttons">Import</label>
-            <div class="btn-group" id="import-buttons">
-                <button value="json" class="btn btn-primary btn-xs btn-action js-open-modal"  data-modal-id="import-json-dialog" name="json">json</button>
-            </div>
-            <label for="export-buttons">Export</label>
-            <div class="btn-group"  id="export-buttons">
-                <button id="export-json-btn" value="json" class="btn btn-primary btn-xs btn-action" name="json">json</button>
-                <button id="export-png-btn" value="png" class="btn btn-primary btn-xs btn-action" name="png">png</button>
-                <button id="export-link-btn" value="link" class="btn btn-primary btn-xs btn-action" name="link">link</button>
-            </div>
-        </div>
     </body>
 </html>
