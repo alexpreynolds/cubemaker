@@ -401,7 +401,7 @@
             var dp_line_geos;
             var dp_lines;
             var dp_line_names;
-            var selected_class;
+            var selected_class = sample.metadata.default_class;
             
 
             function load() {
@@ -448,7 +448,6 @@
                 dp_line_geos = new Array(6);
                 dp_lines = new Array(6);
                 dp_line_names = new Array(6);
-                selected_class = sample.metadata.default_class;
 
                 container = document.createElement('div');
                 document.body.appendChild(container);
