@@ -375,32 +375,29 @@
 
             var container, stats;
             var camera, scene, raycaster, renderer;
-            var mouse = new THREE.Vector2(), INTERSECTED;
-            var cube = null;
-            var cube_materials = null;
-            var opaque_cube_lines = new Array(6);
-            var cube_line_geometry = null;
-            var opaque_cube_line_material = new THREE.LineBasicMaterial({ color: 0xbbbbbb, opacity: 0.25, linewidth: 3 });
-            var red_cube_line_material = new THREE.LineBasicMaterial({ color: 0xff0000, opacity: 0.25, linewidth: 3 });
-            var green_cube_line_material = new THREE.LineBasicMaterial({ color: 0x00ff00, opacity: 0.25, linewidth: 3 });
-            var blue_cube_line_material = new THREE.LineBasicMaterial({ color: 0x0000ff, opacity: 0.25, linewidth: 3 });
-            var cube_line_materials = new Array(6);
-            for (var cube_line_materials_idx = 0; cube_line_materials_idx < cube_line_materials.length; cube_line_materials_idx++) {
-                cube_line_materials[cube_line_materials_idx] = new THREE.LineBasicMaterial().clone(opaque_cube_line_material);
-            }
-            var bounding_boxes = [];
-            var horizontal_fudge = 1.75;
-            var x_deg = 70;
-            var x_rad = Math.PI / 180 * x_deg;
-            var y_deg = 45;
-            var y_rad = Math.PI / 180 * y_deg;
-            var z_rad = 2.8;
-            var id_label = null;
-            var flag = true;
-            var dp_line_geos = new Array(6);
-            var dp_lines = new Array(6);
-            var dp_line_names = new Array(6);
-            var selected_class = sample.metadata.default_class;
+            var mouse, INTERSECTED;
+            var cube;
+            var cube_materials;
+            var opaque_cube_lines;
+            var cube_line_geometry;
+            var opaque_cube_line_material;
+            var red_cube_line_material;
+            var green_cube_line_material;
+            var blue_cube_line_material;
+            var cube_line_materials;
+            var bounding_boxes;
+            var horizontal_fudge;
+            var x_deg;
+            var x_rad;
+            var y_deg;
+            var y_rad;
+            var z_rad;
+            var id_label;
+            var flag;
+            var dp_line_geos;
+            var dp_lines;
+            var dp_line_names;
+            var selected_class;
             
 
             function load() {
@@ -424,6 +421,31 @@
             }
 
             function init() {
+
+                mouse = new THREE.Vector2();
+                opaque_cube_lines = new Array(6);
+                opaque_cube_line_material = new THREE.LineBasicMaterial({ color: 0xbbbbbb, opacity: 0.25, linewidth: 3 });
+                red_cube_line_material = new THREE.LineBasicMaterial({ color: 0xff0000, opacity: 0.25, linewidth: 3 });
+                green_cube_line_material = new THREE.LineBasicMaterial({ color: 0x00ff00, opacity: 0.25, linewidth: 3 });
+                blue_cube_line_material = new THREE.LineBasicMaterial({ color: 0x0000ff, opacity: 0.25, linewidth: 3 });
+                cube_line_materials = new Array(6);
+                for (var cube_line_materials_idx = 0; cube_line_materials_idx < cube_line_materials.length; cube_line_materials_idx++) {
+                    cube_line_materials[cube_line_materials_idx] = new THREE.LineBasicMaterial().clone(opaque_cube_line_material);
+                }
+                bounding_boxes = [];
+                horizontal_fudge = 1.75;
+                x_deg = 70;
+                x_rad = Math.PI / 180 * x_deg;
+                y_deg = 45;
+                y_rad = Math.PI / 180 * y_deg;
+                z_rad = 2.8;
+                id_label = null;
+                flag = true;
+                dp_line_geos = new Array(6);
+                dp_lines = new Array(6);
+                dp_line_names = new Array(6);
+                selected_class = sample.metadata.default_class;
+
                 container = document.createElement('div');
                 document.body.appendChild(container);
                 camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 5000);
