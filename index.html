@@ -133,7 +133,7 @@
 
             function exportAsJson() {
                 var data = 'data:text/json;charset=utf-8,';
-                data += escape(JSON.stringify(sample));
+                data += escape(JSON.stringify(sample, null, 2));
                 downloadURI(data, "data.json");
             }
 
@@ -952,15 +952,15 @@
                     animate();
                 });
 
-                $("#export-json-btn").click(function () {
+                $(document).on("click", "#export-json-btn", function () {
                     exportAsJson();
                 });
 
-                $("#export-png-btn").click(function () {
+                $(document).on("click", "#export-png-btn", function () {
                     exportAsPng();
                 });
 
-                $("#export-link-btn").click(function () {
+                $(document).on("click", "#export-link-btn", function () {
                     $("#link").val(generateLink());
                 });
 
