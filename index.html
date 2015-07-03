@@ -643,20 +643,7 @@
                 title_label.style.width = parseInt(window.innerWidth) + 'px';
                 title_label.innerHTML = '<center><span class="title_label">' + sample.metadata.title + '<br><span class="title_sublabel">' + sample.metadata.subtitle + '</span></span></center>';
 
-                var selected_class_combo = document.createElement('select');
-                selected_class_combo.className = "right";
 
-                $.each(sample.metadata.classes, function(category) {
-                    $(selected_class_combo).append(new Option(category, category));
-                });
-                $(selected_class_combo).val(selected_class);
-                title_label.insertBefore(selected_class_combo, title_label.childNodes[0]);
-                $(selected_class_combo).change(function(){
-                    switchCategory($(this).val());
-                    clear();
-                    init();
-                    animate();
-                });
                 container.appendChild(title_label);
 
             }
@@ -672,6 +659,22 @@
                 class_title_div.id = "class_title";
                 class_title_div.className = "key_title";
                 class_title_div.innerHTML = selected_class;
+
+                var selected_class_combo = document.createElement('select');
+                selected_class_combo.className = "class_combo";
+
+                $.each(sample.metadata.classes, function(category) {
+                    $(selected_class_combo).append(new Option(category, category));
+                });
+                $(selected_class_combo).val(selected_class);
+                class_title_div.insertBefore(selected_class_combo, class_title_div.childNodes[0]);
+                $(selected_class_combo).change(function(){
+                    switchCategory($(this).val());
+                    clear();
+                    init();
+                    animate();
+                });
+
                 content.appendChild(class_title_div);
 
                 $.each(sample.metadata.classes[selected_class], function(class_index, class_value) {

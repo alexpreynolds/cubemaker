@@ -311,14 +311,14 @@ a.close:hover {
 #export-footer {
     position: relative;
     float: right;
-    margin-top: 20px;
+    margin-top: 9px;
     margin-right: 40px;
 }
 
 #import-footer {
     position: relative;
     float: left;
-    margin-top: 20px;
+    margin-top: 9px;
     margin-left: 20px;
 }
 .right {
@@ -326,7 +326,22 @@ a.close:hover {
     float: right;
     margin-right: 40px;
 }
-
-select {
-    border: 1px solid #CCC;
+.class_combo:hover{
+    cursor: pointer;
+    border-top: 11px solid #555;
+}
+.class_combo{
+    background: transparent;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 11px solid #222;
+    line-height: 31px;
+    position: relative;
+    top: 10px;
+    margin-right: 8px;
+    display: inline-block;
+    height: 0;
+    overflow: hidden;
+    width: 0;
+    border-bottom: none;
 }
