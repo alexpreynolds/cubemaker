@@ -321,3 +321,16 @@ a.close:hover {
     margin-top: 20px;
     margin-left: 20px;
 }
+.right {
+    position: relative;
+    float: right;
+    margin-right: 40px;
+}
+
+select {
+    border: 1px solid #CCC;
+}
+
+.hidden{
+    display: none;
+}
