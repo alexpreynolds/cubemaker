@@ -3,7 +3,7 @@ $(function(){
     //http://www.jqueryscript.net/lightbox/Super-Simple-Modal-Popups-with-jQuery-CSS3-Transitions.html
     var appendthis =  ("<div class='modal-overlay js-modal-close'></div>");
 
-    $('a[data-modal-id], button[data-modal-id]').click(function(e) {
+    $(document).on("click", "a[data-modal-id], button[data-modal-id]", function(e) {
         e.preventDefault();
         $("body").append(appendthis);
         $(".modal-overlay").fadeTo(500, 0.7);

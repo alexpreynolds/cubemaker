@@ -407,3 +407,6 @@ a.close:hover {
     text-decoration: none;
 }
 
+.hidden{
+    display: none;
+}
