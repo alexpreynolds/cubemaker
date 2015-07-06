@@ -658,18 +658,22 @@
                 var class_title_div = document.createElement('div');
                 class_title_div.id = "class_title";
                 class_title_div.className = "key_title";
-                class_title_div.innerHTML = selected_class;
 
-                var selected_class_combo = document.createElement('select');
+                var selected_class_combo = document.createElement('div');
                 selected_class_combo.className = "class_combo";
+                $(selected_class_combo).append('<a class="dropdown-toggle" data-dropdown-id="categories-options" href="#">'+ selected_class +'<span class="caret"></span></a>');
+
+                var selected_class_dropdown = document.createElement('ul');
+                selected_class_dropdown.id = "categories-options";
+                selected_class_dropdown.className = "dropdown-menu";
 
                 $.each(sample.metadata.classes, function(category) {
-                    $(selected_class_combo).append(new Option(category, category));
+                    $(selected_class_dropdown).append('<li><a href="#" class="js-modal-close">' + category + '</a></li>');
                 });
-                $(selected_class_combo).val(selected_class);
+                $(selected_class_combo).append(selected_class_dropdown);
                 class_title_div.insertBefore(selected_class_combo, class_title_div.childNodes[0]);
-                $(selected_class_combo).change(function(){
-                    switchCategory($(this).val());
+                $("a", selected_class_dropdown).click(function(){
+                    switchCategory($(this).text());
                     clear();
                     init();
                     animate();
