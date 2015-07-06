@@ -1,2 +1,2 @@
 # cubemaker
-A tool to make cubes
+A tool to make cubes for scientists
