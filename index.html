@@ -663,23 +663,36 @@
 
                 var selected_class_combo = document.createElement('div');
                 selected_class_combo.className = "class_combo";
-                $(selected_class_combo).append('<a class="dropdown-toggle" data-dropdown-id="categories-options" href="#">'+ selected_class +'<span class="caret"></span></a>');
+                $(selected_class_combo).append('<a class="dropdown-toggle" href="#">'+ selected_class +'<span class="caret"></span></a>');
 
                 var selected_class_dropdown = document.createElement('ul');
                 selected_class_dropdown.id = "categories-options";
                 selected_class_dropdown.className = "dropdown-menu";
 
-                $.each(sample.metadata.classes, function(category) {
-                    $(selected_class_dropdown).append('<li><a href="#" class="js-modal-close">' + category + '</a></li>');
+                $(".dropdown-toggle", selected_class_combo).click(function () {
+                    $(this).addClass("active");
+                    $(selected_class_dropdown).addClass("open");
+                    $(selected_class_combo).trigger("show-category-selector");
                 });
+
+
+                $(selected_class_combo).on("show-category-selector", function() {
+                    $(selected_class_dropdown).empty();
+                    $.each(sample.metadata.classes, function (category) {
+                        $(selected_class_dropdown).append('<li><a class="js-modal-close">' + category + '</a></li>');
+                    });
+                    $("a", selected_class_dropdown).click(function(){
+                        $(".dropdown-toggle", selected_class_combo).removeClass("active");
+                        $(selected_class_dropdown).removeClass("open");
+                        $(document).trigger("change-category", $(this).text());
+                        return false;
+                    });
+
+                });
+
+
                 $(selected_class_combo).append(selected_class_dropdown);
                 class_title_div.insertBefore(selected_class_combo, class_title_div.childNodes[0]);
-                $("a", selected_class_dropdown).click(function(){
-                    switchCategory($(this).text());
-                    clear();
-                    init();
-                    animate();
-                });
 
                 content.appendChild(class_title_div);
 
@@ -1001,6 +1014,15 @@
                         $this.unbind("mouseup");
                         return false;
                     });
+                });
+
+                $(document).on("change-category", function(event, newValue) {
+                    if (newValue != selected_class) {
+                        switchCategory(newValue);
+                        clear();
+                        init();
+                        animate();
+                    }
                 });
 
                 $(document).on("source-change", function(){
