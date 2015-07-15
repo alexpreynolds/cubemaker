@@ -363,7 +363,7 @@ a.close:hover {
     border-top: 4px dashed;
     display: inline-block;
     height: 0;
-    margin-left: 4px;
+    margin-right: 4px;
     vertical-align: middle;
     width: 0;
 }
