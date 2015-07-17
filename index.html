@@ -9,7 +9,7 @@
         <link rel="shortcut icon" href="assets/img/favicon.ico">
     </head>
     <body>
-        <div class="notification"><div class="warning webgl"><span class="typcn typcn-info-outline" style="font-size: xx-large; position: relative; top: 3px;"></span> Your browser does not appear to support <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>. The <a href="https://get.webgl.org/">WebGL test site</a> may offer help with configuration.</div></div>
+        <div class="notification" id="webgl_missing_warning"><div class="warning webgl"><span class="typcn typcn-info-outline" style="font-size: xx-large; position: relative; top: 3px;"></span> Your browser does not appear to support <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>. The <a href="https://get.webgl.org/">WebGL test site</a> may offer help with configuration.</div></div>
         <div id="container"></div>
         <div id="import-json-dialog" class="modal-box">
             <header> <a href="#" class="js-modal-close close">&#x00D7;</a>
@@ -1155,7 +1155,12 @@ var checkWebGL = function () {
             gl = null;
         }
     }
-    if (gl) return true;
+
+    if (gl) {
+        $("#webgl_missing_warning").remove();
+        return true;
+    }
+
     $(".notification .warning.webgl").show();
     
     return false;
