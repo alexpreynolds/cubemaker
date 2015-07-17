@@ -63,6 +63,7 @@
         <script type="text/javascript" src="assets/js/dat.gui.min.js"></script>
         <script type="text/javascript" src="assets/js/jquery.editinplace.js"></script>
         <script type="text/javascript" src="assets/js/jquery.minicolors.min.js"></script>
+        <script type="text/javascript" src="assets/js/ui.js"></script>
         <script type="text/javascript">
     
 var cubeMaker = function () {
@@ -152,6 +153,7 @@ var cubeMaker = function () {
         var link = document.createElement("a");
         link.download = name;
         link.href = uri;
+        link.target = "_blank";
         link.click();
     }
     
