@@ -11,25 +11,25 @@ body {
 }
 
 .particle_label, .particle_sublabel {
-	font-family: "Helvetica Neue", "Helvetica", sans-serif;
-	font-size: 18px;
-	font-weight: 900;
-	color: black;
-	-webkit-text-stroke: 0.25px white;
-	text-shadow: 0px 0px 2px white;
-	line-height: 0.33em;
+    font-family: "Helvetica Neue", "Helvetica", sans-serif;
+    font-size: 18px;
+    font-weight: 900;
+    color: black;
+    -webkit-text-stroke: 0.25px white;
+    text-shadow: 0px 0px 2px white;
+    line-height: 0.33em;
 }
 
 .particle_sublabel {
-	font-size: 14px;
-	font-weight: 500;
+    font-size: 14px;
+    font-weight: 500;
 }
 
 #graph_title, #graph_key {
-	padding: 8px;
-	padding-top: 12px;
-	background: rgb(33, 33, 33); /* for IE */
-	background: rgba(33, 33, 33, 0.0933);
+    padding: 8px;
+    padding-top: 12px;
+    background: rgb(33, 33, 33); /* for IE */
+    background: rgba(33, 33, 33, 0.0933);
 }
 
 #graph_key {
@@ -38,9 +38,9 @@ body {
 }
 
 .stamlab_label, .title_label, .title_label input, .title_sublabel {
-	color: black;
-	text-align: center;
-	line-height: 0.33em;
+    color: black;
+    text-align: center;
+    line-height: 0.33em;
     display: inline-block;
 }
 
@@ -63,8 +63,8 @@ body {
 }
 
 .title_sublabel, .title_sublabel input {
-	font-size: 14px;
-	font-weight: 400;
+    font-size: 14px;
+    font-weight: 400;
 }
 
 .title_sublabel input {
@@ -73,8 +73,7 @@ body {
 
 .title_sublabel {
     padding-top: 10px;
-    padding-bottom: 5px;
-
+    padding-bottom: 10px;
 }
 .title_sublabel.editInPlace-active {
     padding: 0px;
