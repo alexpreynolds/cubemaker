@@ -116,7 +116,7 @@ var cubeMaker = function () {
     }
     
     var xyz_to_str = function(coords) {
-        return coords.x+":"+coords.y+":"+coords.z;
+        return coords.x + ":" + coords.y + ":" + coords.z;
     }
     
     var get_url_parameter = function(name) {
@@ -433,8 +433,7 @@ var cubeMaker = function () {
     var dp_lines = new Array(6);
     var dp_line_names = new Array(6);
     var selected_class = sample.metadata.default_class;
-    
-    
+        
     function load() {
         var source = get_url_parameter("source");
         if (source) {
@@ -455,8 +454,7 @@ var cubeMaker = function () {
         }
     }
     
-    function init() {
-        
+    function init() {    
         mouse = new THREE.Vector2();
         opaque_cube_lines = new Array(6);
         opaque_cube_line_material = new THREE.LineBasicMaterial({ color: 0xbbbbbb, opacity: 0.25, linewidth: 3 });
@@ -612,7 +610,7 @@ var cubeMaker = function () {
                                               new THREE.MeshLambertMaterial({ 
                                                   opacity: 0.33, 
                                                   transparent: true,
-                                                          alphaTest: 0.5
+                                                  alphaTest: 0.5
                                               }) );
             bounding_box.position.x = 0.9 * rescaled_point_xyz[0];
             bounding_box.position.y = 0.9 * rescaled_point_xyz[1];
@@ -683,7 +681,6 @@ var cubeMaker = function () {
             }
         });
         title_label.innerHTML = '<center><span class="title_label">' + sample.metadata.title + '<br><span class="title_sublabel">' + sample.metadata.subtitle + '</span></span></center>';
-
         
         container.appendChild(title_label);
     }
@@ -718,7 +715,7 @@ var cubeMaker = function () {
             $.each(sample.metadata.classes, function (category) {
                 $(selected_class_dropdown).append('<li><a class="js-modal-close">' + category + '</a></li>');
             });
-            $("a", selected_class_dropdown).click(function(){
+            $("a", selected_class_dropdown).click(function() {
                 $(".dropdown-toggle", selected_class_combo).removeClass("active");
                 $(selected_class_dropdown).removeClass("open");
                 $(document).trigger("change-category", $(this).text());
@@ -944,7 +941,7 @@ var cubeMaker = function () {
             if (dp > 0) {
                 if ((!scene.getObjectByName(dp_line_names[cube_line_idx])) && (dp_lines[cube_line_idx] !== undefined)) {
                     console.log("adding id", dp_line_names[cube_line_idx]);
-                    scene.add(dp_lines[cube_line_idx]);
+                    //scene.add(dp_lines[cube_line_idx]);
                     var _midpt = midpoint_vertices(dp_lines[cube_line_idx].geometry.vertices);
                     var _geometry = new THREE.BoxGeometry( 0.075, 0.075, 0.075 );
                     var _material = new THREE.MeshBasicMaterial( { 
@@ -958,8 +955,8 @@ var cubeMaker = function () {
                     _mesh.position.x = _midpt.x;
                     _mesh.position.y = _midpt.y;
                     _mesh.position.z = _midpt.z;
-                    scene.add( _mesh );
-                    scene.updateMatrixWorld();
+                    //scene.add( _mesh );
+                    //scene.updateMatrixWorld();
                     var _width = window.innerWidth, _height = window.innerHeight;
                     var _v = new THREE.Vector3();
                     var _projector = new THREE.Projector();
@@ -1058,8 +1055,8 @@ var cubeMaker = function () {
     
     var KeyCodes = {LEFT : '37', RIGHT : '39', ESC : '27'}
     var lastKey = null;
-    $(document).keydown(function(event) {
-        
+    
+    $(document).keydown(function(event) {    
         var key = (event.keyCode ? event.keyCode : event.which);
         if (key == KeyCodes.LEFT){
             if (rotateRight){
@@ -1137,7 +1134,7 @@ var cubeMaker = function () {
             if (sample.source){
                 $("#export-link-btn").removeAttr("disabled");
             } else {
-                $("#export-link-btn").attr("disabled","disabled");
+                $("#export-link-btn").attr("disabled", "disabled");
             }
         });
     });
