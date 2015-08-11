@@ -123,7 +123,7 @@ var cubeMaker = function () {
         return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
     };
     
-    function createVertexTexture(rgb) {
+    function create_vertex_texture(rgb) {
         var class_rgb = rgb_array_to_str(rgb);
         var class_d3_rgb = d3.rgb(class_rgb);
         d3.select("#sphere_gradient_0").style("stop-color", class_d3_rgb.brighter().brighter().toString());
@@ -137,7 +137,7 @@ var cubeMaker = function () {
         return svg_texture;
     }
     
-    function generateLink() {
+    function generate_link() {
         var result = location.href;
         if (result.indexOf('?')) {
             result = result.substr(0, result.indexOf('?'));
@@ -149,7 +149,7 @@ var cubeMaker = function () {
         return result;
     }
     
-    function downloadURI(uri, name) {
+    function download_URI(uri, name) {
         var link = document.createElement("a");
         link.download = name;
         link.href = uri;
@@ -159,22 +159,22 @@ var cubeMaker = function () {
         link.dispatchEvent(click_event);
     }
     
-    function exportAsJson() {
+    function export_json() {
         var data = 'data:text/json;charset=utf-8,';
         data += escape(JSON.stringify(sample, null, 2));
-        downloadURI(data, "data.json");
+        download_URI(data, "data.json");
     }
     
-    function exportAsPng() {
+    function export_png() {
         var data = renderer.domElement.toDataURL("image/png");
-        downloadURI(data, "cube.png");
+        download_URI(data, "cube.png");
     }
     
-    function switchCategory(category) {
+    function switch_category(category) {
         selected_class = category;
     }
     
-    function importSample(jsonString, source) {
+    function import_sample(jsonString, source) {
         sample = JSON.parse(jsonString);
         if (source){
             sample.source = encodeURI(source);
@@ -186,7 +186,7 @@ var cubeMaker = function () {
     function importJson(uri){
         var d = $.Deferred()
         return $.get(uri, function(data) {
-            importSample(data, uri);
+            import_sample(data, uri);
             d.resolve();
             //todo: add error handler
         });
@@ -580,7 +580,7 @@ var cubeMaker = function () {
             var particles = new THREE.Geometry();                    
             
             var particle_material = new THREE.PointCloudMaterial({
-                map: createVertexTexture(point_type.rgb),
+                map: create_vertex_texture(point_type.rgb),
                 transparent: true, 
                 size: 0.2, 
                 alphaTest: 0.15
@@ -775,7 +775,7 @@ var cubeMaker = function () {
                     
                     var associated_class = classes[associated_class_index];
                     associated_class.rgb = rgb;
-                    vertex_materials[selected_class][associated_class_name].map = createVertexTexture(rgb);
+                    vertex_materials[selected_class][associated_class_name].map = create_vertex_texture(rgb);
                     vertex_materials[selected_class][associated_class_name].needsUpdate = true;
                     
                     render();
@@ -854,18 +854,18 @@ var cubeMaker = function () {
         return _vector;
     }
     
-    var rotateLeft = false, rotateRight = false;
+    var rotate_left = false, rotate_right = false;
     var rotationSpeed = 0.005;
     
-    function updateRotation() {    
+    function update_rotation() {
         var x = camera.position.x,
             y = camera.position.y,
             z = camera.position.z;
         
-        if (rotateLeft) {
+        if (rotate_left) {
             camera.position.x = x * Math.cos(rotationSpeed) + z * Math.sin(rotationSpeed);
             camera.position.z = z * Math.cos(rotationSpeed) - x * Math.sin(rotationSpeed);
-        } else if (rotateRight) {
+        } else if (rotate_right) {
             camera.position.x = x * Math.cos(rotationSpeed) - z * Math.sin(rotationSpeed);
             camera.position.z = z * Math.cos(rotationSpeed) + x * Math.sin(rotationSpeed);
         }
@@ -874,7 +874,7 @@ var cubeMaker = function () {
     
     function animate() {
         requestAnimationFrame(animate);
-        updateRotation();
+        update_rotation();
         controls.update();
         render();
     }
@@ -1053,59 +1053,59 @@ var cubeMaker = function () {
         renderer.render(scene, camera);
     }
     
-    var KeyCodes = {LEFT : '37', RIGHT : '39', ESC : '27'}
-    var lastKey = null;
+    var Keys = {LEFT : '37', RIGHT : '39', ESC : '27'}
+    var last_key = null;
     
     $(document).keydown(function(event) {    
         var key = (event.keyCode ? event.keyCode : event.which);
-        if (key == KeyCodes.LEFT){
-            if (rotateRight){
-                rotateRight = false;
+        if (key == Keys.LEFT){
+            if (rotate_right){
+                rotate_right = false;
                 event.stopPropagation();
             }
-        } else if (key == KeyCodes.RIGHT) {
-            if (rotateLeft) {
-                rotateLeft = false;
+        } else if (key == Keys.RIGHT) {
+            if (rotate_left) {
+                rotate_left = false;
                 event.stopPropagation();
             }
             
-        } else if (key == KeyCodes.ESC) {
-            rotateRight = false;
-            rotateLeft = false;
+        } else if (key == Keys.ESC) {
+            rotate_right = false;
+            rotate_left = false;
         }
-        if (lastKey && lastKey == key) {
-            if (key == KeyCodes.LEFT) {
-                rotateLeft = true;
-            } else if (key == KeyCodes.RIGHT) {
-                rotateRight = true;
+        if (last_key && last_key == key) {
+            if (key == Keys.LEFT) {
+                rotate_left = true;
+            } else if (key == Keys.RIGHT) {
+                rotate_right = true;
             }
         } else {
             setTimeout(function(){
-                lastKey = null;
+                last_key = null;
             }, 1000);
         }
-        lastKey = key;
+        last_key = key;
     });
     
     $(document).ready(function() {
         $("#import-btn").click(function () {
             var data = $("#import-data").val();
-            importSample(data);
+            import_sample(data);
             clear();
             init();
             animate();
         });
         
         $(document).on("click", "#export-json-btn", function () {
-            exportAsJson();
+            export_json();
         });
         
         $(document).on("click", "#export-png-btn", function () {
-            exportAsPng();
+            export_png();
         });
         
         $(document).on("click", "#export-link-btn", function () {
-            $("#link").val(generateLink());
+            $("#link").val(generate_link());
         });
         
         $("#link").click(function() {
@@ -1123,7 +1123,7 @@ var cubeMaker = function () {
         
         $(document).on("change-category", function(event, newValue) {
             if (newValue != selected_class) {
-                switchCategory(newValue);
+                switch_category(newValue);
                 clear();
                 init();
                 animate();
@@ -1140,7 +1140,7 @@ var cubeMaker = function () {
     });
 }
 
-var checkWebGL = function () {
+var check_WebGL = function () {
     var canvas = document.createElement("canvas");
     try {
         gl = canvas.getContext("webgl");
@@ -1166,7 +1166,7 @@ var checkWebGL = function () {
     return false;
 }
 
-if (checkWebGL()) cubeMaker();
+if (check_WebGL()) cubeMaker();
 
 </script>
     </body>
