@@ -118,6 +118,10 @@ var cubeMaker = function () {
     var xyz_to_str = function(coords) {
         return coords.x + ":" + coords.y + ":" + coords.z;
     }
+
+    var clone_coordinates = function (coords) {
+        return {x: coords.x, y: coords.y, z: coords.z};
+    }
     
     var get_url_parameter = function(name) {
         return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
@@ -422,7 +426,7 @@ var cubeMaker = function () {
     for (var cube_line_materials_idx = 0; cube_line_materials_idx < cube_line_materials.length; cube_line_materials_idx++) {
         cube_line_materials[cube_line_materials_idx] = new THREE.LineBasicMaterial().clone(opaque_cube_line_material);
     }
-    var vertex_materials = {};
+    var vertex_materials;
     var bounding_boxes = [];
     var horizontal_fudge = 1.75;
     var x_deg = 70;
@@ -468,6 +472,7 @@ var cubeMaker = function () {
         for (var cube_line_materials_idx = 0; cube_line_materials_idx < cube_line_materials.length; cube_line_materials_idx++) {
             cube_line_materials[cube_line_materials_idx] = new THREE.LineBasicMaterial().clone(opaque_cube_line_material);
         }
+        vertex_materials = {};
         bounding_boxes = [];
         horizontal_fudge = 1.75;
         x_deg = 70;
@@ -573,24 +578,26 @@ var cubeMaker = function () {
         $.each(sample.data, function(point_index, point_data) {
             var point_type_index = point_data["type"][selected_class];
             var point_type = sample.metadata.classes[selected_class][point_type_index];
-            
+
             var class_name = point_type.name;
             var class_rgb = rgb_array_to_str(point_type.rgb);
-            
-            var particles = new THREE.Geometry();                    
-            
-            var particle_material = new THREE.PointCloudMaterial({
-                map: createVertexTexture(point_type.rgb),
-                transparent: true, 
-                size: 0.2, 
-                alphaTest: 0.15
-            });
-            
-            if (!vertex_materials[selected_class]){
+
+            var particles = new THREE.Geometry();
+            if (!vertex_materials[selected_class]) {
                 vertex_materials[selected_class] = {};
             }
-            vertex_materials[selected_class][class_name] = particle_material;
-            
+            var particle_material = vertex_materials[selected_class][class_name];
+            if (!particle_material) {
+                particle_material = new THREE.PointCloudMaterial({
+                    map: createVertexTexture(point_type.rgb),
+                    transparent: true,
+                    size: 0.2,
+                    alphaTest: 0.15
+                });
+                particle_material.needsUpdate = true;
+                vertex_materials[selected_class][class_name] = particle_material;
+            }
+
             // A particle has basically zero radius, so we build a bounding box around the particle, which we can 
             // use with the raycaster to better mimic mouseover and mouseout events. For example, a mouseover might
             // append a text label to left of the sphere particle describing the point ID or parent class.
@@ -772,12 +779,12 @@ var cubeMaker = function () {
                     var rgb = hex_to_rgb_array(hex);
                     var associated_class_name = $(this).data("classname");
                     var associated_class_index = $(this).data("classindex");
-                    
+
                     var associated_class = classes[associated_class_index];
                     associated_class.rgb = rgb;
                     vertex_materials[selected_class][associated_class_name].map = createVertexTexture(rgb);
                     vertex_materials[selected_class][associated_class_name].needsUpdate = true;
-                    
+
                     render();
                 }});
         });
@@ -795,11 +802,13 @@ var cubeMaker = function () {
         graph_key.appendChild(content);
         container.appendChild(graph_key);
     }
-    
+
+    var lastPosition, lastRotation, lastCenter;
+
     function update_position() {
-        var position = get_xyz_url_parameter("camPosition");
-        var rotation = get_xyz_url_parameter("camRotation");
-        var controlCenter = get_xyz_url_parameter("center");
+        var position = lastPosition || get_xyz_url_parameter("camPosition"); lastPosition = undefined;
+        var rotation = lastRotation || get_xyz_url_parameter("camRotation"); lastRotation = undefined;
+        var controlCenter = lastCenter || get_xyz_url_parameter("center"); lastCenter = undefined;
         var xdeg = get_url_parameter("xdeg");
         var ydeg = get_url_parameter("ydeg");
         if (position || rotation || controlCenter) {
@@ -1123,6 +1132,7 @@ var cubeMaker = function () {
         
         $(document).on("change-category", function(event, newValue) {
             if (newValue != selected_class) {
+                lastPosition = clone_coordinates(camera.position), lastRotation = clone_coordinates(camera.rotation), lastCenter = clone_coordinates(controls.center);
                 switchCategory(newValue);
                 clear();
                 init();
