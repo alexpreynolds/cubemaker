@@ -799,25 +799,25 @@ var cubeMaker = function () {
     function update_position() {
         var position = get_xyz_url_parameter("camPosition");
         var rotation = get_xyz_url_parameter("camRotation");
-        var controlCenter = get_xyz_url_parameter("center");
-        var xdeg = get_url_parameter("xdeg");
-        var ydeg = get_url_parameter("ydeg");
-        if (position || rotation || controlCenter) {
+        var control_center = get_xyz_url_parameter("center");
+        var x_deg = get_url_parameter("xdeg");
+        var y_deg = get_url_parameter("ydeg");
+        if (position || rotation || control_center) {
             if (position) {
                 camera.position.set(position.x, position.y, position.z);
             }
             if (rotation) {
                 camera.rotation.set(rotation.x, rotation.y, rotation.z);
             }
-            if (controlCenter) {
-                controls.center.set(controlCenter.x, controlCenter.y, controlCenter.z);
+            if (control_center) {
+                controls.center.set(control_center.x, control_center.y, control_center.z);
             }
         } else {
-            if (xdeg) {
-                x_rad = Math.PI / 180.0 * xdeg;
+            if (x_deg) {
+                x_rad = Math.PI / 180.0 * x_deg;
             }
-            if (ydeg) {
-                y_rad = Math.PI / 180.0 * ydeg;
+            if (y_deg) {
+                y_rad = Math.PI / 180.0 * y_deg;
                 
             }
             controls.rotateLeft(x_rad);
