@@ -613,17 +613,13 @@
                 if (rotate) {
 
                     if (rotationDirection == Direction.LEFT) {
-                        camera.position.x = x * cos + z * sin;
-                        camera.position.z = z * cos - x * sin;
+                        controls.rotateLeft(-rotationSpeed);
                     } else if (rotationDirection == Direction.RIGHT) {
-                        camera.position.x = x * cos - z * sin;
-                        camera.position.z = z * cos + x * sin;
+                        controls.rotateLeft(rotationSpeed);
                     } else if (rotationDirection == Direction.UP) {
-                        camera.position.x = x * cos - y * sin;
-                        camera.position.y = y * cos + x * sin;
+                        controls.rotateUp(-rotationSpeed);
                     } else if (rotationDirection == Direction.DOWN) {
-                        camera.position.x = x * cos - y * sin;
-                        camera.position.y = y * cos + x * sin;
+                        controls.rotateUp(rotationSpeed);
                     }
                 }
             }
