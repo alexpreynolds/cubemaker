@@ -1103,57 +1103,57 @@ var cubeMaker = function () {
         mousedown = false;
     });
 
-$(document).ready(function() {
-    $("#import-btn").click(function () {
-        var data = $("#import-data").val();
-        import_sample(data);
-        clear();
-        init();
-        animate();
-    });
-    
-    $(document).on("click", "#export-json-btn", function () {
-        export_as_json();
-    });
-    
-    $(document).on("click", "#export-png-btn", function () {
-        export_as_png();
-    });
-    
-    $(document).on("click", "#export-link-btn", function () {
-        $("#link").val(generate_link());
-    });
-    
-    $("#link").click(function() {
-        var $this = $(this);
-        $this.focus();
-        $this.select();
-        
-        // Work around Chrome's little problem
-        $this.mouseup(function() {
-            // Prevent further mouseup intervention
-            $this.unbind("mouseup");
-            return false;
-        });
-    });
-    
-    $(document).on("change-category", function(event, newValue) {
-        if (newValue != selected_class) {
-            switch_category(newValue);
+    $(document).ready(function() {
+	$("#import-btn").click(function () {
+            var data = $("#import-data").val();
+            import_sample(data);
             clear();
             init();
             animate();
-        }
+	});
+	
+	$(document).on("click", "#export-json-btn", function () {
+            export_as_json();
+	});
+	
+	$(document).on("click", "#export-png-btn", function () {
+            export_as_png();
+	});
+	
+	$(document).on("click", "#export-link-btn", function () {
+            $("#link").val(generate_link());
+	});
+	
+	$("#link").click(function() {
+            var $this = $(this);
+            $this.focus();
+            $this.select();
+            
+            // Work around Chrome's little problem
+            $this.mouseup(function() {
+		// Prevent further mouseup intervention
+		$this.unbind("mouseup");
+		return false;
+            });
+	});
+	
+	$(document).on("change-category", function(event, newValue) {
+            if (newValue != selected_class) {
+		switch_category(newValue);
+		clear();
+		init();
+		animate();
+            }
+	});
+	
+	$(document).on("source-change", function() {
+            if (sample.source) {
+		$("#export-link-btn").removeAttr("disabled");
+            } else {
+		$("#export-link-btn").attr("disabled", "disabled");
+            }
+	});
     });
-    
-    $(document).on("source-change", function() {
-        if (sample.source){
-            $("#export-link-btn").removeAttr("disabled");
-        } else {
-            $("#export-link-btn").attr("disabled", "disabled");
-        }
-    });
-});
 }
 
 var checkWebGL = function () {
