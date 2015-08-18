@@ -579,17 +579,21 @@ var cubeMaker = function () {
             
             var particles = new THREE.Geometry();                    
             
-            var particle_material = new THREE.PointCloudMaterial({
-                map: create_vertex_texture(point_type.rgb),
-                transparent: true, 
-                size: 0.2, 
-                alphaTest: 0.15
-            });
-            
-            if (!vertex_materials[selected_class]){
+            if (!vertex_materials[selected_class]) {
                 vertex_materials[selected_class] = {};
             }
-            vertex_materials[selected_class][class_name] = particle_material;
+	    
+	    var particle_material = vertex_materials[selected_class][class_name];
+
+	    if (!particle_material) {
+		particle_material = new THREE.PointCloudMaterial({
+                    map: create_vertex_texture(point_type.rgb),
+                    transparent: true, 
+                    size: 0.2, 
+                    alphaTest: 0.15
+		});
+		vertex_materials[selected_class][class_name] = particle_material;
+	    }
             
             // A particle has basically zero radius, so we build a bounding box around the particle, which we can 
             // use with the raycaster to better mimic mouseover and mouseout events. For example, a mouseover might
