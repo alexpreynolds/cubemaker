@@ -414,6 +414,7 @@ var cubeMaker = function () {
     var cube_materials = null;
     var opaque_cube_lines = new Array(6);
     var cube_line_geometry = null;
+    var x1, x2, x3, x4, y1, y2, y3, y4, z1, z2, z3, z4;
     var opaque_cube_line_material = new THREE.LineBasicMaterial({ color: 0xbbbbbb, opacity: 0.25, linewidth: 3 });
     var red_cube_line_material = new THREE.LineBasicMaterial({ color: 0xff0000, opacity: 0.25, linewidth: 3 });
     var green_cube_line_material = new THREE.LineBasicMaterial({ color: 0x00ff00, opacity: 0.25, linewidth: 3 });
@@ -457,7 +458,7 @@ var cubeMaker = function () {
         }
     }
     
-    function init() {    
+    function init() {
         mouse = new THREE.Vector2();
         opaque_cube_lines = new Array(6);
         opaque_cube_line_material = new THREE.LineBasicMaterial({ color: 0xbbbbbb, opacity: 0.25, linewidth: 3 });
@@ -507,7 +508,39 @@ var cubeMaker = function () {
             cube.geometry.faces[idx].materialIndex = idx;
         }
         scene.add(cube);
-        
+
+
+        var axis_length = 1;
+
+        var axis_line_material = new THREE.LineBasicMaterial({ color: 0xbb0000, opacity: 0.25, linewidth: 5 });
+        function axis(start, end, name){
+            var axis_geometry = new THREE.Geometry();
+            axis_geometry.vertices.push(new THREE.Vector3(start[0] * axis_length / 2, start[1] * axis_length / 2, start[2] * axis_length / 2));
+            axis_geometry.vertices.push(new THREE.Vector3(end[0] * axis_length / 2, end[1] * axis_length / 2, end[2] * axis_length / 2));
+            var result = new THREE.Line(axis_geometry, axis_line_material);
+            result.name = name;
+            return result;
+        }
+
+        x1 = axis([-1, -1, -1], [ 1, -1, -1], "x1");
+        x2 = axis([-1, -1,  1], [ 1, -1,  1], "x2");
+        x3 = axis([-1,  1, -1], [ 1,  1, -1], "x3");
+        x4 = axis([-1,  1,  1], [ 1,  1,  1], "x4");
+
+        y1 = axis([-1, -1, -1], [-1,  1, -1], "y1");
+        y2 = axis([-1, -1,  1], [-1,  1,  1], "y2");
+        y3 = axis([ 1, -1, -1], [ 1,  1, -1], "y3");
+        y4 = axis([ 1, -1,  1], [ 1,  1,  1], "y4");
+
+        z1 = axis([-1, -1, -1], [-1, -1,  1], "z1");
+        z2 = axis([ -1, 1, -1], [-1,  1,  1], "z2");
+        z3 = axis([ 1, -1, -1], [ 1, -1,  1], "z3");
+        z4 = axis([ 1,  1, -1], [ 1,  1,  1], "z4");
+
+
+
+
+
         for (var cube_line_idx = 0; cube_line_idx < opaque_cube_lines.length; cube_line_idx++) {
             cube_line_geometry = new THREE.Geometry();
             switch (cube_line_idx % opaque_cube_lines.length) {
@@ -554,7 +587,7 @@ var cubeMaker = function () {
                 cube_line_geometry.vertices.push(new THREE.Vector3( -0.5,  0.5, -0.5 ));
                 break;
             }
-            
+
             var opaque_cube_line = new THREE.Line(cube_line_geometry, opaque_cube_line_material);
             opaque_cube_lines[cube_line_idx] = opaque_cube_line;
             scene.add(opaque_cube_line);
@@ -567,7 +600,7 @@ var cubeMaker = function () {
               scene.add(line_bbox_cubes[cube_line_idx]);
             */
         }
-        
+
         var offset_x = offset_y = offset_z = -0.5;
         
         $.each(sample.data, function(point_index, point_data) {
@@ -916,15 +949,155 @@ var cubeMaker = function () {
           }
           
         */
-        
-        for (var cube_face_idx = 0; cube_face_idx < cube.geometry.faces.length; cube_face_idx++) {
+
+        function determine_if_face_visible(cube_face_idx){
             var face = cube.geometry.faces[cube_face_idx];
             var face_to_camera = new THREE.Vector3();
             face_to_camera.copy(camera.position);
             face_to_camera.sub(cube.geometry.vertices[face.a]);
             var dp = face.normal.dot(face_to_camera);
+            return dp > 0;
+        }
+
+        function remove_scene_objects(names){
+            Array.prototype.slice.call(arguments).forEach(remove_scene_object);
+        }
+
+        function remove_scene_object(name){
+            scene.remove(scene.getObjectByName(name));
+        }
+
+        remove_scene_objects("x1", "x2", "x3", "x4", "y1", "y2", "y3", "y4", "z1", "z2", "z3", "z4") ;
+
+
+        var     x_positive_face_visible = determine_if_face_visible(1),
+                x_negative_face_visible = determine_if_face_visible(3),
+                y_positive_face_visible = determine_if_face_visible(5),
+                y_negative_face_visible = determine_if_face_visible(7),
+                z_positive_face_visible = determine_if_face_visible(9),
+                z_negative_face_visible = determine_if_face_visible(11);
+
+
+        if (y_positive_face_visible) {
+
+            if (x_positive_face_visible) {
+                if (z_positive_face_visible) {
+                    scene.add(x2);
+                    scene.add(y2);
+                } else if (z_negative_face_visible) {
+                    scene.add(x1);
+                    scene.add(y4);
+                } else {
+                    scene.add(x4);
+                    scene.add(y4);
+                }
+                scene.add(z3);
+            } else if (x_negative_face_visible) {
+                if (z_positive_face_visible) {
+                    scene.add(x2);
+                    scene.add(y1);
+                } else if (z_negative_face_visible) {
+                    scene.add(x1);
+                    scene.add(y3);
+                } else {
+                    scene.add(x3);
+                    scene.add(y1);
+                }
+                scene.add(z1);
+            } else {
+                if (z_positive_face_visible) {
+                    scene.add(x2);
+                    scene.add(y2);
+                    scene.add(z2);
+                } else if (z_negative_face_visible) {
+                    scene.add(x1);
+                    scene.add(y3);
+                    scene.add(z4);
+                } else {
+                    scene.add(x3);
+                    scene.add(z2);
+                }
+            }
+        } else if (y_negative_face_visible) {
+            if (x_positive_face_visible) {
+                if (z_positive_face_visible) {
+                    scene.add(x1);
+                    scene.add(y2);
+                } else if (z_negative_face_visible) {
+                    scene.add(x2);
+                    scene.add(y4);
+                } else {
+                    scene.add(x2);
+                    scene.add(y4);
+                }
+                scene.add(z1);
+            } else if (x_negative_face_visible) {
+                if (z_positive_face_visible) {
+                    scene.add(x1);
+                    scene.add(y1);
+                } else if (z_negative_face_visible) {
+                    scene.add(x2);
+                    scene.add(y3);
+                } else {
+                    scene.add(x1);
+                    scene.add(y1);
+                }
+                scene.add(z3);
+            } else {
+                if (z_positive_face_visible) {
+                    scene.add(x1);
+                    scene.add(y2);
+                    scene.add(z1);
+                } else if (z_negative_face_visible) {
+                    scene.add(x2);
+                    scene.add(y3);
+                    scene.add(z3);
+                } else {
+                    scene.add(x1);
+                    scene.add(z1);
+                }
+            }
+        } else {
+            if (x_positive_face_visible) {
+                if (z_positive_face_visible) {
+                    scene.add(x2);
+                    scene.add(y2);
+                } else if (z_negative_face_visible) {
+                    scene.add(x1);
+                    scene.add(y4);
+                } else {
+                    scene.add(y4);
+                }
+                scene.add(z3);
+            } else if (x_negative_face_visible) {
+                if (z_positive_face_visible) {
+                    scene.add(x2);
+                    scene.add(y1);
+                } else if (z_negative_face_visible) {
+                    scene.add(x1);
+                    scene.add(y3);
+                } else {
+                    scene.add(y1);
+                }
+                scene.add(z1);
+            } else {
+                if (z_positive_face_visible) {
+                    scene.add(y2);
+                    scene.add(z2);
+                } else if (z_negative_face_visible) {
+                    scene.add(x1);
+                    scene.add(y3);
+
+                }
+            }
+        }
+
+        for (var cube_face_idx = 0; cube_face_idx < cube.geometry.faces.length; cube_face_idx++) {
+
+            var face = cube.geometry.faces[cube_face_idx];
+            var face_visible = determine_if_face_visible(cube_face_idx);
             if (flag) {
-                console.log(Math.floor(cube_face_idx/2.0), dp, '{', cube.geometry.vertices[face.a].x, cube.geometry.vertices[face.a].y, cube.geometry.vertices[face.a].z, '}');
+                console.log(Math.floor(cube_face_idx/2.0), face_visible, '{', cube.geometry.vertices[face.a].x, cube.geometry.vertices[face.a].y, cube.geometry.vertices[face.a].z, '}');
             }
             var cube_line_idx = Math.floor(cube_face_idx/2.0);
             if (cube_face_idx % 2 == 0) {
@@ -935,13 +1108,14 @@ var cubeMaker = function () {
                 dp_line_geos[cube_line_idx].vertices.push(new THREE.Vector3(1.1*cube.geometry.vertices[face.b].x, 1.1*cube.geometry.vertices[face.b].y, 1.1*cube.geometry.vertices[face.b].z));
                 var cube_line = new THREE.Line(dp_line_geos[cube_line_idx], (cube_face_idx % 3 == 0) ? red_cube_line_material : (cube_face_idx % 3 == 1) ? green_cube_line_material : blue_cube_line_material);
                 cube_line.name = "cube_line_idx" + cube_line_idx;
-                dp_lines[cube_line_idx] = cube_line;
+               // dp_lines[cube_line_idx] = cube_line;
                 dp_line_names[cube_line_idx] = cube_line.name;
             }
-            if (dp > 0) {
+            if (face_visible) {
+
                 if ((!scene.getObjectByName(dp_line_names[cube_line_idx])) && (dp_lines[cube_line_idx] !== undefined)) {
                     console.log("adding id", dp_line_names[cube_line_idx]);
-                    //scene.add(dp_lines[cube_line_idx]);
+                    scene.add(dp_lines[cube_line_idx]);
                     var _midpt = midpoint_vertices(dp_lines[cube_line_idx].geometry.vertices);
                     var _geometry = new THREE.BoxGeometry( 0.075, 0.075, 0.075 );
                     var _material = new THREE.MeshBasicMaterial( { 
@@ -959,8 +1133,8 @@ var cubeMaker = function () {
                     //scene.updateMatrixWorld();
                     var _width = window.innerWidth, _height = window.innerHeight;
                     var _v = new THREE.Vector3();
-                    var _projector = new THREE.Projector();
-                    _projector.projectVector(_v.setFromMatrixPosition( _mesh.matrixWorld ), camera);
+                    _v.setFromMatrixPosition( _mesh.matrixWorld);
+                    _v = _v.project(camera);
                     if (flag)
                         console.log(cube_line_idx, _v);
                     var _percX = (_v.x + 1) / 2;
@@ -1005,8 +1179,8 @@ var cubeMaker = function () {
                 var width = window.innerWidth, height = window.innerHeight;
                 var widthHalf = width / 2, heightHalf = height / 2;
                 var screen_object_center = new THREE.Vector3();
-                var projector = new THREE.Projector();
-                projector.projectVector(screen_object_center.setFromMatrixPosition(INTERSECTED.matrixWorld), camera);
+                screen_object_center.setFromMatrixPosition(INTERSECTED.matrixWorld);
+                screen_object_center.project(camera);
                 screen_object_center.x = (screen_object_center.x * widthHalf) + widthHalf;
                 screen_object_center.y = -(screen_object_center.y * heightHalf) + heightHalf;
                 
@@ -1018,7 +1192,7 @@ var cubeMaker = function () {
                 var INTERSECTED_matrix_copy = new THREE.Matrix4().copy(INTERSECTED.matrixWorld);
                 INTERSECTED_matrix_copy.setPosition(new THREE.Vector3(INTERSECTED.position.x + scene_right.x, INTERSECTED.position.y + scene_right.y, INTERSECTED.position.z + scene_right.z));
                 var screen_object_edge = new THREE.Vector3();
-                projector.projectVector(screen_object_edge.setFromMatrixPosition(INTERSECTED_matrix_copy), camera);
+                screen_object_edge.project(camera);
                 screen_object_edge.x = (screen_object_edge.x * widthHalf) + widthHalf;
                 screen_object_edge.y = -(screen_object_edge.y * heightHalf) + heightHalf;
                 
