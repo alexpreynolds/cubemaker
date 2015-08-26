@@ -170,7 +170,7 @@ var cubeMaker = function () {
         download_URI(data, "cube.png");
     };
     
-    function switchCategory(category) {
+    var switch_category = function(category) {
         selected_class = category;
     };
     
@@ -184,7 +184,7 @@ var cubeMaker = function () {
     };
     
     var import_json = function(uri){
-        var d = $.Deferred()
+        var d = $.Deferred();
         return $.get(uri, function(data) {
             import_sample(data, uri);
             d.resolve();
@@ -1064,7 +1064,7 @@ var cubeMaker = function () {
         renderer.render(scene, camera);
     }
 
-    var Keys = {LEFT: '37', UP: '38', RIGHT: '39', DOWN: '40', ESC: '27'}
+    var Keys = {LEFT: '37', UP: '38', RIGHT: '39', DOWN: '40', ESC: '27'};
     var last_key = null;
     $(document).keydown(function (event) {
 
