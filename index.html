@@ -538,9 +538,6 @@ var cubeMaker = function () {
         z4 = axis([ 1,  1, -1], [ 1,  1,  1], "z4");
 
 
-
-
-
         for (var cube_line_idx = 0; cube_line_idx < opaque_cube_lines.length; cube_line_idx++) {
             cube_line_geometry = new THREE.Geometry();
             switch (cube_line_idx % opaque_cube_lines.length) {
@@ -959,6 +956,13 @@ var cubeMaker = function () {
             return dp > 0;
         }
 
+        function get_axis_faces_metadata(positive_direction_cube_face_idx, negative_direction_cube_face_idx){
+            var result = {};
+            result["+"] = {visible : determine_if_face_visible(positive_direction_cube_face_idx)};
+            result["-"] = {visible : determine_if_face_visible(negative_direction_cube_face_idx)};
+            return result;
+        }
+
         function remove_scene_objects(names){
             Array.prototype.slice.call(arguments).forEach(remove_scene_object);
         }
@@ -967,128 +971,59 @@ var cubeMaker = function () {
             scene.remove(scene.getObjectByName(name));
         }
 
+        function add_axes(axes){
+            Array.prototype.slice.call(arguments).forEach(function(axis){
+                scene.add(axis);
+            });
+        }
+        
         remove_scene_objects("x1", "x2", "x3", "x4", "y1", "y2", "y3", "y4", "z1", "z2", "z3", "z4") ;
 
-
-        var     x_positive_face_visible = determine_if_face_visible(1),
-                x_negative_face_visible = determine_if_face_visible(3),
-                y_positive_face_visible = determine_if_face_visible(5),
-                y_negative_face_visible = determine_if_face_visible(7),
-                z_positive_face_visible = determine_if_face_visible(9),
-                z_negative_face_visible = determine_if_face_visible(11);
+        var faces = {};
+        faces.x =  get_axis_faces_metadata(1, 3);
+        faces.y =  get_axis_faces_metadata(5, 7);
+        faces.z =  get_axis_faces_metadata(9, 11);
 
 
-        if (y_positive_face_visible) {
+        if (faces.y["+"].visible) {
+            if        (faces.x["+"].visible) {
+                    if       (faces.z["+"].visible)  add_axes(x2, y2, z3);
+                    else if  (faces.z["-"].visible)  add_axes(x1, y4, z3);
+                    else                             add_axes(x4, y4, z3);
 
-            if (x_positive_face_visible) {
-                if (z_positive_face_visible) {
-                    scene.add(x2);
-                    scene.add(y2);
-                } else if (z_negative_face_visible) {
-                    scene.add(x1);
-                    scene.add(y4);
-                } else {
-                    scene.add(x4);
-                    scene.add(y4);
-                }
-                scene.add(z3);
-            } else if (x_negative_face_visible) {
-                if (z_positive_face_visible) {
-                    scene.add(x2);
-                    scene.add(y1);
-                } else if (z_negative_face_visible) {
-                    scene.add(x1);
-                    scene.add(y3);
-                } else {
-                    scene.add(x3);
-                    scene.add(y1);
-                }
-                scene.add(z1);
+            } else if (faces.x["-"].visible) {
+                    if       (faces.z["+"].visible)  add_axes(x2, y1, z1);
+                    else if  (faces.z["-"].visible)  add_axes(x1, y3, z1);
+                    else                             add_axes(x3, y1, z1);
             } else {
-                if (z_positive_face_visible) {
-                    scene.add(x2);
-                    scene.add(y2);
-                    scene.add(z2);
-                } else if (z_negative_face_visible) {
-                    scene.add(x1);
-                    scene.add(y3);
-                    scene.add(z4);
-                } else {
-                    scene.add(x3);
-                    scene.add(z2);
-                }
+                    if       (faces.z["+"].visible)  add_axes(x2, y2, z2);
+                    else if  (faces.z["-"].visible)  add_axes(x1, y3, z4);
+                    else                             add_axes(x3, z2);
             }
-        } else if (y_negative_face_visible) {
-            if (x_positive_face_visible) {
-                if (z_positive_face_visible) {
-                    scene.add(x1);
-                    scene.add(y2);
-                } else if (z_negative_face_visible) {
-                    scene.add(x2);
-                    scene.add(y4);
-                } else {
-                    scene.add(x2);
-                    scene.add(y4);
-                }
-                scene.add(z1);
-            } else if (x_negative_face_visible) {
-                if (z_positive_face_visible) {
-                    scene.add(x1);
-                    scene.add(y1);
-                } else if (z_negative_face_visible) {
-                    scene.add(x2);
-                    scene.add(y3);
-                } else {
-                    scene.add(x1);
-                    scene.add(y1);
-                }
-                scene.add(z3);
+        } else if (faces.y["-"].visible) {
+            if        (faces.x["+"].visible) {
+                if          (faces.z["+"].visible)   add_axes(x1, y2, z1);
+                else                                 add_axes(x2, y4, z1);
+            } else if (faces.x["-"].visible) {
+                if          (faces.z["-"].visible)   add_axes(x2, y3, z3);
+                else                                 add_axes(x1, y1, z3);
             } else {
-                if (z_positive_face_visible) {
-                    scene.add(x1);
-                    scene.add(y2);
-                    scene.add(z1);
-                } else if (z_negative_face_visible) {
-                    scene.add(x2);
-                    scene.add(y3);
-                    scene.add(z3);
-                } else {
-                    scene.add(x1);
-                    scene.add(z1);
-                }
+                if          (faces.z["+"].visible)   add_axes(x1, y2, z1);
+                else if     (faces.z["-"].visible)   add_axes(x2, y3, z3);
+                else                                 add_axes(x1, z1);
             }
         } else {
-            if (x_positive_face_visible) {
-                if (z_positive_face_visible) {
-                    scene.add(x2);
-                    scene.add(y2);
-                } else if (z_negative_face_visible) {
-                    scene.add(x1);
-                    scene.add(y4);
-                } else {
-                    scene.add(y4);
-                }
-                scene.add(z3);
-            } else if (x_negative_face_visible) {
-                if (z_positive_face_visible) {
-                    scene.add(x2);
-                    scene.add(y1);
-                } else if (z_negative_face_visible) {
-                    scene.add(x1);
-                    scene.add(y3);
-                } else {
-                    scene.add(y1);
-                }
-                scene.add(z1);
+            if        (faces.x["+"].visible) {
+                if          (faces.z["+"].visible)   add_axes(x2, y2, z3);
+                else if     (faces.z["-"].visible)   add_axes(x1, y4, z3);
+                else                                 add_axes(y4, z3);
+            } else if (faces.x["-"].visible) {
+                if          (faces.z["+"].visible)   add_axes(x2, y1, z1);
+                else if     (faces.z["-"].visible)   add_axes(x1, y3, z1);
+                else                                 add_axes(y1, z1);
             } else {
-                if (z_positive_face_visible) {
-                    scene.add(y2);
-                    scene.add(z2);
-                } else if (z_negative_face_visible) {
-                    scene.add(x1);
-                    scene.add(y3);
-
-                }
+                if          (faces.z["+"].visible)  add_axes(x2, y2);
+                else                                add_axes(x1, y3);
             }
         }
 
