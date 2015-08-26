@@ -586,7 +586,7 @@ var cubeMaker = function () {
             var particle_material = vertex_materials[selected_class][class_name];
             if (!particle_material){
                 particle_material = new THREE.PointCloudMaterial({
-                    map: createVertexTexture(point_type.rgb),
+                    map: create_vertex_texture(point_type.rgb),
                     transparent: true,
                     size: 0.2,
                     alphaTest: 0.15
