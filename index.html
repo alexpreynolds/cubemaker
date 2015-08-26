@@ -839,6 +839,7 @@ var cubeMaker = function () {
         renderer.setSize(window.innerWidth, window.innerHeight);
         update_title();
         update_key();
+        render();
     }
     
     function onDocumentMouseMove(event) {
@@ -848,6 +849,7 @@ var cubeMaker = function () {
         if (!INTERSECTED) {
             $(".particle_label").remove();
         }
+        render();
     }
     
     function midpoint_vertices(v) {
@@ -861,6 +863,17 @@ var cubeMaker = function () {
     var rotate = false;
     var Direction = {UP : "up", DOWN : "down", RIGHT : "right", LEFT : "left"};
     var rotationDirection;
+
+    var start_rotation = function(direction){
+        rotate = true;
+        start_animation();
+        rotationDirection = direction;
+    };
+
+    var stop_rotation = function(){
+        rotate = false;
+        stop_animation();
+    };
 
     var rotationSpeed = 0.005;
     function updateRotation() {
@@ -883,8 +896,19 @@ var cubeMaker = function () {
         }
     }
 
+    var play = false;
+
+    function start_animation() {
+        play = true;
+        animate();
+    }
+
+    function stop_animation() {
+        play = false;
+    }
+
     function animate() {
-        requestAnimationFrame(animate);
+        if (play) requestAnimationFrame(animate);
         updateRotation();
         controls.update();
         render();
@@ -1071,22 +1095,18 @@ var cubeMaker = function () {
 
         var key = (event.keyCode ? event.keyCode : event.which);
         if (rotate && (key == KeyCodes.LEFT || key == KeyCodes.RIGHT || key == KeyCodes.UP || key == KeyCodes.DOWN || key == KeyCodes.ESC)) {
-            rotate = false;
+            stop_rotation();
             event.stopPropagation();
         }
         if (lastKey && lastKey == key) {
             if (key == KeyCodes.LEFT) {
-                rotate = true;
-                rotationDirection = Direction.LEFT;
+                start_rotation(Direction.LEFT);
             } else if (key == KeyCodes.RIGHT) {
-                rotate = true;
-                rotationDirection = Direction.RIGHT;
+                start_rotation(Direction.RIGHT);
             } else if (key == KeyCodes.UP) {
-                rotate = true;
-                rotationDirection = Direction.UP;
+                start_rotation(Direction.UP);
             } else if (key == KeyCodes.DOWN) {
-                rotate = true;
-                rotationDirection = Direction.DOWN;
+                start_rotation(Direction.DOWN);
             }
         }
         lastKey = key;
