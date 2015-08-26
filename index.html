@@ -75,7 +75,7 @@ var cubeMaker = function () {
                 ++count;
         }
         return count;
-    }
+    };
     
     var rgb_array_to_str = function(arr) {
         return "rgb(" + arr.join(",") + ")";
@@ -113,17 +113,17 @@ var cubeMaker = function () {
             }
         }
         return undefined;
-    }
+    };
     
     var xyz_to_str = function(coords) {
         return coords.x + ":" + coords.y + ":" + coords.z;
-    }
+    };
     
     var get_url_parameter = function(name) {
         return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search)||[,""])[1].replace(/\+/g, '%20'))||null
     };
     
-    function create_vertex_texture(rgb) {
+    var create_vertex_texture = function(rgb) {
         var class_rgb = rgb_array_to_str(rgb);
         var class_d3_rgb = d3.rgb(class_rgb);
         d3.select("#sphere_gradient_0").style("stop-color", class_d3_rgb.brighter().brighter().toString());
@@ -135,9 +135,9 @@ var cubeMaker = function () {
         var svg_texture = new THREE.Texture(svg_canvas);
         svg_texture.needsUpdate = true;
         return svg_texture;
-    }
+    };
     
-    function generate_link() {
+    var generate_link = function() {
         var result = location.href;
         if (result.indexOf('?')) {
             result = result.substr(0, result.indexOf('?'));
@@ -147,9 +147,9 @@ var cubeMaker = function () {
             + "&camRotation=" + xyz_to_str(camera.rotation)
             + "&center=" + xyz_to_str(controls.center);
         return result;
-    }
+    };
     
-    function download_URI(uri, name) {
+    var download_URI = function(uri, name) {
         var link = document.createElement("a");
         link.download = name;
         link.href = uri;
@@ -157,33 +157,33 @@ var cubeMaker = function () {
         var click_event = document.createEvent('MouseEvents');
         click_event.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
         link.dispatchEvent(click_event);
-    }
+    };
     
-    function export_json() {
+    var export_as_json = function() {
         var data = 'data:text/json;charset=utf-8,';
         data += escape(JSON.stringify(sample, null, 2));
         download_URI(data, "data.json");
-    }
+    };
     
-    function export_png() {
+    var export_as_png = function() {
         var data = renderer.domElement.toDataURL("image/png");
         download_URI(data, "cube.png");
-    }
+    };
     
-    function switch_category(category) {
+    function switchCategory(category) {
         selected_class = category;
-    }
+    };
     
-    function import_sample(jsonString, source) {
+    var import_sample = function(jsonString, source) {
         sample = JSON.parse(jsonString);
         if (source){
             sample.source = encodeURI(source);
         }
         //todo: verify the sample object structure
         $(document).trigger("source-change");
-    }
+    };
     
-    function importJson(uri){
+    var import_json = function(uri){
         var d = $.Deferred()
         return $.get(uri, function(data) {
             import_sample(data, uri);
@@ -191,12 +191,12 @@ var cubeMaker = function () {
             //todo: add error handler
         });
         return d.promise();
-    }
+    };
     
     var sample = {
         "metadata" : {
             "title" : "Cubemaker",
-            "subtitle" : "Use mouse to rotate cube (or equivalent arrow keys) and use scrollwheel to zoom",
+            "subtitle" : "Use mouse or arrow keys to rotate, scrollwheel to zoom, and double-tap arrow keys to animate",
             "axis" : {
                 "x" : "PC1",
                 "y" : "PC2",
@@ -437,25 +437,25 @@ var cubeMaker = function () {
     var dp_line_names = new Array(6);
     var selected_class = sample.metadata.default_class;
         
-    function load() {
+    var load = function() {
         var source = get_url_parameter("source");
         if (source) {
-            return importJson(source);
+            return import_json(source);
         }
         return $.Deferred().resolve().promise();
-    }
+    };
     
     load()
-        .done(function(){
+        .done(function() {
             init();
             animate();
         });
     
-    function clear() {
-        if (container){
+    var clear = function() {
+        if (container) {
             document.body.removeChild(container);
         }
-    }
+    };
     
     function init() {    
         mouse = new THREE.Vector2();
@@ -577,19 +577,23 @@ var cubeMaker = function () {
             var class_name = point_type.name;
             var class_rgb = rgb_array_to_str(point_type.rgb);
             
-            var particles = new THREE.Geometry();                    
-            
-            var particle_material = new THREE.PointCloudMaterial({
-                map: create_vertex_texture(point_type.rgb),
-                transparent: true, 
-                size: 0.2, 
-                alphaTest: 0.15
-            });
-            
-            if (!vertex_materials[selected_class]){
+            var particles = new THREE.Geometry();
+
+            if (!vertex_materials[selected_class]) {
                 vertex_materials[selected_class] = {};
             }
-            vertex_materials[selected_class][class_name] = particle_material;
+
+            var particle_material = vertex_materials[selected_class][class_name];
+
+            if (!particle_material) {
+                particle_material = new THREE.PointCloudMaterial({
+                    map: create_vertex_texture(point_type.rgb),
+                    transparent: true,
+                    size: 0.2,
+                    alphaTest: 0.15
+                });
+                vertex_materials[selected_class][class_name] = particle_material;
+            }
             
             // A particle has basically zero radius, so we build a bounding box around the particle, which we can 
             // use with the raycaster to better mimic mouseover and mouseout events. For example, a mouseover might
@@ -853,25 +857,32 @@ var cubeMaker = function () {
         _vector.z = (v[0].z + v[1].z) / 2;
         return _vector;
     }
-    
-    var rotate_left = false, rotate_right = false;
+
+    var rotate = false;
+    var Direction = {UP : "up", DOWN : "down", RIGHT : "right", LEFT : "left"};
+    var rotationDirection;
+
     var rotationSpeed = 0.005;
     
     function update_rotation() {
         var x = camera.position.x,
-            y = camera.position.y,
-            z = camera.position.z;
-        
-        if (rotate_left) {
-            camera.position.x = x * Math.cos(rotationSpeed) + z * Math.sin(rotationSpeed);
-            camera.position.z = z * Math.cos(rotationSpeed) - x * Math.sin(rotationSpeed);
-        } else if (rotate_right) {
-            camera.position.x = x * Math.cos(rotationSpeed) - z * Math.sin(rotationSpeed);
-            camera.position.z = z * Math.cos(rotationSpeed) + x * Math.sin(rotationSpeed);
+                y = camera.position.y,
+                z = camera.position.z;
+
+        if (rotate) {
+
+            if (rotationDirection == Direction.LEFT) {
+                controls.rotateLeft(-rotationSpeed);
+            } else if (rotationDirection == Direction.RIGHT) {
+                controls.rotateLeft(rotationSpeed);
+            } else if (rotationDirection == Direction.UP) {
+                controls.rotateUp(-rotationSpeed);
+            } else if (rotationDirection == Direction.DOWN) {
+                controls.rotateUp(rotationSpeed);
+            }
         }
-        
     }
-    
+
     function animate() {
         requestAnimationFrame(animate);
         update_rotation();
@@ -1052,91 +1063,100 @@ var cubeMaker = function () {
         }
         renderer.render(scene, camera);
     }
-    
-    var Keys = {LEFT : '37', RIGHT : '39', ESC : '27'}
+
+    var Keys = {LEFT: '37', UP: '38', RIGHT: '39', DOWN: '40', ESC: '27'}
     var last_key = null;
-    
-    $(document).keydown(function(event) {    
+    $(document).keydown(function (event) {
+
+
         var key = (event.keyCode ? event.keyCode : event.which);
-        if (key == Keys.LEFT){
-            if (rotate_right){
-                rotate_right = false;
-                event.stopPropagation();
-            }
-        } else if (key == Keys.RIGHT) {
-            if (rotate_left) {
-                rotate_left = false;
-                event.stopPropagation();
-            }
-            
-        } else if (key == Keys.ESC) {
-            rotate_right = false;
-            rotate_left = false;
+        if (rotate && (key == Keys.LEFT || key == Keys.RIGHT || key == Keys.UP || key == Keys.DOWN || key == Keys.ESC)) {
+            rotate = false;
+            event.stopPropagation();
         }
         if (last_key && last_key == key) {
             if (key == Keys.LEFT) {
-                rotate_left = true;
+                rotate = true;
+                rotationDirection = Direction.LEFT;
             } else if (key == Keys.RIGHT) {
-                rotate_right = true;
+                rotate = true;
+                rotationDirection = Direction.RIGHT;
+            } else if (key == Keys.UP) {
+                rotate = true;
+                rotationDirection = Direction.UP;
+            } else if (key == Keys.DOWN) {
+                rotate = true;
+                rotationDirection = Direction.DOWN;
             }
-        } else {
-            setTimeout(function(){
-                last_key = null;
-            }, 1000);
         }
         last_key = key;
+        setTimeout(function () {
+            last_key = null;
+        }, 1000);
+
     });
-    
+
+    var mousedown = false;
+    $(document).mousedown(function () {
+        mousedown = true;
+    }).mousemove(function () {
+        if (mousedown) {
+            rotate = false;
+        }
+    }).mouseup(function () {
+        mousedown = false;
+    });
+
     $(document).ready(function() {
-        $("#import-btn").click(function () {
+	$("#import-btn").click(function () {
             var data = $("#import-data").val();
             import_sample(data);
             clear();
             init();
             animate();
-        });
-        
-        $(document).on("click", "#export-json-btn", function () {
-            export_json();
-        });
-        
-        $(document).on("click", "#export-png-btn", function () {
-            export_png();
-        });
-        
-        $(document).on("click", "#export-link-btn", function () {
+	});
+	
+	$(document).on("click", "#export-json-btn", function () {
+            export_as_json();
+	});
+	
+	$(document).on("click", "#export-png-btn", function () {
+            export_as_png();
+	});
+	
+	$(document).on("click", "#export-link-btn", function () {
             $("#link").val(generate_link());
-        });
-        
-        $("#link").click(function() {
+	});
+	
+	$("#link").click(function() {
             var $this = $(this);
             $this.focus();
             $this.select();
             
             // Work around Chrome's little problem
             $this.mouseup(function() {
-                // Prevent further mouseup intervention
-                $this.unbind("mouseup");
-                return false;
+		// Prevent further mouseup intervention
+		$this.unbind("mouseup");
+		return false;
             });
-        });
-        
-        $(document).on("change-category", function(event, newValue) {
+	});
+	
+	$(document).on("change-category", function(event, newValue) {
             if (newValue != selected_class) {
-                switch_category(newValue);
-                clear();
-                init();
-                animate();
+		switch_category(newValue);
+		clear();
+		init();
+		animate();
             }
-        });
-        
-        $(document).on("source-change", function() {
-            if (sample.source){
-                $("#export-link-btn").removeAttr("disabled");
+	});
+	
+	$(document).on("source-change", function() {
+            if (sample.source) {
+		$("#export-link-btn").removeAttr("disabled");
             } else {
-                $("#export-link-btn").attr("disabled", "disabled");
+		$("#export-link-btn").attr("disabled", "disabled");
             }
-        });
+	});
     });
 }
 
@@ -1168,6 +1188,6 @@ var check_WebGL = function () {
 
 if (check_WebGL()) cubeMaker();
 
-</script>
+        </script>
     </body>
 </html>
