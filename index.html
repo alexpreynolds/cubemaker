@@ -203,7 +203,7 @@ var cubemaker = function () {
                 "y" : "PC2",
                 "z" : "PC3"
             },
-            "default_class" : "Lineage",
+            "selected_class" : "Lineage",
             "show_axes" : false,
             "classes" : {
                 "Lineage" :
@@ -434,14 +434,14 @@ var cubemaker = function () {
     var dp_line_geos = new Array(6);
     var dp_lines = new Array(6);
     var dp_line_names = new Array(6);
-    var selected_class = sample.metadata.default_class;
+    var selected_class = sample.metadata.selected_class;
         
     var load = function() {
         var source = get_url_parameter("source");
         if (source) {
             return import_json(source);
         }
-        return $.Deferred().resolve().promise();
+        return $.Deferred().resolve().mise();
     };
     
     load()
