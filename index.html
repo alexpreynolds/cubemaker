@@ -10,6 +10,9 @@
     </head>
     <body>
         <div class="notification" id="webgl_missing_warning"><div class="warning webgl"><span class="typcn typcn-info-outline" style="font-size: xx-large; position: relative; top: 3px;"></span> Your browser does not appear to support <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>. The <a href="https://get.webgl.org/">WebGL test site</a> may offer help with configuration.</div></div>
+        <div id="settings-panel">
+	        <div onclick="show_settings_panel();" class="controller"><span class="typcn typcn-cog" style="font-size: x-large;"></span></div>
+        </div>
         <div id="container"></div>
         <div id="import-json-dialog" class="modal-box">
             <header> <a href="#" class="js-modal-close close">&#x00D7;</a>
@@ -66,10 +69,26 @@
         <script type="text/javascript" src="assets/js/jquery.minicolors.min.js"></script>
         <script type="text/javascript" src="assets/js/ui.js"></script>
         <script type="text/javascript">
+
+var show_settings_panel = function() {
+	var e = document.getElementById("settings-panel");
+	if (e.classList) {
+		e.classList.toggle("show");
+	}
+    else {
+	    var classes = e.className;
+	    if (classes.indexOf("show") >= 0) {
+		    e.className = classes.replace("show", "");
+	    }
+	    else {
+		    e.className = classes + " show";
+	    }
+    }
+};
     
 var cubemaker = function () {
     
-    var count_properties = function(obj) {
+    var count_properties = function (obj) {
         var count = 0;
         for (var prop in obj) {
             if (obj.hasOwnProperty(prop))
@@ -78,7 +97,7 @@ var cubemaker = function () {
         return count;
     };
     
-    var rgb_array_to_str = function(arr) {
+    var rgb_array_to_str = function (arr) {
         return "rgb(" + arr.join(",") + ")";
     };
     
@@ -441,7 +460,7 @@ var cubemaker = function () {
         if (source) {
             return import_json(source);
         }
-        return $.Deferred().resolve().mise();
+        return $.Deferred().resolve().promise();
     };
     
     load()
