@@ -42,6 +42,7 @@
                 <label for="import-buttons">Import</label>
                 <div class="btn-group" id="import-buttons">
                     <button value="json" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="import-json-dialog" name="json">json</button>
+                    <button id="import-mtx-btn" value="link" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="import-mtx-dialog" name="mtx" disabled="disabled">matrix</button>
                 </div>
             </div>
             <div id="export-footer">
@@ -66,7 +67,7 @@
         <script type="text/javascript" src="assets/js/ui.js"></script>
         <script type="text/javascript">
     
-var cubeMaker = function () {
+var cubemaker = function () {
     
     var count_properties = function(obj) {
         var count = 0;
@@ -184,7 +185,7 @@ var cubeMaker = function () {
     };
     
     var import_json = function(uri){
-        var d = $.Deferred()
+        var d = $.Deferred();
         return $.get(uri, function(data) {
             import_sample(data, uri);
             d.resolve();
@@ -203,6 +204,7 @@ var cubeMaker = function () {
                 "z" : "PC3"
             },
             "default_class" : "Lineage",
+            "show_axes" : false,
             "classes" : {
                 "Lineage" :
                 [
@@ -607,23 +609,23 @@ var cubeMaker = function () {
             var class_name = point_type.name;
             var class_rgb = rgb_array_to_str(point_type.rgb);
             
-            var particles = new THREE.Geometry();                    
-            
+            var particles = new THREE.Geometry();
+
             if (!vertex_materials[selected_class]) {
                 vertex_materials[selected_class] = {};
             }
-	    
-	    var particle_material = vertex_materials[selected_class][class_name];
 
-	    if (!particle_material) {
-		particle_material = new THREE.PointCloudMaterial({
+            var particle_material = vertex_materials[selected_class][class_name];
+
+            if (!particle_material) {
+                particle_material = new THREE.PointCloudMaterial({
                     map: create_vertex_texture(point_type.rgb),
-                    transparent: true, 
-                    size: 0.2, 
+                    transparent: true,
+                    size: 0.2,
                     alphaTest: 0.15
-		});
-		vertex_materials[selected_class][class_name] = particle_material;
-	    }
+                });
+                vertex_materials[selected_class][class_name] = particle_material;
+            }
             
             // A particle has basically zero radius, so we build a bounding box around the particle, which we can 
             // use with the raycaster to better mimic mouseover and mouseout events. For example, a mouseover might
@@ -672,8 +674,8 @@ var cubeMaker = function () {
         renderer.sortObjects = false;
         container.appendChild(renderer.domElement);
         
-        document.addEventListener('mousemove', onDocumentMouseMove, false);
-        window.addEventListener('resize', onWindowResize, false);
+        document.addEventListener('mousemove', on_document_mouse_move, false);
+        window.addEventListener('resize', on_window_resize, false);
         
         controls = new THREE.OrbitControls(camera, renderer.domElement);
         controls.minDistance = 1;
@@ -833,25 +835,25 @@ var cubeMaker = function () {
     function update_position() {
         var position = get_xyz_url_parameter("camPosition");
         var rotation = get_xyz_url_parameter("camRotation");
-        var controlCenter = get_xyz_url_parameter("center");
-        var xdeg = get_url_parameter("xdeg");
-        var ydeg = get_url_parameter("ydeg");
-        if (position || rotation || controlCenter) {
+        var control_center = get_xyz_url_parameter("center");
+        var x_deg = get_url_parameter("xdeg");
+        var y_deg = get_url_parameter("ydeg");
+        if (position || rotation || control_center) {
             if (position) {
                 camera.position.set(position.x, position.y, position.z);
             }
             if (rotation) {
                 camera.rotation.set(rotation.x, rotation.y, rotation.z);
             }
-            if (controlCenter) {
-                controls.center.set(controlCenter.x, controlCenter.y, controlCenter.z);
+            if (control_center) {
+                controls.center.set(control_center.x, control_center.y, control_center.z);
             }
         } else {
-            if (xdeg) {
-                x_rad = Math.PI / 180.0 * xdeg;
+            if (x_deg) {
+                x_rad = Math.PI / 180.0 * x_deg;
             }
-            if (ydeg) {
-                y_rad = Math.PI / 180.0 * ydeg;
+            if (y_deg) {
+                y_rad = Math.PI / 180.0 * y_deg;
                 
             }
             controls.rotateLeft(x_rad);
@@ -863,21 +865,23 @@ var cubeMaker = function () {
         render();
     }
     
-    function onWindowResize() {
+    function on_window_resize() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
         update_title();
         update_key();
+        render();
     }
     
-    function onDocumentMouseMove(event) {
+    function on_document_mouse_move(event) {
         event.preventDefault();
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.y = - (event.clientY / window.innerHeight) * 2 + 1;
         if (!INTERSECTED) {
             $(".particle_label").remove();
         }
+        render();
     }
     
     function midpoint_vertices(v) {
@@ -889,33 +893,56 @@ var cubeMaker = function () {
     }
 
     var rotate = false;
-    var Direction = {UP : "up", DOWN : "down", RIGHT : "right", LEFT : "left"};
-    var rotationDirection;
+    var Directions = {UP : "up", DOWN : "down", RIGHT : "right", LEFT : "left"};
+    var rotation_direction;
+
+    var start_rotation = function(direction){
+        rotate = true;
+        start_animation();
+        rotation_direction = direction;
+    };
+
+    var stop_rotation = function(){
+        rotate = false;
+        stop_animation();
+    };
 
     var rotationSpeed = 0.005;
-    function updateRotation() {
-
+    
+    function update_rotation() {
         var x = camera.position.x,
                 y = camera.position.y,
                 z = camera.position.z;
 
         if (rotate) {
 
-            if (rotationDirection == Direction.LEFT) {
+            if (rotation_direction == Directions.LEFT) {
                 controls.rotateLeft(-rotationSpeed);
-            } else if (rotationDirection == Direction.RIGHT) {
+            } else if (rotation_direction == Directions.RIGHT) {
                 controls.rotateLeft(rotationSpeed);
-            } else if (rotationDirection == Direction.UP) {
+            } else if (rotation_direction == Directions.UP) {
                 controls.rotateUp(-rotationSpeed);
-            } else if (rotationDirection == Direction.DOWN) {
+            } else if (rotation_direction == Directions.DOWN) {
                 controls.rotateUp(rotationSpeed);
             }
         }
     }
 
+    var play = false;
+
+    function start_animation() {
+        play = true;
+        animate();
+    }
+
+    function stop_animation() {
+        play = false;
+    }
+
     function animate() {
-        requestAnimationFrame(animate);
-        updateRotation();
+        if (play)
+            requestAnimationFrame(animate);
+        update_rotation();
         controls.update();
         render();
     }
@@ -1173,34 +1200,28 @@ var cubeMaker = function () {
         renderer.render(scene, camera);
     }
 
-    var KeyCodes = {LEFT: '37', UP: '38', RIGHT: '39', DOWN: '40', ESC: '27'}
-    var lastKey = null;
+    var Keys = {LEFT: '37', UP: '38', RIGHT: '39', DOWN: '40', ESC: '27'};
+    var last_key = null;
     $(document).keydown(function (event) {
-
-
         var key = (event.keyCode ? event.keyCode : event.which);
-        if (rotate && (key == KeyCodes.LEFT || key == KeyCodes.RIGHT || key == KeyCodes.UP || key == KeyCodes.DOWN || key == KeyCodes.ESC)) {
-            rotate = false;
+        if (rotate && (key == Keys.LEFT || key == Keys.RIGHT || key == Keys.UP || key == Keys.DOWN || key == Keys.ESC)) {
+            stop_rotation();
             event.stopPropagation();
         }
-        if (lastKey && lastKey == key) {
-            if (key == KeyCodes.LEFT) {
-                rotate = true;
-                rotationDirection = Direction.LEFT;
-            } else if (key == KeyCodes.RIGHT) {
-                rotate = true;
-                rotationDirection = Direction.RIGHT;
-            } else if (key == KeyCodes.UP) {
-                rotate = true;
-                rotationDirection = Direction.UP;
-            } else if (key == KeyCodes.DOWN) {
-                rotate = true;
-                rotationDirection = Direction.DOWN;
+        if (last_key && last_key == key) {
+            if (key == Keys.LEFT) {
+                start_rotation(Directions.LEFT);
+            } else if (key == Keys.RIGHT) {
+                start_rotation(Directions.RIGHT);
+            } else if (key == Keys.UP) {
+                start_rotation(Directions.UP);
+            } else if (key == Keys.DOWN) {
+                start_rotation(Directions.DOWN);
             }
         }
-        lastKey = key;
+        last_key = key;
         setTimeout(function () {
-            lastKey = null;
+            last_key = null;
         }, 1000);
 
     });
@@ -1269,7 +1290,7 @@ var cubeMaker = function () {
     });
 }
 
-var checkWebGL = function () {
+var check_WebGL = function () {
     var canvas = document.createElement("canvas");
     try {
         gl = canvas.getContext("webgl");
@@ -1295,7 +1316,7 @@ var checkWebGL = function () {
     return false;
 }
 
-if (checkWebGL()) cubeMaker();
+if (check_WebGL()) cubemaker();
 
         </script>
     </body>
