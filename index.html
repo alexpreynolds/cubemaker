@@ -420,11 +420,8 @@ var cubemaker = function () {
     var red_cube_line_material = new THREE.LineBasicMaterial({ color: 0xff0000, opacity: 0.25, linewidth: 3 });
     var green_cube_line_material = new THREE.LineBasicMaterial({ color: 0x00ff00, opacity: 0.25, linewidth: 3 });
     var blue_cube_line_material = new THREE.LineBasicMaterial({ color: 0x0000ff, opacity: 0.25, linewidth: 3 });
-    var cube_line_materials = new Array(6);
-    for (var cube_line_materials_idx = 0; cube_line_materials_idx < cube_line_materials.length; cube_line_materials_idx++) {
-        cube_line_materials[cube_line_materials_idx] = new THREE.LineBasicMaterial().clone(opaque_cube_line_material);
-    }
-    var vertex_materials = {};
+    var cube_line_materials;
+    var vertex_materials;
     var bounding_boxes = [];
     var horizontal_fudge = 1.75;
     var x_deg = 70;
@@ -459,7 +456,7 @@ var cubemaker = function () {
         }
     };
     
-    function init() {    
+    function init() {
         mouse = new THREE.Vector2();
         opaque_cube_lines = new Array(6);
         opaque_cube_line_material = new THREE.LineBasicMaterial({ color: 0xbbbbbb, opacity: 0.25, linewidth: 3 });
@@ -470,6 +467,7 @@ var cubemaker = function () {
         for (var cube_line_materials_idx = 0; cube_line_materials_idx < cube_line_materials.length; cube_line_materials_idx++) {
             cube_line_materials[cube_line_materials_idx] = new THREE.LineBasicMaterial().clone(opaque_cube_line_material);
         }
+        vertex_materials = {};
         bounding_boxes = [];
         horizontal_fudge = 1.75;
         x_deg = 70;
