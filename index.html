@@ -1172,6 +1172,7 @@ var cubemaker = function () {
                 var INTERSECTED_matrix_copy = new THREE.Matrix4().copy(INTERSECTED.matrixWorld);
                 INTERSECTED_matrix_copy.setPosition(new THREE.Vector3(INTERSECTED.position.x + scene_right.x, INTERSECTED.position.y + scene_right.y, INTERSECTED.position.z + scene_right.z));
                 var screen_object_edge = new THREE.Vector3();
+                screen_object_edge.setFromMatrixPosition(INTERSECTED_matrix_copy);
                 screen_object_edge.project(camera);
                 screen_object_edge.x = (screen_object_edge.x * widthHalf) + widthHalf;
                 screen_object_edge.y = -(screen_object_edge.y * heightHalf) + heightHalf;
