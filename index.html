@@ -2,6 +2,7 @@
 
 <html lang="en">
     <head>
+	    <meta charset="utf-8"/>
         <link rel="stylesheet" href="assets/css/jquery.minicolors.css" type="text/css" />
         <link rel="stylesheet" href="assets/css/style.css" type="text/css" />
         <link rel="stylesheet" href="assets/fonts/typicons.min.css" type="text/css" />
@@ -10,8 +11,8 @@
     </head>
     <body>
         <div class="notification" id="webgl_missing_warning"><div class="warning webgl"><span class="typcn typcn-info-outline" style="font-size: xx-large; position: relative; top: 3px;"></span> Your browser does not appear to support <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>. The <a href="https://get.webgl.org/">WebGL test site</a> may offer help with configuration.</div></div>
-        <div id="settings-panel">
-	        <div onclick="show_settings_panel();" class="controller"><span class="typcn typcn-cog" style="font-size: x-large;"></span></div>
+        <div id="graph_settings_panel">
+	        <div onclick="show_settings_panel();" class="controller"><span class="typcn typcn-cog" style="font-size: xx-large;"></span></div>
         </div>
         <div id="container"></div>
         <div id="import-json-dialog" class="modal-box">
@@ -71,7 +72,7 @@
         <script type="text/javascript">
 
 var show_settings_panel = function() {
-	var e = document.getElementById("settings-panel");
+	var e = document.getElementById("graph_settings_panel");
 	if (e.classList) {
 		e.classList.toggle("show");
 	}
@@ -203,7 +204,7 @@ var cubemaker = function () {
         $(document).trigger("source-change");
     };
     
-    var import_json = function(uri){
+    var import_json = function(uri) {
         var d = $.Deferred();
         return $.get(uri, function(data) {
             import_sample(data, uri);
@@ -679,6 +680,12 @@ var cubemaker = function () {
         
         update_title();
         update_key();
+        update_settings_panel();
+    }
+    
+    function update_settings_panel() {
+	    $('#graph_settings_panel').offset({ top: 30 });
+	    $('#graph_settings_panel').height( parseInt(window.innerHeight) - 60 );
     }
     
     function update_title() {
@@ -689,9 +696,12 @@ var cubemaker = function () {
         var title_label = document.createElement('div');
         title_label.id = "graph_title";
         title_label.style.position = 'absolute';
-        title_label.style.top = parseInt(Math.floor(0.05 * window.innerHeight)) + 'px';
+        /* title_label.style.top = parseInt(Math.floor(0.05 * window.innerHeight)) + 'px'; */
+        title_label.style.top = '30px';
         title_label.style.left = '0px';
         title_label.style.width = parseInt(window.innerWidth) + 'px';
+        title_label.style.padding = '0px';
+        title_label.style.margin = '0px';
         title_label.innerHTML = '<center><span class="title_label">' + sample.metadata.title + '</span><br><span class="title_sublabel">' + sample.metadata.subtitle + '</span></center>';
         container.appendChild(title_label);
         $(title_label).find(".title_label").editInPlace({
@@ -809,9 +819,12 @@ var cubemaker = function () {
         var graph_key = document.createElement('div');
         graph_key.id = "graph_key";
         graph_key.style.position = 'absolute';
-        graph_key.style.bottom = parseInt(Math.floor(0.05 * window.innerHeight)) + 'px';
+        //graph_key.style.bottom = parseInt(Math.floor(0.05 * window.innerHeight)) + 'px';
+        graph_key.style.bottom = '30px';
         graph_key.style.left = '0px';
-        graph_key.style.width = parseInt(window.innerWidth) + 'px';    
+        graph_key.style.width = parseInt(window.innerWidth) + 'px';
+        graph_key.style.margin = 0;
+        graph_key.style.padding = 0;
         graph_key.style.textAlign = "center";
         $("#import-footer").clone().appendTo(graph_key);
         $("#export-footer").clone().appendTo(graph_key);
@@ -978,9 +991,11 @@ var cubemaker = function () {
             face_to_camera.copy(camera.position);
             face_to_camera.sub(cube.geometry.vertices[face.a]);
             var dp = face.normal.dot(face_to_camera);
+            /*
             if (flag) {
                 console.log(Math.floor(cube_face_idx/2.0), dp, '{', cube.geometry.vertices[face.a].x, cube.geometry.vertices[face.a].y, cube.geometry.vertices[face.a].z, '}');
             }
+            */
             var cube_line_idx = Math.floor(cube_face_idx/2.0);
             if (cube_face_idx % 2 == 0) {
                 dp_line_geos[cube_line_idx] = new THREE.Geometry();
@@ -995,7 +1010,7 @@ var cubemaker = function () {
             }
             if (dp > 0) {
                 if ((!scene.getObjectByName(dp_line_names[cube_line_idx])) && (dp_lines[cube_line_idx] !== undefined)) {
-                    console.log("adding id", dp_line_names[cube_line_idx]);
+                    //console.log("adding id", dp_line_names[cube_line_idx]);
                     //scene.add(dp_lines[cube_line_idx]);
                     var _midpt = midpoint_vertices(dp_lines[cube_line_idx].geometry.vertices);
                     var _geometry = new THREE.BoxGeometry( 0.075, 0.075, 0.075 );
@@ -1016,14 +1031,18 @@ var cubemaker = function () {
                     var _v = new THREE.Vector3();
                     var _projector = new THREE.Projector();
                     _projector.projectVector(_v.setFromMatrixPosition( _mesh.matrixWorld ), camera);
+                    /*
                     if (flag)
                         console.log(cube_line_idx, _v);
+                    */
                     var _percX = (_v.x + 1) / 2;
                     var _percY = (_v.y + 1) / 2;
                     var _left = _percX * _width;
                     var _top = _percY * _height;
+                    /*
                     if (flag)
                         console.log(cube_line_idx, _left, _top);
+                    */
                 }
             }
             else {
@@ -1146,55 +1165,58 @@ var cubemaker = function () {
     });
 
     $(document).ready(function() {
-	$("#import-btn").click(function () {
+	    
+	    update_settings_panel();
+	    
+		$("#import-btn").click(function () {
             var data = $("#import-data").val();
             import_sample(data);
             clear();
             init();
             animate();
-	});
+		});
 	
-	$(document).on("click", "#export-json-btn", function () {
+		$(document).on("click", "#export-json-btn", function () {
             export_as_json();
-	});
+		});
 	
-	$(document).on("click", "#export-png-btn", function () {
+		$(document).on("click", "#export-png-btn", function () {
             export_as_png();
-	});
+		});
 	
-	$(document).on("click", "#export-link-btn", function () {
+		$(document).on("click", "#export-link-btn", function () {
             $("#link").val(generate_link());
-	});
+		});
 	
-	$("#link").click(function() {
+		$("#link").click(function() {
             var $this = $(this);
             $this.focus();
             $this.select();
             
             // Work around Chrome's little problem
             $this.mouseup(function() {
-		// Prevent further mouseup intervention
-		$this.unbind("mouseup");
-		return false;
+				// Prevent further mouseup intervention
+				$this.unbind("mouseup");
+				return false;
             });
-	});
+		});
 	
-	$(document).on("change-category", function(event, newValue) {
+		$(document).on("change-category", function(event, newValue) {
             if (newValue != selected_class) {
-		switch_category(newValue);
-		clear();
-		init();
-		animate();
+				switch_category(newValue);
+				clear();
+				init();
+				animate();
             }
-	});
+		});
 	
-	$(document).on("source-change", function() {
+		$(document).on("source-change", function() {
             if (sample.source) {
-		$("#export-link-btn").removeAttr("disabled");
+				$("#export-link-btn").removeAttr("disabled");
             } else {
-		$("#export-link-btn").attr("disabled", "disabled");
+				$("#export-link-btn").attr("disabled", "disabled");
             }
-	});
+		});
     });
 }
 

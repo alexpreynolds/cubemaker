@@ -11,44 +11,37 @@ body {
     font-family: system, -apple-system, ".SFNSDisplay-Regular", "Helvetica Neue", "Helvetica", sans-serif !important;
 }
 
-#settings-panel {
+#graph_settings_panel {
   	width: 300px;
-  	/* border: 2px solid rgba(33, 33, 33, 0.0933); */
+  	/* border: 1px solid rgba(33, 33, 33, 0.0933); */
   	background-color: rgba(33, 33, 33, 0.0933);
   	position: fixed;
-  	top: 150px;
   	left: -275px;
-  	padding: 5px;
-  	-webkit-transition: all 0.5s ease-in-out;
-  	-moz-transition: all 0.5s ease-in-out;
-  	-o-transition: all 0.5s ease-in-out;
+  	transition: all 0.5s ease-in-out;
+  	z-index: 100;
 }
 
-#settings-panel:hover {
+#graph_settings_panel:hover {
   	/* left: -250px; */
 }
 
-#settings-panel.show {
+#graph_settings_panel.show {
   	left: -5px;
 }
 
-#settings-panel .controller {
+#graph_settings_panel .controller {
   	position: absolute;
-  	right: 5px;
-  	/* top: 5px; */
+  	right: -3px;
+  	top: -7px;
   	vertical-align: bottom;
   	text-decoration: none;
-  	-webkit-transition: all 0.5s ease-in-out;
-  	-moz-transition: all 0.5s ease-in-out;
-  	-o-transition: all 0.5s ease-in-out;
+  	transition: all 0.5s ease-in-out;
   	color: black;
-  	font-weight: bold;
 }
 
-#settings-panel.show .controller {
-  	-webkit-transform: rotate(180deg);
-  	-moz-transform: rotate(180deg);
-  	-o-transform: rotate(180deg);
+#graph_settings_panel.show .controller {
+  	transform: rotate(180deg);
+  	transform-origin: 50% 58%;
 }
 
 .particle_label, .particle_sublabel {
@@ -68,7 +61,6 @@ body {
 
 #graph_title, #graph_key {
     padding: 0px;
-    padding-top: 12px;
     background: rgb(33, 33, 33); /* for IE */
     background: rgba(33, 33, 33, 0.0933);
 }
@@ -96,7 +88,7 @@ body {
 
 .title_label {
     margin-bottom: 0px;
-    padding-top: 13px;
+    padding-top: 20px;
 }
 
 .title_label.editInPlace-active {
@@ -128,7 +120,7 @@ textarea {
 #class_key_content {
     padding-top: 0px;
     margin-top: 0px;
-    padding-bottom: 15px;
+    padding-bottom: 10px;
 }
 
 /*
