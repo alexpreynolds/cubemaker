@@ -13,17 +13,27 @@
         <div class="notification" id="webgl_missing_warning"><div class="warning webgl"><span class="typcn typcn-info-outline" style="font-size: xx-large; position: relative; top: 3px;"></span> Your browser does not appear to support <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>. The <a href="https://get.webgl.org/">WebGL test site</a> may offer help with configuration.</div></div>
         <div id="graph_settings_panel">
 	        <div onclick="show_settings_panel();" id="graph_settings_cog" class="controller">
-    	        <span class="typcn typcn-cog" style="font-size: xx-large;"></span>
+    	        <span class="typcn typcn-cog" style="font-size: 2em; font-weight: 100;"></span>
             </div>
 	        <div id="graph_settings_subpanel" class="settings">
     	        <div id="graph_settings_subpanel_content">
         	        <h3>Settings</h3>
         	        <hr>
-        	        <p>Foo</p>
+        	        <ul>
+            	        <li>A</li>
+            	        <li>B</li>
+            	        <li>C</li>
+        	        </ul>
+        	        <h3>Import/Export</h3>
+        	        <hr>
+        	        <ul>
+            	        <li>D</li>
+            	        <li>E</li>
+        	        </ul>
         	    </div>
 	        </div>
         </div>
-        <div id="container"></div>
+
         <div id="import-json-dialog" class="modal-box">
             <header> <a href="#" class="js-modal-close close">&#x00D7;</a>
                 <h3>Import Cube JSON</h3>
@@ -79,7 +89,9 @@
         <script type="text/javascript" src="assets/js/jquery.minicolors.min.js"></script>
         <script type="text/javascript" src="assets/js/ui.js"></script>
         <script type="text/javascript">
-            
+
+// settings panel
+
 var settings_panel_visible = false;
 
 var show_settings_panel = function() {
@@ -98,10 +110,16 @@ var show_settings_panel = function() {
     }
     settings_panel_visible = !settings_panel_visible;
 };
+
+$("body").on("click", "#container", function() {
+    if (settings_panel_visible)
+        show_settings_panel();
+});
+
+// cube viz
     
-var cubemaker = function () {
-    
-    var count_properties = function (obj) {
+var cubemaker = function() {
+    var count_properties = function(obj) {
         var count = 0;
         for (var prop in obj) {
             if (obj.hasOwnProperty(prop))
@@ -110,15 +128,15 @@ var cubemaker = function () {
         return count;
     };
     
-    var rgb_array_to_str = function (arr) {
+    var rgb_array_to_str = function(arr) {
         return "rgb(" + arr.join(",") + ")";
     };
     
-    var rgb_array_to_hex = function (arr) {
+    var rgb_array_to_hex = function(arr) {
         return "#" + ((1 << 24) + (arr[0] << 16) + (arr[1] << 8) + arr[2]).toString(16).slice(1);
     };
     
-    var hex_to_rgb_array = function (hex) {
+    var hex_to_rgb_array = function(hex) {
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)];
     };
@@ -514,6 +532,7 @@ var cubemaker = function () {
         dp_line_names = new Array(6);
         
         container = document.createElement('div');
+        container.setAttribute('id', 'container');
         document.body.appendChild(container);
         camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 5000);
         scene = new THREE.Scene();
