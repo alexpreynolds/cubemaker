@@ -12,7 +12,16 @@
     <body>
         <div class="notification" id="webgl_missing_warning"><div class="warning webgl"><span class="typcn typcn-info-outline" style="font-size: xx-large; position: relative; top: 3px;"></span> Your browser does not appear to support <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>. The <a href="https://get.webgl.org/">WebGL test site</a> may offer help with configuration.</div></div>
         <div id="graph_settings_panel">
-	        <div onclick="show_settings_panel();" class="controller"><span class="typcn typcn-cog" style="font-size: xx-large;"></span></div>
+	        <div onclick="show_settings_panel();" id="graph_settings_cog" class="controller">
+    	        <span class="typcn typcn-cog" style="font-size: xx-large;"></span>
+            </div>
+	        <div id="graph_settings_subpanel" class="settings">
+    	        <div id="graph_settings_subpanel_content">
+        	        <h3>Settings</h3>
+        	        <hr>
+        	        <p>Foo</p>
+        	    </div>
+	        </div>
         </div>
         <div id="container"></div>
         <div id="import-json-dialog" class="modal-box">
@@ -70,6 +79,8 @@
         <script type="text/javascript" src="assets/js/jquery.minicolors.min.js"></script>
         <script type="text/javascript" src="assets/js/ui.js"></script>
         <script type="text/javascript">
+            
+var settings_panel_visible = false;
 
 var show_settings_panel = function() {
 	var e = document.getElementById("graph_settings_panel");
@@ -85,6 +96,7 @@ var show_settings_panel = function() {
 		    e.className = classes + " show";
 	    }
     }
+    settings_panel_visible = !settings_panel_visible;
 };
     
 var cubemaker = function () {
@@ -684,8 +696,7 @@ var cubemaker = function () {
     }
     
     function update_settings_panel() {
-	    $('#graph_settings_panel').offset({ top: 30 });
-	    $('#graph_settings_panel').height( parseInt(window.innerHeight) - 60 );
+        $('#graph_settings_subpanel').height( parseInt(window.innerHeight) );
     }
     
     function update_title() {
