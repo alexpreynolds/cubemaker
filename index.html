@@ -10,25 +10,24 @@
         <link rel="shortcut icon" href="assets/img/favicon.ico">
     </head>
     <body>
-        <div class="notification" id="webgl_missing_warning"><div class="warning webgl"><span class="typcn typcn-info-outline" style="font-size: xx-large; position: relative; top: 3px;"></span> Your browser does not appear to support <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>. The <a href="https://get.webgl.org/">WebGL test site</a> may offer help with configuration.</div></div>
+        <div class="notification" id="webgl_missing_warning">
+            <div class="warning webgl">
+                <span class="typcn typcn-info-outline" style="font-size: xx-large; position: relative; top: 3px;"></span> Your browser does not appear to support <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>. The <a href="https://get.webgl.org/">WebGL test site</a> may offer help with configuration.
+            </div>
+        </div>
         <div id="graph_settings_panel">
 	        <div onclick="show_settings_panel();" id="graph_settings_cog" class="controller">
     	        <span class="typcn typcn-cog" style="font-size: 2em; font-weight: 100;"></span>
             </div>
 	        <div id="graph_settings_subpanel" class="settings">
     	        <div id="graph_settings_subpanel_content">
-        	        <h3>Settings</h3>
-        	        <hr>
+        	        <h3>Data</h3>
+                    <p id="settings_panel_data"></p>
+                    <h3 style="border-top: 1px dotted black; padding-top: 10px; margin-top: 15px;">Settings</h3>
         	        <ul>
             	        <li>A</li>
             	        <li>B</li>
             	        <li>C</li>
-        	        </ul>
-        	        <h3>Import/Export</h3>
-        	        <hr>
-        	        <ul>
-            	        <li>D</li>
-            	        <li>E</li>
         	        </ul>
         	    </div>
 	        </div>
@@ -43,6 +42,7 @@
             </div>
             <footer><a id="import-btn" href="#" class="btn btn-small js-modal-close">Import</a></footer>
         </div>
+        
         <div id="export-link-dialog" class="modal-box">
             <header> <a href="#" class="js-modal-close close">&#x00D7;</a>
                 <h3>Copy link</h3>
@@ -52,6 +52,7 @@
             </div>
             <footer><a href="#" class="btn btn-small js-modal-close">Close</a></footer>
         </div>
+        
         <div id="sphere_asset" style="display: none;"><svg version="1.1" id="sphere_svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="640px" height="640px" viewBox="0 0 640 640" enable-background="new 0 0 640 640" xml:space="preserve">
             <defs><radialGradient id="sphere_gradient" cx="292.3262" cy="287.4077" r="249.2454" fx="147.7949" fy="274.5532" gradientTransform="matrix(1.0729 0 0 1.0729 -23.3359 -23.3359)" gradientUnits="userSpaceOnUse">
                 <stop id="sphere_gradient_0" offset="0" style="stop-color:#F37D7F"/>
@@ -856,8 +857,8 @@ var cubemaker = function() {
         graph_key.style.margin = 0;
         graph_key.style.padding = 0;
         graph_key.style.textAlign = "center";
-        $("#import-footer").clone().appendTo(graph_key);
-        $("#export-footer").clone().appendTo(graph_key);
+        $("#import-footer").clone().appendTo(document.getElementById('settings_panel_data'));
+        $("#export-footer").clone().appendTo(document.getElementById('settings_panel_data'));
         graph_key.appendChild(content);
         container.appendChild(graph_key);
     }
