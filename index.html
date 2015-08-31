@@ -5,6 +5,7 @@
 	    <meta charset="utf-8"/>
         <link rel="stylesheet" href="assets/css/jquery.minicolors.css" type="text/css" />
         <link rel="stylesheet" href="assets/css/style.css" type="text/css" />
+        <link rel="stylesheet" href="assets/css/bootstrap-switch.min.css" type="text/css" />
         <link rel="stylesheet" href="assets/fonts/typicons.min.css" type="text/css" />
         <title>Cubemaker</title>
         <link rel="shortcut icon" href="assets/img/favicon.ico">
@@ -23,12 +24,8 @@
     	        <div id="graph_settings_subpanel_content">
         	        <h3>Data</h3>
                     <p id="settings_panel_data"></p>
-                    <h3 style="border-top: 1px dotted black; padding-top: 10px; margin-top: 15px;">Settings</h3>
-        	        <ul>
-            	        <li>A</li>
-            	        <li>B</li>
-            	        <li>C</li>
-        	        </ul>
+                    <h3 class="settings_panel_subsequent_group">Settings</h3>
+        	        <p id="settings_panel_parameters"></p>
         	    </div>
 	        </div>
         </div>
@@ -63,14 +60,14 @@
             <circle fill="url(#sphere_gradient)" cx="320" cy="320" r="320"/>
         </svg></div>
         <div class="hidden">
-            <div id="import-footer">
+            <div id="import-bgroup">
                 <label for="import-buttons">Import</label>
                 <div class="btn-group" id="import-buttons">
                     <button value="json" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="import-json-dialog" name="json">json</button>
                     <button id="import-mtx-btn" value="link" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="import-mtx-dialog" name="mtx" disabled="disabled">matrix</button>
                 </div>
             </div>
-            <div id="export-footer">
+            <div id="export-bgroup">
                 <label for="export-buttons">Export</label>
                 <div class="btn-group"  id="export-buttons">
                     <button id="export-json-btn" value="json" class="btn btn-primary btn-xs btn-action" name="json">json</button>
@@ -78,8 +75,15 @@
                     <button id="export-link-btn" value="link" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="export-link-dialog" name="link" disabled="disabled">link</button>
                 </div>
             </div>
+            <div id="axes-bgroup">
+	            <label for="axes-buttons">Axes</label>
+                <div class="btn-group"  id="axes-buttons">
+	                <input type="checkbox" name="axes-checkbox" checked>
+                </div>
+            </div>
         </div>
         <script type="text/javascript" src="assets/js/jquery-2.1.3.min.js"></script>
+        <script type="text/javascript" src="assets/js/bootstrap-switch.min.js"></script>
         <script type="text/javascript" src="assets/js/three.min.js"></script>
         <script type="text/javascript" src="assets/js/three.orbit-controls.js"></script>
         <script type="text/javascript" src="assets/js/gabelerner.rgbcolor.js"></script>
@@ -858,8 +862,6 @@ var cubemaker = function() {
         graph_key.style.margin = 0;
         graph_key.style.padding = 0;
         graph_key.style.textAlign = "center";
-        $("#import-footer").clone().appendTo(document.getElementById('settings_panel_data'));
-        $("#export-footer").clone().appendTo(document.getElementById('settings_panel_data'));
         graph_key.appendChild(content);
         container.appendChild(graph_key);
     }
@@ -1198,8 +1200,20 @@ var cubemaker = function() {
 
     $(document).ready(function() {
 	    
-	    update_settings_panel();
+	    console.log("ready");
 	    
+	    $("#import-bgroup").clone().appendTo(document.getElementById('settings_panel_data'));
+        $("#export-bgroup").clone().appendTo(document.getElementById('settings_panel_data'));
+        $("#axes-bgroup").clone().appendTo(document.getElementById('settings_panel_parameters'));
+       
+        $("[name='axes-checkbox']").bootstrapSwitch();
+        $("[name='axes-checkbox']").bootstrapSwitch('onColor', 'primary');
+        $("[name='axes-checkbox']").bootstrapSwitch('size', 'small');
+        $("[name='axes-checkbox']").bootstrapSwitch('state', sample.metadata.show_axes);
+        $("[name='axes-checkbox']").bootstrapSwitch('disabled', true);
+        
+	    update_settings_panel();
+        
 		$("#import-btn").click(function () {
             var data = $("#import-data").val();
             import_sample(data);
