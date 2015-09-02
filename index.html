@@ -1070,6 +1070,9 @@ var cubemaker = function() {
         function remove_scene_object(name){
             scene.remove(scene.getObjectByName(name));
         }
+
+        remove_scene_objects("x1", "x2", "x3", "x4", "y1", "y2", "y3", "y4", "z1", "z2", "z3", "z4");
+
         if (sample.metadata.show_axes) {
 
             function get_axis_faces_metadata(positive_direction_cube_face_idx, negative_direction_cube_face_idx) {
@@ -1084,8 +1087,6 @@ var cubemaker = function() {
                     scene.add(axis);
                 });
             }
-
-            remove_scene_objects("x1", "x2", "x3", "x4", "y1", "y2", "y3", "y4", "z1", "z2", "z3", "z4");
 
             var faces = {};
             faces.x = get_axis_faces_metadata(1, 3);
@@ -1327,7 +1328,11 @@ var cubemaker = function() {
         $("[name='axes-checkbox']").bootstrapSwitch('onColor', 'primary');
         $("[name='axes-checkbox']").bootstrapSwitch('size', 'small');
         $("[name='axes-checkbox']").bootstrapSwitch('state', sample.metadata.show_axes);
-        $("[name='axes-checkbox']").bootstrapSwitch('disabled', true);
+
+        $("[name='axes-checkbox']").bootstrapSwitch('onSwitchChange', function(event, state) {
+            sample.metadata.show_axes = state;
+            render();
+        });
         
 	    update_settings_panel();
         
