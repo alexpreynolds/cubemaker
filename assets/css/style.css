@@ -11,11 +11,83 @@ body {
     font-family: system, -apple-system, ".SFNSDisplay-Regular", "Helvetica Neue", "Helvetica", sans-serif !important;
 }
 
+label {
+    font-size: 0.9em;
+}
+
+#graph_settings_panel {
+  	width: 300px;
+  	/* border: 1px solid rgba(33, 33, 33, 0.0933); */
+  	/* background-color: rgba(33, 33, 33, 0.0933); */
+  	position: fixed;
+  	left: -285px;
+  	transition: all 0.5s ease-in-out;
+  	z-index: 100;  	
+}
+
+#graph_settings_panel:hover {
+  	/* left: -250px; */
+}
+
+#graph_settings_panel.show {
+  	left: -5px;
+}
+
+#graph_settings_panel .controller {
+  	position: absolute;
+  	right: -20px;
+  	top: -1px;
+  	text-decoration: none;
+  	transition: all 0.5s ease-in-out;
+  	color: black;
+}
+
+#graph_settings_panel.show .controller {
+  	right: -10px;    
+  	transform: rotate(360deg);
+  	transform-origin: 50% 58%;
+}
+
+#graph_settings_cog {
+    margin-top: 30px;
+}
+
+#graph_settings_panel .settings {
+    background-color: rgba(230, 230, 230, 1);
+    border-right: 1px solid rgba(187, 187, 187, 0.25);
+    margin-right: 28px;
+    box-shadow: 5px 0px 10px 2px rgba(22, 22, 22, 0.5);
+}
+
+#graph_settings_subpanel_content {
+    padding: 10px 15px 10px 20px;
+}
+
+#graph_settings_subpanel_content h3, p {
+    margin: 0;
+    padding: 0;
+}
+
+#graph_settings_subpanel_content p {
+    font-weight: 400 !important;  
+}  
+
+#graph_settings_subpanel_content h3 {
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+#graph_settings_subpanel_content h3.settings_panel_subsequent_group {
+    border-top: 1px dotted black; 
+    padding-top: 10px; 
+    margin-top: 15px;
+} 
+
 .particle_label, .particle_sublabel {
-    font-family: system, -apple-system, ".SFNSDisplay-Regular", "Helvetica Neue", "Helvetica", sans-serif !important;
+    /* font-family: system, -apple-system, ".SFNSDisplay-Regular", "Helvetica Neue", "Helvetica", sans-serif !important; */
     font-size: 18px;
     font-weight: 900;
-    color: black;
+    color: rgba(0, 0, 0, 1);
     -webkit-text-stroke: 0.25px white;
     text-shadow: 0px 0px 2px white;
     line-height: 0.33em;
@@ -28,7 +100,6 @@ body {
 
 #graph_title, #graph_key {
     padding: 0px;
-    padding-top: 12px;
     background: rgb(33, 33, 33); /* for IE */
     background: rgba(33, 33, 33, 0.0933);
 }
@@ -56,7 +127,7 @@ body {
 
 .title_label {
     margin-bottom: 0px;
-    padding-top: 13px;
+    padding-top: 20px;
 }
 
 .title_label.editInPlace-active {
@@ -88,7 +159,7 @@ textarea {
 #class_key_content {
     padding-top: 0px;
     margin-top: 0px;
-    padding-bottom: 15px;
+    padding-bottom: 10px;
 }
 
 /*
@@ -353,6 +424,13 @@ a.close:hover {
     border-color: #357ebd;
 }
 
+.bootstrap-switch .bootstrap-switch-handle-on.bootstrap-switch-primary,
+.bootstrap-switch .bootstrap-switch-handle-off.bootstrap-switch-primary {
+    color: #fff;
+    background: hsl(225, 100%, 45%) !important;
+    font-weight: 700;
+}
+
 .key_title {
     font-size: 20px;
     font-weight: 500 !important;
@@ -365,16 +443,12 @@ a.close:hover {
 }
 
 
-#export-footer {
-    position: absolute;
-    right: 40px;
-    top: 30px;
+#export-bgroup {
+    margin-bottom: 10px;
 }
 
-#import-footer {
-    left: 20px;
-    position: absolute;
-    top: 30px;
+#import-bgroup {
+    margin-bottom: 10px;
 }
 
 .right {
@@ -434,7 +508,7 @@ a.close:hover {
 .dropdown-menu {
     display: none;
     background-clip: padding-box;
-    background-color: #FFFFFF;
+    background-color: #ffffff;
     border: 1px solid rgba(0, 0, 0, 0.3);
     border-radius: 4px 4px 4px 4px;
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.176);

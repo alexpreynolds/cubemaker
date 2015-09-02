@@ -2,24 +2,45 @@
 
 <html lang="en">
     <head>
+	    <meta charset="utf-8"/>
         <link rel="stylesheet" href="assets/css/jquery.minicolors.css" type="text/css" />
         <link rel="stylesheet" href="assets/css/style.css" type="text/css" />
+        <link rel="stylesheet" href="assets/css/bootstrap-switch.min.css" type="text/css" />
         <link rel="stylesheet" href="assets/fonts/typicons.min.css" type="text/css" />
         <title>Cubemaker</title>
         <link rel="shortcut icon" href="assets/img/favicon.ico">
     </head>
     <body>
-        <div class="notification" id="webgl_missing_warning"><div class="warning webgl"><span class="typcn typcn-info-outline" style="font-size: xx-large; position: relative; top: 3px;"></span> Your browser does not appear to support <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>. The <a href="https://get.webgl.org/">WebGL test site</a> may offer help with configuration.</div></div>
-        <div id="container"></div>
+        <div class="notification" id="webgl_missing_warning">
+            <div class="warning webgl">
+                <span class="typcn typcn-info-outline" style="font-size: xx-large; position: relative; top: 3px;"></span> Your browser does not appear to support <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>. The <a href="https://get.webgl.org/">WebGL test site</a> may offer help with configuration.
+            </div>
+        </div>
+        <div id="graph_settings_panel">
+	        <div onclick="show_settings_panel();" id="graph_settings_cog" class="controller">
+    	        <span class="typcn typcn-cog" style="font-size: 2em; font-weight: 100;"></span>
+            </div>
+	        <div id="graph_settings_subpanel" class="settings">
+    	        <div id="graph_settings_subpanel_content">
+        	        <h3>Data</h3>
+                    <p id="settings_panel_data"></p>
+                    <h3 class="settings_panel_subsequent_group">Settings</h3>
+        	        <p id="settings_panel_parameters"></p>
+        	    </div>
+	        </div>
+        </div>
+
         <div id="import-json-dialog" class="modal-box">
             <header> <a href="#" class="js-modal-close close">&#x00D7;</a>
-                <h3>Import Cube JSON</h3>
+                <h3>Cubemaker - Import JSON</h3>
             </header>
             <div class="modal-body">
+                <p style="margin-bottom: 10px;">Paste JSON-formatted Cubemaker data object:</p>
                 <textarea id="import-data" style="width:100%" rows="10"></textarea>
             </div>
             <footer><a id="import-btn" href="#" class="btn btn-small js-modal-close">Import</a></footer>
         </div>
+        
         <div id="export-link-dialog" class="modal-box">
             <header> <a href="#" class="js-modal-close close">&#x00D7;</a>
                 <h3>Copy link</h3>
@@ -29,6 +50,7 @@
             </div>
             <footer><a href="#" class="btn btn-small js-modal-close">Close</a></footer>
         </div>
+        
         <div id="sphere_asset" style="display: none;"><svg version="1.1" id="sphere_svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="640px" height="640px" viewBox="0 0 640 640" enable-background="new 0 0 640 640" xml:space="preserve">
             <defs><radialGradient id="sphere_gradient" cx="292.3262" cy="287.4077" r="249.2454" fx="147.7949" fy="274.5532" gradientTransform="matrix(1.0729 0 0 1.0729 -23.3359 -23.3359)" gradientUnits="userSpaceOnUse">
                 <stop id="sphere_gradient_0" offset="0" style="stop-color:#F37D7F"/>
@@ -38,14 +60,14 @@
             <circle fill="url(#sphere_gradient)" cx="320" cy="320" r="320"/>
         </svg></div>
         <div class="hidden">
-            <div id="import-footer">
+            <div id="import-bgroup">
                 <label for="import-buttons">Import</label>
                 <div class="btn-group" id="import-buttons">
                     <button value="json" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="import-json-dialog" name="json">json</button>
                     <button id="import-mtx-btn" value="link" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="import-mtx-dialog" name="mtx" disabled="disabled">matrix</button>
                 </div>
             </div>
-            <div id="export-footer">
+            <div id="export-bgroup">
                 <label for="export-buttons">Export</label>
                 <div class="btn-group"  id="export-buttons">
                     <button id="export-json-btn" value="json" class="btn btn-primary btn-xs btn-action" name="json">json</button>
@@ -53,8 +75,15 @@
                     <button id="export-link-btn" value="link" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="export-link-dialog" name="link" disabled="disabled">link</button>
                 </div>
             </div>
+            <div id="axes-bgroup">
+	            <label for="axes-buttons">Axes</label>
+                <div class="btn-group"  id="axes-buttons">
+	                <input type="checkbox" name="axes-checkbox" checked>
+                </div>
+            </div>
         </div>
         <script type="text/javascript" src="assets/js/jquery-2.1.3.min.js"></script>
+        <script type="text/javascript" src="assets/js/bootstrap-switch.min.js"></script>
         <script type="text/javascript" src="assets/js/three.min.js"></script>
         <script type="text/javascript" src="assets/js/three.orbit-controls.js"></script>
         <script type="text/javascript" src="assets/js/gabelerner.rgbcolor.js"></script>
@@ -66,9 +95,36 @@
         <script type="text/javascript" src="assets/js/jquery.minicolors.min.js"></script>
         <script type="text/javascript" src="assets/js/ui.js"></script>
         <script type="text/javascript">
+
+// settings panel
+
+var settings_panel_visible = false;
+
+var show_settings_panel = function() {
+	var e = document.getElementById("graph_settings_panel");
+	if (e.classList) {
+		e.classList.toggle("show");
+	}
+    else {
+	    var classes = e.className;
+	    if (classes.indexOf("show") >= 0) {
+		    e.className = classes.replace("show", "");
+	    }
+	    else {
+		    e.className = classes + " show";
+	    }
+    }
+    settings_panel_visible = !settings_panel_visible;
+};
+
+$("body").on("click", "#container", function() {
+    if (settings_panel_visible)
+        show_settings_panel();
+});
+
+// cube viz
     
-var cubemaker = function () {
-    
+var cubemaker = function() {
     var count_properties = function(obj) {
         var count = 0;
         for (var prop in obj) {
@@ -82,11 +138,11 @@ var cubemaker = function () {
         return "rgb(" + arr.join(",") + ")";
     };
     
-    var rgb_array_to_hex = function (arr) {
+    var rgb_array_to_hex = function(arr) {
         return "#" + ((1 << 24) + (arr[0] << 16) + (arr[1] << 8) + arr[2]).toString(16).slice(1);
     };
     
-    var hex_to_rgb_array = function (hex) {
+    var hex_to_rgb_array = function(hex) {
         var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
         return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)];
     };
@@ -184,7 +240,7 @@ var cubemaker = function () {
         $(document).trigger("source-change");
     };
     
-    var import_json = function(uri){
+    var import_json = function(uri) {
         var d = $.Deferred();
         return $.get(uri, function(data) {
             import_sample(data, uri);
@@ -203,7 +259,7 @@ var cubemaker = function () {
                 "y" : "PC2",
                 "z" : "PC3"
             },
-            "default_class" : "Lineage",
+            "selected_class" : "Lineage",
             "show_axes" : true,
             "classes" : {
                 "Lineage" :
@@ -421,11 +477,8 @@ var cubemaker = function () {
     var red_cube_line_material = new THREE.LineBasicMaterial({ color: 0xff0000, opacity: 0.25, linewidth: 3 });
     var green_cube_line_material = new THREE.LineBasicMaterial({ color: 0x00ff00, opacity: 0.25, linewidth: 3 });
     var blue_cube_line_material = new THREE.LineBasicMaterial({ color: 0x0000ff, opacity: 0.25, linewidth: 3 });
-    var cube_line_materials = new Array(6);
-    for (var cube_line_materials_idx = 0; cube_line_materials_idx < cube_line_materials.length; cube_line_materials_idx++) {
-        cube_line_materials[cube_line_materials_idx] = new THREE.LineBasicMaterial().clone(opaque_cube_line_material);
-    }
-    var vertex_materials = {};
+    var cube_line_materials;
+    var vertex_materials;
     var bounding_boxes = [];
     var horizontal_fudge = 1.75;
     var x_deg = 70;
@@ -438,7 +491,7 @@ var cubemaker = function () {
     var dp_line_geos = new Array(6);
     var dp_lines = new Array(6);
     var dp_line_names = new Array(6);
-    var selected_class = sample.metadata.default_class;
+    var selected_class = sample.metadata.selected_class;
         
     var load = function() {
         var source = get_url_parameter("source");
@@ -460,7 +513,7 @@ var cubemaker = function () {
         }
     };
     
-    function init() {
+    function init() {    
         mouse = new THREE.Vector2();
         opaque_cube_lines = new Array(6);
         opaque_cube_line_material = new THREE.LineBasicMaterial({ color: 0xbbbbbb, opacity: 0.25, linewidth: 3 });
@@ -471,6 +524,7 @@ var cubemaker = function () {
         for (var cube_line_materials_idx = 0; cube_line_materials_idx < cube_line_materials.length; cube_line_materials_idx++) {
             cube_line_materials[cube_line_materials_idx] = new THREE.LineBasicMaterial().clone(opaque_cube_line_material);
         }
+        vertex_materials = {};
         bounding_boxes = [];
         horizontal_fudge = 1.75;
         x_deg = 70;
@@ -485,6 +539,7 @@ var cubemaker = function () {
         dp_line_names = new Array(6);
         
         container = document.createElement('div');
+        container.setAttribute('id', 'container');
         document.body.appendChild(container);
         camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 5000);
         scene = new THREE.Scene();
@@ -695,6 +750,11 @@ var cubemaker = function () {
         
         update_title();
         update_key();
+        update_settings_panel();
+    }
+    
+    function update_settings_panel() {
+        $('#graph_settings_subpanel').height( parseInt(window.innerHeight) );
     }
     
     function update_title() {
@@ -705,9 +765,12 @@ var cubemaker = function () {
         var title_label = document.createElement('div');
         title_label.id = "graph_title";
         title_label.style.position = 'absolute';
-        title_label.style.top = parseInt(Math.floor(0.05 * window.innerHeight)) + 'px';
+        /* title_label.style.top = parseInt(Math.floor(0.05 * window.innerHeight)) + 'px'; */
+        title_label.style.top = '30px';
         title_label.style.left = '0px';
         title_label.style.width = parseInt(window.innerWidth) + 'px';
+        title_label.style.padding = '0px';
+        title_label.style.margin = '0px';
         title_label.innerHTML = '<center><span class="title_label">' + sample.metadata.title + '</span><br><span class="title_sublabel">' + sample.metadata.subtitle + '</span></center>';
         container.appendChild(title_label);
         $(title_label).find(".title_label").editInPlace({
@@ -825,12 +888,13 @@ var cubemaker = function () {
         var graph_key = document.createElement('div');
         graph_key.id = "graph_key";
         graph_key.style.position = 'absolute';
-        graph_key.style.bottom = parseInt(Math.floor(0.05 * window.innerHeight)) + 'px';
+        //graph_key.style.bottom = parseInt(Math.floor(0.05 * window.innerHeight)) + 'px';
+        graph_key.style.bottom = '30px';
         graph_key.style.left = '0px';
-        graph_key.style.width = parseInt(window.innerWidth) + 'px';    
+        graph_key.style.width = parseInt(window.innerWidth) + 'px';
+        graph_key.style.margin = 0;
+        graph_key.style.padding = 0;
         graph_key.style.textAlign = "center";
-        $("#import-footer").clone().appendTo(graph_key);
-        $("#export-footer").clone().appendTo(graph_key);
         graph_key.appendChild(content);
         container.appendChild(graph_key);
     }
@@ -1076,9 +1140,11 @@ var cubemaker = function () {
 
             var face = cube.geometry.faces[cube_face_idx];
             var face_visible = determine_if_face_visible(cube_face_idx);
+            /*
             if (flag) {
                 console.log(Math.floor(cube_face_idx/2.0), face_visible, '{', cube.geometry.vertices[face.a].x, cube.geometry.vertices[face.a].y, cube.geometry.vertices[face.a].z, '}');
             }
+            */
             var cube_line_idx = Math.floor(cube_face_idx/2.0);
             if (cube_face_idx % 2 == 0) {
                 dp_line_geos[cube_line_idx] = new THREE.Geometry();
@@ -1088,7 +1154,7 @@ var cubemaker = function () {
                 dp_line_geos[cube_line_idx].vertices.push(new THREE.Vector3(1.1*cube.geometry.vertices[face.b].x, 1.1*cube.geometry.vertices[face.b].y, 1.1*cube.geometry.vertices[face.b].z));
                 var cube_line = new THREE.Line(dp_line_geos[cube_line_idx], (cube_face_idx % 3 == 0) ? red_cube_line_material : (cube_face_idx % 3 == 1) ? green_cube_line_material : blue_cube_line_material);
                 cube_line.name = "cube_line_idx" + cube_line_idx;
-               // dp_lines[cube_line_idx] = cube_line;
+                // dp_lines[cube_line_idx] = cube_line;
                 dp_line_names[cube_line_idx] = cube_line.name;
             }
             if (face_visible) {
@@ -1098,9 +1164,9 @@ var cubemaker = function () {
                     scene.add(dp_lines[cube_line_idx]);
                     var _midpt = midpoint_vertices(dp_lines[cube_line_idx].geometry.vertices);
                     var _geometry = new THREE.BoxGeometry( 0.075, 0.075, 0.075 );
-                    var _material = new THREE.MeshBasicMaterial( { 
-                        color : dp_lines[cube_line_idx].material.color, 
-                        opacity: 0.5, 
+                    var _material = new THREE.MeshBasicMaterial( {
+                        color : dp_lines[cube_line_idx].material.color,
+                        opacity: 0.5,
                         transparent: true,
                         alphaTest: 0.5
                     });
@@ -1115,14 +1181,18 @@ var cubemaker = function () {
                     var _v = new THREE.Vector3();
                     _v.setFromMatrixPosition( _mesh.matrixWorld);
                     _v = _v.project(camera);
+                    /*
                     if (flag)
                         console.log(cube_line_idx, _v);
+                    */
                     var _percX = (_v.x + 1) / 2;
                     var _percY = (_v.y + 1) / 2;
                     var _left = _percX * _width;
                     var _top = _percY * _height;
+                    /*
                     if (flag)
                         console.log(cube_line_idx, _left, _top);
+                    */
                 }
             }
             else {
@@ -1133,29 +1203,29 @@ var cubemaker = function () {
                 }
             }
             /*
-              if (dp > 0) {
-              cube_materials[ cube_face_idx ] = new THREE.MeshBasicMaterial({color:0xff0000, transparent:true, opacity:0.1, side:THREE.FrontSide});
-              }
-              else {
-              cube_materials[ cube_face_idx ] = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:1, side:THREE.BackSide});
-              }
-            */
+             if (dp > 0) {
+             cube_materials[ cube_face_idx ] = new THREE.MeshBasicMaterial({color:0xff0000, transparent:true, opacity:0.1, side:THREE.FrontSide});
+             }
+             else {
+             cube_materials[ cube_face_idx ] = new THREE.MeshBasicMaterial({color:0x0000ff, transparent:true, opacity:1, side:THREE.BackSide});
+             }
+             */
         }
         flag = false;
-        
+
         // Find intersections with mouse pointer screen position and world objects
-        
+
         var mouse_vector = new THREE.Vector3(mouse.x, mouse.y, 1).unproject(camera);
         raycaster.set(camera.position, mouse_vector.sub(camera.position).normalize());
         // cf. http://stackoverflow.com/a/27796523/19410
         var scene_right = new THREE.Vector3().crossVectors(raycaster.ray.origin, camera.up).setLength(0.0375);
         var bounding_box_intersections = raycaster.intersectObjects(bounding_boxes);
-        if (bounding_box_intersections.length > 0) { 
+        if (bounding_box_intersections.length > 0) {
             if (INTERSECTED != bounding_box_intersections[0].object) {
                 INTERSECTED = bounding_box_intersections[0].object;
                 $(".particle_label").remove();
                 id_label = null;
-                
+
                 var width = window.innerWidth, height = window.innerHeight;
                 var widthHalf = width / 2, heightHalf = height / 2;
                 var screen_object_center = new THREE.Vector3();
@@ -1163,12 +1233,12 @@ var cubemaker = function () {
                 screen_object_center.project(camera);
                 screen_object_center.x = (screen_object_center.x * widthHalf) + widthHalf;
                 screen_object_center.y = -(screen_object_center.y * heightHalf) + heightHalf;
-                
+
                 // The screen_object_center instance shows the screen coordinates of the intersected object, while the
                 // z position of the intersected object shows how relatively far away the object is in world coordinates.
                 // We can use these two pieces of information to draw the point ID (or other label) and perhaps scale the 
                 // label font size by world object depth.
-                
+
                 var INTERSECTED_matrix_copy = new THREE.Matrix4().copy(INTERSECTED.matrixWorld);
                 INTERSECTED_matrix_copy.setPosition(new THREE.Vector3(INTERSECTED.position.x + scene_right.x, INTERSECTED.position.y + scene_right.y, INTERSECTED.position.z + scene_right.z));
                 var screen_object_edge = new THREE.Vector3();
@@ -1176,7 +1246,7 @@ var cubemaker = function () {
                 screen_object_edge.project(camera);
                 screen_object_edge.x = (screen_object_edge.x * widthHalf) + widthHalf;
                 screen_object_edge.y = -(screen_object_edge.y * heightHalf) + heightHalf;
-                
+
                 if (!id_label) {
                     id_label = document.createElement('div');
                     id_label.id = INTERSECTED.name;
@@ -1246,55 +1316,70 @@ var cubemaker = function () {
     });
 
     $(document).ready(function() {
-	$("#import-btn").click(function () {
+	    
+	    console.log("ready");
+	    
+	    $("#import-bgroup").clone().appendTo(document.getElementById('settings_panel_data'));
+        $("#export-bgroup").clone().appendTo(document.getElementById('settings_panel_data'));
+        $("#axes-bgroup").clone().appendTo(document.getElementById('settings_panel_parameters'));
+       
+        $("[name='axes-checkbox']").bootstrapSwitch();
+        $("[name='axes-checkbox']").bootstrapSwitch('onColor', 'primary');
+        $("[name='axes-checkbox']").bootstrapSwitch('size', 'small');
+        $("[name='axes-checkbox']").bootstrapSwitch('state', sample.metadata.show_axes);
+        $("[name='axes-checkbox']").bootstrapSwitch('disabled', true);
+        
+	    update_settings_panel();
+        
+		$("#import-btn").click(function () {
             var data = $("#import-data").val();
             import_sample(data);
             clear();
             init();
             animate();
-	});
+		});
 	
-	$(document).on("click", "#export-json-btn", function () {
+		$(document).on("click", "#export-json-btn", function () {
             export_as_json();
-	});
+		});
 	
-	$(document).on("click", "#export-png-btn", function () {
+		$(document).on("click", "#export-png-btn", function () {
             export_as_png();
-	});
+		});
 	
-	$(document).on("click", "#export-link-btn", function () {
+		$(document).on("click", "#export-link-btn", function () {
             $("#link").val(generate_link());
-	});
+		});
 	
-	$("#link").click(function() {
+		$("#link").click(function() {
             var $this = $(this);
             $this.focus();
             $this.select();
             
             // Work around Chrome's little problem
             $this.mouseup(function() {
-		// Prevent further mouseup intervention
-		$this.unbind("mouseup");
-		return false;
+				// Prevent further mouseup intervention
+				$this.unbind("mouseup");
+				return false;
             });
-	});
+		});
 	
-	$(document).on("change-category", function(event, newValue) {
+		$(document).on("change-category", function(event, newValue) {
             if (newValue != selected_class) {
-		switch_category(newValue);
-		clear();
-		init();
-		animate();
+				switch_category(newValue);
+				clear();
+				init();
+				animate();
             }
-	});
+		});
 	
-	$(document).on("source-change", function() {
+		$(document).on("source-change", function() {
             if (sample.source) {
-		$("#export-link-btn").removeAttr("disabled");
+				$("#export-link-btn").removeAttr("disabled");
             } else {
-		$("#export-link-btn").attr("disabled", "disabled");
+				$("#export-link-btn").attr("disabled", "disabled");
             }
-	});
+		});
     });
 }
 
