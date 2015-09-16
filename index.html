@@ -1388,6 +1388,10 @@ var cubemaker = function() {
         $("[name='axes-checkbox']").bootstrapSwitch('size', 'small');
         $("[name='axes-checkbox']").bootstrapSwitch('state', sample.metadata.show_axes);
 
+        $("[name='axes-checkbox']").focus(function(event){
+            $(event.target).blur();
+        });
+
         $("[name='axes-checkbox']").bootstrapSwitch('onSwitchChange', function(event, state) {
             sample.metadata.show_axes = state;
             render();
