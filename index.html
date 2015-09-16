@@ -14,6 +14,7 @@
         <div class="notification" id="webgl_missing_warning">
             <div class="warning webgl">
                 <span class="typcn typcn-info-outline" style="font-size: xx-large; position: relative; top: 3px;"></span> Your browser does not appear to support <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>. The <a href="https://get.webgl.org/">WebGL test site</a> may offer help with configuration.
+                <span class="typcn typcn-info-outline" style="font-size: xx-large; position: relative; top: 3px;"></span> Your browser does not appear to support <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>. The <a href="https://get.webgl.org/">WebGL test site</a> may offer help with configuration.
             </div>
         </div>
         <div id="graph_settings_panel">
@@ -943,6 +944,7 @@ var cubemaker = function() {
         renderer.setSize(window.innerWidth, window.innerHeight);
         update_title();
         update_key();
+        update_settings_panel();
         render();
     }
     
