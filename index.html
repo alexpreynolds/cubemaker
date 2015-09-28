@@ -82,18 +82,19 @@
                 </div>
             </div>
         </div>
-        <script type="text/javascript" src="assets/js/jquery-2.1.3.min.js"></script>
+        <script type="text/javascript" src="assets/js/jquery-2.1.4.min.js"></script>
         <script type="text/javascript" src="assets/js/bootstrap-switch.min.js"></script>
         <script type="text/javascript" src="assets/js/three.min.js"></script>
         <script type="text/javascript" src="assets/js/three.orbit-controls.js"></script>
         <script type="text/javascript" src="assets/js/gabelerner.rgbcolor.js"></script>
         <script type="text/javascript" src="assets/js/gabelerner.stackblur.js"></script>
         <script type="text/javascript" src="assets/js/gabelerner.canvg.js"></script>
-        <script type="text/javascript" src="assets/js/d3-3.5.2.min.js"></script>
+        <script type="text/javascript" src="assets/js/d3-3.5.6.min.js"></script>
         <script type="text/javascript" src="assets/js/dat.gui.min.js"></script>
         <script type="text/javascript" src="assets/js/jquery.editinplace.js"></script>
         <script type="text/javascript" src="assets/js/jquery.minicolors.min.js"></script>
         <script type="text/javascript" src="assets/js/ui.js"></script>
+        <script type="text/javascript" src="assets/js/canvg.js"></script>
         <script type="text/javascript">
 
 // settings panel
@@ -190,6 +191,7 @@ var cubemaker = function() {
         var svg_canvas = document.createElement("canvas");
         canvg(svg_canvas, svg_html);
         var svg_texture = new THREE.Texture(svg_canvas);
+        svg_texture.minFilter = THREE.LinearFilter;
         svg_texture.needsUpdate = true;
         return svg_texture;
     };
@@ -643,7 +645,7 @@ var cubemaker = function() {
             var particle_material = vertex_materials[selected_class][class_name];
 
             if (!particle_material) {
-                particle_material = new THREE.PointCloudMaterial({
+                particle_material = new THREE.PointsMaterial({
                     map: create_vertex_texture(point_type.rgb),
                     transparent: true,
                     size: 0.2,
@@ -688,13 +690,13 @@ var cubemaker = function() {
                                              bounding_box.position.z);
             particles.vertices.push(particle);
             
-            var particle_system = new THREE.PointCloud(particles, particle_material);
+            var particle_system = new THREE.Points(particles, particle_material);
             scene.add(particle_system);
         });
         
         raycaster = new THREE.Raycaster();
         renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
-        renderer.setClearColor(0xffffff, 0);
+        renderer.setClearColor(0xffffff, 1);
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.sortObjects = false;
         container.appendChild(renderer.domElement);
@@ -1064,8 +1066,8 @@ var cubemaker = function() {
                     //scene.updateMatrixWorld();
                     var _width = window.innerWidth, _height = window.innerHeight;
                     var _v = new THREE.Vector3();
-                    var _projector = new THREE.Projector();
-                    _projector.projectVector(_v.setFromMatrixPosition( _mesh.matrixWorld ), camera);
+                    _v.setFromMatrixPosition(_mesh.matrixWorld);
+                    _v.project(camera);
                     /*
                     if (flag)
                         console.log(cube_line_idx, _v);
@@ -1114,8 +1116,8 @@ var cubemaker = function() {
                 var width = window.innerWidth, height = window.innerHeight;
                 var widthHalf = width / 2, heightHalf = height / 2;
                 var screen_object_center = new THREE.Vector3();
-                var projector = new THREE.Projector();
-                projector.projectVector(screen_object_center.setFromMatrixPosition(INTERSECTED.matrixWorld), camera);
+                screen_object_center.setFromMatrixPosition(INTERSECTED.matrixWorld);
+                screen_object_center.project(camera);
                 screen_object_center.x = (screen_object_center.x * widthHalf) + widthHalf;
                 screen_object_center.y = -(screen_object_center.y * heightHalf) + heightHalf;
                 
@@ -1127,7 +1129,8 @@ var cubemaker = function() {
                 var INTERSECTED_matrix_copy = new THREE.Matrix4().copy(INTERSECTED.matrixWorld);
                 INTERSECTED_matrix_copy.setPosition(new THREE.Vector3(INTERSECTED.position.x + scene_right.x, INTERSECTED.position.y + scene_right.y, INTERSECTED.position.z + scene_right.z));
                 var screen_object_edge = new THREE.Vector3();
-                projector.projectVector(screen_object_edge.setFromMatrixPosition(INTERSECTED_matrix_copy), camera);
+                screen_object_edge.setFromMatrixPosition(INTERSECTED_matrix_copy);
+                screen_object_edge.project(camera);
                 screen_object_edge.x = (screen_object_edge.x * widthHalf) + widthHalf;
                 screen_object_edge.y = -(screen_object_edge.y * heightHalf) + heightHalf;
                 
