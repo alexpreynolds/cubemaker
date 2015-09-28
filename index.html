@@ -902,6 +902,7 @@ var cubemaker = function() {
     }
     
     function on_window_resize() {
+	    update_settings_panel();
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
