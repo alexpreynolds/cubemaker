@@ -1118,21 +1118,29 @@ var cubemaker = function() {
                 return line;
             }
 
+            function create_label_texture(txt) {
+                var canvas = document.createElement('canvas');
+                var canvas_size = 1024;
+                canvas.width = canvas_size;
+                canvas.height = canvas_size;
+                var context = canvas.getContext('2d');
+                context.textAlign = 'center';
+                context.textBaseline = "middle";
+                context.font = 'bolder 42px sans-serif';
+                context.fillStyle="#FF0000";
+                context.strokeStyle="#000000";
+                context.fillText(txt, canvas_size/2, canvas_size/2);
+                var texture = new THREE.Texture(canvas);
+                texture.needsUpdate = true;
+                return texture;
+            }
+
             function add_axis_label(name, position) {
 
                 var axis_letter = name[0];
                 var label_text = sample.metadata.axis[axis_letter];
 
-                var canvas = document.createElement('canvas');
-                var size = 250;
-                canvas.width = size;
-                canvas.height = size;
-                var context = canvas.getContext('2d');
-                context.textAlign = 'center';
-                context.font = '12px Arial';
-                context.fillText(label_text, size/2, size/2);
-
-                var label_texture = new THREE.Texture(canvas);
+                var label_texture = create_label_texture(label_text);
                 var label_material = new THREE.SpriteMaterial({ map: label_texture, color: 0xffffff,  transparent: true, useScreenCoordinates: false});
                 label_texture.needsUpdate = true;
                 var label_sprite = new THREE.Sprite(label_material);
