@@ -86,39 +86,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             return svg_texture;
         };
 
-        var generate_link = function () {
-            var result = location.href;
-            if (result.indexOf('?')) {
-                result = result.substr(0, result.indexOf('?'));
-            }
-            result = result + "?source=" + encodeURI(model.source)
-            + "&camPosition=" + xyz_to_str(camera.position)
-            + "&camRotation=" + xyz_to_str(camera.rotation)
-            + "&center=" + xyz_to_str(controls.center);
-            return result;
-        };
-
-        var download_URI = function (uri, name) {
-            var link = document.createElement("a");
-            link.download = name;
-            link.href = uri;
-            link.target = "_blank";
-            var click_event = document.createEvent('MouseEvents');
-            click_event.initMouseEvent('click', true, true, window, 1, 0, 0, 0, 0, false, false, false, false, 0, null);
-            link.dispatchEvent(click_event);
-        };
-
-        var export_as_json = function () {
-            var data = 'data:text/json;charset=utf-8,';
-            data += escape(JSON.stringify(model, null, 2));
-            download_URI(data, "data.json");
-        };
-
-        var export_as_png = function () {
-            var data = renderer.domElement.toDataURL("image/png");
-            download_URI(data, "cube.png");
-        };
-
         var switch_category = function (category) {
             selected_class = category;
         };
@@ -899,18 +866,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 clear();
                 init();
                 animate();
-            });
-
-            $(document).on("click", "#export-json-btn", function () {
-                export_as_json();
-            });
-
-            $(document).on("click", "#export-png-btn", function () {
-                export_as_png();
-            });
-
-            $(document).on("click", "#export-link-btn", function () {
-                $("#link").val(generate_link());
             });
 
             $("#link").click(function () {
