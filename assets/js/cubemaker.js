@@ -1,8 +1,10 @@
-function CubeMaker(rootElementId, model) {
+var CUBE_MAKER = CUBE_MAKER || {};
+
+CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
     var _rootElement = $("#" + rootElementId);
 
-    var camera, scene, raycaster, renderer;
+    var camera, scene, raycaster, renderer, controls;
 
     return {
         init: init,
@@ -957,8 +959,10 @@ function CubeMaker(rootElementId, model) {
 
     function get_scene_state() {
         return {
-
+            position: camera.position,
+            rotation: camera.rotation,
+            center: controls.center
         }
     }
 
-}
+};

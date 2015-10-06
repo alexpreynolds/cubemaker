@@ -1,4 +1,6 @@
-function ExportUtil(cube_maker) {
+var CUBE_MAKER = CUBE_MAKER || {};
+
+CUBE_MAKER.ExportUtil = function (cube_maker) {
 
     return {
         to_png: export_as_png,
