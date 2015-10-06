@@ -1,13 +1,18 @@
-function CubeMaker(rootElementId, sample) {
+function CubeMaker(rootElementId, model) {
 
     var _rootElement = $("#" + rootElementId);
 
+    var camera, scene, raycaster, renderer;
+
     return {
-        init: _init,
-        render: _render
+        init: init,
+        render: render,
+        get_model: get_model,
+        get_snapshot: get_snapshot,
+        get_scene_state: get_scene_state
     };
 
-    function _init() {
+    function init() {
 
         var count_properties = function (obj) {
             var count = 0;
@@ -84,7 +89,7 @@ function CubeMaker(rootElementId, sample) {
             if (result.indexOf('?')) {
                 result = result.substr(0, result.indexOf('?'));
             }
-            result = result + "?source=" + encodeURI(sample.source)
+            result = result + "?source=" + encodeURI(model.source)
             + "&camPosition=" + xyz_to_str(camera.position)
             + "&camRotation=" + xyz_to_str(camera.rotation)
             + "&center=" + xyz_to_str(controls.center);
@@ -103,7 +108,7 @@ function CubeMaker(rootElementId, sample) {
 
         var export_as_json = function () {
             var data = 'data:text/json;charset=utf-8,';
-            data += escape(JSON.stringify(sample, null, 2));
+            data += escape(JSON.stringify(model, null, 2));
             download_URI(data, "data.json");
         };
 
@@ -117,9 +122,9 @@ function CubeMaker(rootElementId, sample) {
         };
 
         var import_sample = function (jsonString, source) {
-            sample = JSON.parse(jsonString);
+            model = JSON.parse(jsonString);
             if (source) {
-                sample.source = encodeURI(source);
+                model.source = encodeURI(source);
             }
             //todo: verify the sample object structure
             $(document).trigger("source-change");
@@ -137,7 +142,6 @@ function CubeMaker(rootElementId, sample) {
 
 
         var container, stats;
-        var camera, scene, raycaster, renderer;
         var mouse = new THREE.Vector2(), INTERSECTED;
         var cube = null;
         var cube_materials = null;
@@ -161,7 +165,7 @@ function CubeMaker(rootElementId, sample) {
         var dp_line_geos = new Array(6);
         var dp_lines = new Array(6);
         var dp_line_names = new Array(6);
-        var selected_class = sample.metadata.selected_class;
+        var selected_class = model.metadata.selected_class;
 
         var load = function () {
             var source = get_url_parameter("source");
@@ -298,9 +302,9 @@ function CubeMaker(rootElementId, sample) {
 
             var offset_x = offset_y = offset_z = -0.5;
 
-            $.each(sample.data, function (point_index, point_data) {
+            $.each(model.data, function (point_index, point_data) {
                 var point_type_index = point_data["type"][selected_class];
-                var point_type = sample.metadata.classes[selected_class][point_type_index];
+                var point_type = model.metadata.classes[selected_class][point_type_index];
 
                 var class_name = point_type.name;
                 var class_rgb = rgb_array_to_str(point_type.rgb);
@@ -332,14 +336,14 @@ function CubeMaker(rootElementId, sample) {
                 var rescaled_point_xyz = rescaled_xyz(point_data.x,
                     point_data.y,
                     point_data.z,
-                    sample.metadata.range.x[0],
-                    sample.metadata.range.x[1],
+                    model.metadata.range.x[0],
+                    model.metadata.range.x[1],
                     offset_x,
-                    sample.metadata.range.y[0],
-                    sample.metadata.range.y[1],
+                    model.metadata.range.y[0],
+                    model.metadata.range.y[1],
                     offset_y,
-                    sample.metadata.range.z[0],
-                    sample.metadata.range.z[1],
+                    model.metadata.range.z[0],
+                    model.metadata.range.z[1],
                     offset_z);
                 var bounding_box = new THREE.Mesh(bounding_box_geometry,
                     new THREE.MeshLambertMaterial({
@@ -396,7 +400,7 @@ function CubeMaker(rootElementId, sample) {
         }
 
         function update_title() {
-            if (!sample.metadata.title)
+            if (!model.metadata.title)
                 return;
 
             $('#graph_title').remove();
@@ -409,24 +413,24 @@ function CubeMaker(rootElementId, sample) {
             title_label.style.width = parseInt(window.innerWidth) + 'px';
             title_label.style.padding = '0px';
             title_label.style.margin = '0px';
-            title_label.innerHTML = '<center><span class="title_label">' + sample.metadata.title + '</span><br><span class="title_sublabel">' + sample.metadata.subtitle + '</span></center>';
+            title_label.innerHTML = '<center><span class="title_label">' + model.metadata.title + '</span><br><span class="title_sublabel">' + model.metadata.subtitle + '</span></center>';
             container.appendChild(title_label);
             $(title_label).find(".title_label").editInPlace({
                 callback: function (unused, value) {
-                    sample.metadata.title = value;
+                    model.metadata.title = value;
                     return value;
                 }
             });
             $(title_label).find(".title_sublabel").editInPlace({
                 callback: function (unused, value) {
-                    sample.metadata.subtitle = value;
+                    model.metadata.subtitle = value;
                     return value;
                 }
             });
         }
 
         function update_key() {
-            if (!sample.metadata.classes)
+            if (!model.metadata.classes)
                 return;
 
             var content = document.createElement('div');
@@ -452,7 +456,7 @@ function CubeMaker(rootElementId, sample) {
 
             $(selected_class_combo).on("show-category-selector", function () {
                 $(selected_class_dropdown).empty();
-                $.each(sample.metadata.classes, function (category) {
+                $.each(model.metadata.classes, function (category) {
                     $(selected_class_dropdown).append('<li><a class="js-modal-close">' + category + '</a></li>');
                 });
                 $("a", selected_class_dropdown).click(function () {
@@ -468,7 +472,7 @@ function CubeMaker(rootElementId, sample) {
 
             content.appendChild(class_title_div);
 
-            var classes = sample.metadata.classes[selected_class];
+            var classes = model.metadata.classes[selected_class];
             $.each(classes, function (class_index, class_value) {
                 class_name = class_value.name;
                 class_color = rgb_array_to_str(class_value.rgb);
@@ -882,7 +886,7 @@ function CubeMaker(rootElementId, sample) {
             $("[name='axes-checkbox']").bootstrapSwitch();
             $("[name='axes-checkbox']").bootstrapSwitch('onColor', 'primary');
             $("[name='axes-checkbox']").bootstrapSwitch('size', 'small');
-            $("[name='axes-checkbox']").bootstrapSwitch('state', sample.metadata.show_axes);
+            $("[name='axes-checkbox']").bootstrapSwitch('state', model.metadata.show_axes);
             $("[name='axes-checkbox']").bootstrapSwitch('disabled', true);
 
             update_settings_panel();
@@ -930,7 +934,7 @@ function CubeMaker(rootElementId, sample) {
             });
 
             $(document).on("source-change", function () {
-                if (sample.source) {
+                if (model.source) {
                     $("#export-link-btn").removeAttr("disabled");
                 } else {
                     $("#export-link-btn").attr("disabled", "disabled");
@@ -939,8 +943,22 @@ function CubeMaker(rootElementId, sample) {
         });
     }
 
-    function _render() {
+    function render() {
 
+    }
+
+    function get_model() {
+        return model;
+    }
+
+    function get_snapshot() {
+        return renderer.domElement.toDataURL("image/png");
+    }
+
+    function get_scene_state() {
+        return {
+
+        }
     }
 
 }
