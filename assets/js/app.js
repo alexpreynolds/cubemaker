@@ -53,7 +53,7 @@ var check_WebGL = function () {
 if (check_WebGL()) {
 
     $.getJSON("assets/js/sample.json", function (sample) {
-        var cube_maker = new CubeMaker("cube-div", sample);
+        var cube_maker = new CubeMaker("cube-container", sample);
         cube_maker.init();
     });
 

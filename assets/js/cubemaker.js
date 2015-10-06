@@ -1,5 +1,6 @@
-function CubeMaker(rootDiv, sample) {
+function CubeMaker(rootElementId, sample) {
 
+    var _rootElement = $("#" + rootElementId);
 
     return {
         init: _init,
@@ -209,7 +210,7 @@ function CubeMaker(rootDiv, sample) {
 
             container = document.createElement('div');
             container.setAttribute('id', 'container');
-            document.body.appendChild(container);
+            _rootElement.append(container);
             camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 5000);
             scene = new THREE.Scene();
 
