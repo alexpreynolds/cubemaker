@@ -6,21 +6,22 @@ $(function () {
     var cube_maker;
     var export_util;
 
-    init();
+    activate();
 
-    function init() {
-        if (check_WebGL()) {
-
-            $.getJSON("assets/js/sample.json", function (sample) {
-
-                // create cube maker component
-                cube_maker = new CubeMaker("cube-container", sample);
-
-                // setup exports
-                export_util = new ExportUtil(cube_maker);
-
-            });
+    function activate() {
+        if (!check_WebGL()) {
+            return
         }
+
+        $.getJSON("assets/js/sample.json", function (sample) {
+
+            // create cube maker component
+            cube_maker = new CubeMaker("cube-container", sample);
+
+            // setup exports
+            export_util = new ExportUtil(cube_maker);
+
+        });
 
         // set settings panel action handlers
         setActionHandlers();
@@ -50,6 +51,7 @@ $(function () {
 
     function check_WebGL() {
         var canvas = document.createElement("canvas");
+        var gl;
         try {
             gl = canvas.getContext("webgl");
         } catch (x) {
