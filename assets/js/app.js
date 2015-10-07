@@ -15,10 +15,8 @@ $(function () {
 
         $.getJSON("assets/js/sample.json", function (sample) {
 
-            // create cube maker component
             cube_maker = new CubeMaker("cube-container", sample);
 
-            // setup exports
             export_util = new ExportUtil(cube_maker);
 
         });

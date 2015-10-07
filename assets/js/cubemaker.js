@@ -359,11 +359,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
         update_title();
         update_key();
-        update_settings_panel();
-    }
-
-    function update_settings_panel() {
-        $('#graph_settings_subpanel').height(parseInt(window.innerHeight));
     }
 
     function update_title() {
@@ -543,7 +538,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     function on_window_resize() {
-        update_settings_panel();
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
         renderer.setSize(window.innerWidth, window.innerHeight);
@@ -854,9 +848,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             axes_checkbox.bootstrapSwitch('size', 'small');
             axes_checkbox.bootstrapSwitch('state', model.metadata.show_axes);
             axes_checkbox.bootstrapSwitch('disabled', true);
-
-            update_settings_panel();
-
 
             $("#link").click(function () {
                 var $this = $(this);
