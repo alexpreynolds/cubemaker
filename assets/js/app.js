@@ -15,7 +15,6 @@ $(function () {
 
                 // create cube maker component
                 cube_maker = new CubeMaker("cube-container", sample);
-                cube_maker.init();
 
                 // setup exports
                 export_util = new ExportUtil(cube_maker);
@@ -40,6 +39,11 @@ $(function () {
 
         $(document).on("click", "#export-link-btn", function () {
             $("#link").val(export_util.to_url());
+        });
+
+        $(document).on("click", "#import-btn", function () {
+            var data = $("#import-data").val();
+            cube_maker.reload(data);
         });
     }
 
