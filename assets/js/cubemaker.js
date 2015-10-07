@@ -2,96 +2,9 @@ var CUBE_MAKER = CUBE_MAKER || {};
 
 CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
+    // ====== internal variables declaration section
+
     var root_element = $("#" + rootElementId);
-
-    var count_properties = function (obj) {
-        var count = 0;
-        for (var prop in obj) {
-            if (obj.hasOwnProperty(prop))
-                ++count;
-        }
-        return count;
-    };
-
-    var rgb_array_to_str = function (arr) {
-        return "rgb(" + arr.join(",") + ")";
-    };
-
-    var rgb_array_to_hex = function (arr) {
-        return "#" + ((1 << 24) + (arr[0] << 16) + (arr[1] << 8) + arr[2]).toString(16).slice(1);
-    };
-
-    var hex_to_rgb_array = function (hex) {
-        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)];
-    };
-
-    var rescaled_xyz = function (x, y, z, min_x, max_x, offset_x, min_y, max_y, offset_y, min_z, max_z, offset_z) {
-        var result = [];
-        result.push(rescale_val(x, min_x, max_x, offset_x));
-        result.push(rescale_val(y, min_y, max_y, offset_y));
-        result.push(rescale_val(z, min_z, max_z, offset_z));
-        return result;
-    };
-
-    var rescale_val = function (val, min_val, max_val, offset) {
-        return offset + (val - min_val) / (max_val - min_val);
-    };
-
-    var get_xyz_url_parameter = function (name) {
-        var value = get_url_parameter(name);
-        if (value) {
-            var coords = value.split(":");
-            return {
-                x: parseFloat(coords[0]),
-                y: parseFloat(coords[1]),
-                z: parseFloat(coords[2])
-            }
-        }
-        return undefined;
-    };
-
-    var get_url_parameter = function (name) {
-        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null
-    };
-
-    var create_vertex_texture = function (rgb) {
-        var class_rgb = rgb_array_to_str(rgb);
-        var class_d3_rgb = d3.rgb(class_rgb);
-        d3.select("#sphere_gradient_0").style("stop-color", class_d3_rgb.brighter().brighter().toString());
-        d3.select("#sphere_gradient_1").style("stop-color", class_d3_rgb.brighter().toString());
-        d3.select("#sphere_gradient_2").style("stop-color", class_d3_rgb.darker().toString());
-        var svg_html = $('#sphere_asset').html();
-        var svg_canvas = document.createElement("canvas");
-        canvg(svg_canvas, svg_html);
-        var svg_texture = new THREE.Texture(svg_canvas);
-        svg_texture.minFilter = THREE.LinearFilter;
-        svg_texture.needsUpdate = true;
-        return svg_texture;
-    };
-
-    var switch_category = function (category) {
-        selected_class = category;
-    };
-
-    var import_sample = function (jsonString, source) {
-        model = JSON.parse(jsonString);
-        if (source) {
-            model.source = encodeURI(source);
-        }
-        //todo: verify the sample object structure
-        $(document).trigger("source-change");
-    };
-
-    var import_json = function (uri) {
-        var d = $.Deferred();
-        return $.get(uri, function (data) {
-            import_sample(data, uri);
-            d.resolve();
-            //todo: add error handler
-        });
-    };
-
     var camera, scene, raycaster, renderer, controls;
     var container, stats;
     var mouse = new THREE.Vector2(), INTERSECTED;
@@ -118,20 +31,128 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     var dp_lines = new Array(6);
     var dp_line_names = new Array(6);
     var selected_class = model.metadata.selected_class;
+    var rotate = false;
+    var Directions = {UP: "up", DOWN: "down", RIGHT: "right", LEFT: "left"};
+    var rotation_direction;
+    var rotationSpeed = 0.005;
+    var mousedown = false;
+    var Keys = {LEFT: '37', UP: '38', RIGHT: '39', DOWN: '40', ESC: '27'};
+    var last_key = null;
+    var play = false;
 
-    var load = function () {
+    // executes on start
+    activate();
+
+    // component's public API
+    return {
+        reload: reload,
+        get_model: get_model,
+        get_snapshot: get_snapshot,
+        get_scene_state: get_scene_state
+    };
+
+    // private functions
+    function count_properties(obj) {
+        var count = 0;
+        for (var prop in obj) {
+            if (obj.hasOwnProperty(prop))
+                ++count;
+        }
+        return count;
+    }
+
+    function rgb_array_to_str(arr) {
+        return "rgb(" + arr.join(",") + ")";
+    }
+
+    function rgb_array_to_hex(arr) {
+        return "#" + ((1 << 24) + (arr[0] << 16) + (arr[1] << 8) + arr[2]).toString(16).slice(1);
+    }
+
+    function hex_to_rgb_array(hex) {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)];
+    }
+
+    function rescaled_xyz(x, y, z, min_x, max_x, offset_x, min_y, max_y, offset_y, min_z, max_z, offset_z) {
+        var result = [];
+        result.push(rescale_val(x, min_x, max_x, offset_x));
+        result.push(rescale_val(y, min_y, max_y, offset_y));
+        result.push(rescale_val(z, min_z, max_z, offset_z));
+        return result;
+    }
+
+    function rescale_val(val, min_val, max_val, offset) {
+        return offset + (val - min_val) / (max_val - min_val);
+    }
+
+    function get_xyz_url_parameter(name) {
+        var value = get_url_parameter(name);
+        if (value) {
+            var coords = value.split(":");
+            return {
+                x: parseFloat(coords[0]),
+                y: parseFloat(coords[1]),
+                z: parseFloat(coords[2])
+            }
+        }
+        return undefined;
+    }
+
+    function get_url_parameter(name) {
+        return decodeURIComponent((new RegExp('[?|&]' + name + '=' + '([^&;]+?)(&|#|;|$)').exec(location.search) || [, ""])[1].replace(/\+/g, '%20')) || null
+    }
+
+    function create_vertex_texture(rgb) {
+        var class_rgb = rgb_array_to_str(rgb);
+        var class_d3_rgb = d3.rgb(class_rgb);
+        d3.select("#sphere_gradient_0").style("stop-color", class_d3_rgb.brighter().brighter().toString());
+        d3.select("#sphere_gradient_1").style("stop-color", class_d3_rgb.brighter().toString());
+        d3.select("#sphere_gradient_2").style("stop-color", class_d3_rgb.darker().toString());
+        var svg_html = $('#sphere_asset').html();
+        var svg_canvas = document.createElement("canvas");
+        canvg(svg_canvas, svg_html);
+        var svg_texture = new THREE.Texture(svg_canvas);
+        svg_texture.minFilter = THREE.LinearFilter;
+        svg_texture.needsUpdate = true;
+        return svg_texture;
+    }
+
+    function switch_category(category) {
+        selected_class = category;
+    }
+
+    function import_sample(jsonString, source) {
+        model = JSON.parse(jsonString);
+        if (source) {
+            model.source = encodeURI(source);
+        }
+        //todo: verify the sample object structure
+        $(document).trigger("source-change");
+    }
+
+    function import_json(uri) {
+        var d = $.Deferred();
+        return $.get(uri, function (data) {
+            import_sample(data, uri);
+            d.resolve();
+            //todo: add error handler
+        });
+    }
+
+    function load() {
         var source = get_url_parameter("source");
         if (source) {
             return import_json(source);
         }
         return $.Deferred().resolve().promise();
-    };
+    }
 
-    var clear = function () {
+    function clear() {
         if (container) {
             container.remove();
         }
-    };
+    }
 
     function init() {
         mouse = new THREE.Vector2();
@@ -549,22 +570,16 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         return _vector;
     }
 
-    var rotate = false;
-    var Directions = {UP: "up", DOWN: "down", RIGHT: "right", LEFT: "left"};
-    var rotation_direction;
-
-    var start_rotation = function (direction) {
+    function start_rotation(direction) {
         rotate = true;
         start_animation();
         rotation_direction = direction;
-    };
+    }
 
-    var stop_rotation = function () {
+    function stop_rotation() {
         rotate = false;
         stop_animation();
-    };
-
-    var rotationSpeed = 0.005;
+    }
 
     function update_rotation() {
         var x = camera.position.x,
@@ -584,8 +599,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             }
         }
     }
-
-    var play = false;
 
     function start_animation() {
         play = true;
@@ -785,108 +798,97 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         renderer.render(scene, camera);
     }
 
-    var Keys = {LEFT: '37', UP: '38', RIGHT: '39', DOWN: '40', ESC: '27'};
-    var last_key = null;
-    $(document).keydown(function (event) {
-        var key = (event.keyCode ? event.keyCode : event.which);
-        if (rotate && (key == Keys.LEFT || key == Keys.RIGHT || key == Keys.UP || key == Keys.DOWN || key == Keys.ESC)) {
-            stop_rotation();
-            event.stopPropagation();
-        }
-        if (last_key && last_key == key) {
-            if (key == Keys.LEFT) {
-                start_rotation(Directions.LEFT);
-            } else if (key == Keys.RIGHT) {
-                start_rotation(Directions.RIGHT);
-            } else if (key == Keys.UP) {
-                start_rotation(Directions.UP);
-            } else if (key == Keys.DOWN) {
-                start_rotation(Directions.DOWN);
-            }
-        }
-        last_key = key;
-        setTimeout(function () {
-            last_key = null;
-        }, 1000);
-    });
-
-    var mousedown = false;
-    $(document).mousedown(function () {
-        mousedown = true;
-    }).mousemove(function () {
-        if (mousedown) {
-            rotate = false;
-        }
-    }).mouseup(function () {
-        mousedown = false;
-    });
-
-    $(document).ready(function () {
-
-        console.log("ready");
-
-        $("#import-bgroup").clone().appendTo(document.getElementById('settings_panel_data'));
-        $("#export-bgroup").clone().appendTo(document.getElementById('settings_panel_data'));
-        $("#axes-bgroup").clone().appendTo(document.getElementById('settings_panel_parameters'));
-
-        var axes_checkbox = $("[name='axes-checkbox']");
-        axes_checkbox.bootstrapSwitch();
-        axes_checkbox.bootstrapSwitch('onColor', 'primary');
-        axes_checkbox.bootstrapSwitch('size', 'small');
-        axes_checkbox.bootstrapSwitch('state', model.metadata.show_axes);
-        axes_checkbox.bootstrapSwitch('disabled', true);
-
-        update_settings_panel();
-
-
-        $("#link").click(function () {
-            var $this = $(this);
-            $this.focus();
-            $this.select();
-
-            // Work around Chrome's little problem
-            $this.mouseup(function () {
-                // Prevent further mouseup intervention
-                $this.unbind("mouseup");
-                return false;
-            });
-        });
-
-        $(document).on("change-category", function (event, newValue) {
-            if (newValue != selected_class) {
-                switch_category(newValue);
-                clear();
-                init();
-                animate();
-            }
-        });
-
-        $(document).on("source-change", function () {
-            if (model.source) {
-                $("#export-link-btn").removeAttr("disabled");
-            } else {
-                $("#export-link-btn").attr("disabled", "disabled");
-            }
-        });
-    });
-
-    activate();
-
-    return {
-        reload: reload,
-        get_model: get_model,
-        get_snapshot: get_snapshot,
-        get_scene_state: get_scene_state
-    };
-
     function activate() {
-
+        setup_action_handlers();
         load().done(function () {
             init();
             animate();
         });
     }
 
+    function setup_action_handlers() {
+        $(document).keydown(function (event) {
+            var key = (event.keyCode ? event.keyCode : event.which);
+            if (rotate && (key == Keys.LEFT || key == Keys.RIGHT || key == Keys.UP || key == Keys.DOWN || key == Keys.ESC)) {
+                stop_rotation();
+                event.stopPropagation();
+            }
+            if (last_key && last_key == key) {
+                if (key == Keys.LEFT) {
+                    start_rotation(Directions.LEFT);
+                } else if (key == Keys.RIGHT) {
+                    start_rotation(Directions.RIGHT);
+                } else if (key == Keys.UP) {
+                    start_rotation(Directions.UP);
+                } else if (key == Keys.DOWN) {
+                    start_rotation(Directions.DOWN);
+                }
+            }
+            last_key = key;
+            setTimeout(function () {
+                last_key = null;
+            }, 1000);
+        });
+
+        $(document).mousedown(function () {
+            mousedown = true;
+        }).mousemove(function () {
+            if (mousedown) {
+                rotate = false;
+            }
+        }).mouseup(function () {
+            mousedown = false;
+        });
+
+        $(document).ready(function () {
+
+            console.log("ready");
+
+            $("#import-bgroup").clone().appendTo(document.getElementById('settings_panel_data'));
+            $("#export-bgroup").clone().appendTo(document.getElementById('settings_panel_data'));
+            $("#axes-bgroup").clone().appendTo(document.getElementById('settings_panel_parameters'));
+
+            var axes_checkbox = $("[name='axes-checkbox']");
+            axes_checkbox.bootstrapSwitch();
+            axes_checkbox.bootstrapSwitch('onColor', 'primary');
+            axes_checkbox.bootstrapSwitch('size', 'small');
+            axes_checkbox.bootstrapSwitch('state', model.metadata.show_axes);
+            axes_checkbox.bootstrapSwitch('disabled', true);
+
+            update_settings_panel();
+
+
+            $("#link").click(function () {
+                var $this = $(this);
+                $this.focus();
+                $this.select();
+
+                // Work around Chrome's little problem
+                $this.mouseup(function () {
+                    // Prevent further mouseup intervention
+                    $this.unbind("mouseup");
+                    return false;
+                });
+            });
+
+            $(document).on("change-category", function (event, newValue) {
+                if (newValue != selected_class) {
+                    switch_category(newValue);
+                    clear();
+                    init();
+                    animate();
+                }
+            });
+
+            $(document).on("source-change", function () {
+                if (model.source) {
+                    $("#export-link-btn").removeAttr("disabled");
+                } else {
+                    $("#export-link-btn").attr("disabled", "disabled");
+                }
+            });
+        });
+    }
 
     function reload(data) {
         import_sample(data);
