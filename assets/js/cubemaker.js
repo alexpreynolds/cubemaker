@@ -2,13 +2,13 @@ var CUBE_MAKER = CUBE_MAKER || {};
 
 CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
-    var _rootElement = $("#" + rootElementId);
+    var root_element = $("#" + rootElementId);
 
     var camera, scene, raycaster, renderer, controls;
 
     return {
         init: init,
-        render: render,
+        reload: reload,
         get_model: get_model,
         get_snapshot: get_snapshot,
         get_scene_state: get_scene_state
@@ -61,10 +61,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 }
             }
             return undefined;
-        };
-
-        var xyz_to_str = function (coords) {
-            return coords.x + ":" + coords.y + ":" + coords.z;
         };
 
         var get_url_parameter = function (name) {
@@ -152,7 +148,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
         var clear = function () {
             if (container) {
-                document.body.removeChild(container);
+                container.remove();
             }
         };
 
@@ -183,7 +179,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
             container = document.createElement('div');
             container.setAttribute('id', 'container');
-            _rootElement.append(container);
+            root_element.append(container);
             camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 5000);
             scene = new THREE.Scene();
 
@@ -900,7 +896,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         });
     }
 
-    function render() {
+    function reload(model) {
 
     }
 
