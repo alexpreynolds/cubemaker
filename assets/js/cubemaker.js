@@ -267,6 +267,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
              */
         }
 
+        var offset_y;
+        var offset_z;
         var offset_x = offset_y = offset_z = -0.5;
 
         $.each(model.data, function (point_index, point_data) {
@@ -436,8 +438,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
         var classes = model.metadata.classes[selected_class];
         $.each(classes, function (class_index, class_value) {
-            class_name = class_value.name;
-            class_color = rgb_array_to_str(class_value.rgb);
+            var class_name = class_value.name;
+            var class_color = rgb_array_to_str(class_value.rgb);
             var class_rect_div = document.createElement('input');
             class_rect_div.id = "class_rect_parent_" + class_name.replace(/\s/g, '');
             class_rect_div.type = "hidden";

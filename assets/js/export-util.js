@@ -50,4 +50,4 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
         var data = cube_maker.get_snapshot();
         download_URI(data, "cube.png");
     }
-}
+};

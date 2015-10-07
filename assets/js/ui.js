@@ -22,9 +22,10 @@ $(function(){
     $(document).on("click", ".js-modal-close, .modal-overlay", closeOverlay);
 
     $(window).resize(function() {
-        $(".modal-box").css({
-            top: ($(window).height() - $(".modal-box").outerHeight()) / 2,
-            left: ($(window).width() - $(".modal-box").outerWidth()) / 2
+        var modal_box = $(".modal-box");
+        modal_box.css({
+            top: ($(window).height() - modal_box.outerHeight()) / 2,
+            left: ($(window).width() - modal_box.outerWidth()) / 2
         });
 
         settings_panel.update();
