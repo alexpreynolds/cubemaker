@@ -670,13 +670,13 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
-        var size = 512;
+        var size = 1024;
         canvas.width = size;
         canvas.height = size;
 
         context.textAlign = (name.indexOf('y') > -1) ?'right' : 'center';
         context.textBaseline = "middle";
-        context.font = 'bolder 24px sans-serif';
+        context.font = 'bolder 48px sans-serif';
 
         context.fillText(label_text, size/2, size/2);
 
@@ -959,6 +959,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     function render_axes() {
+
+
         // render axes
         if (model.metadata.show_axes) {
 
@@ -1009,6 +1011,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                     else                              set_visible_axes(["x1", "y3"]);
                 }
             }
+        } else {
+            // hide all axes
+            set_visible_axes([])
         }
     }
 
