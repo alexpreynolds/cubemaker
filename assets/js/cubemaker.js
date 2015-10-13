@@ -39,6 +39,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     var Keys = {LEFT: '37', UP: '38', RIGHT: '39', DOWN: '40', ESC: '27'};
     var last_key = null;
     var play = false;
+    var axes = {};
+    var axis_length = 1;
 
     // executes on start
     activate();
@@ -206,6 +208,30 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             cube.geometry.faces[idx].materialIndex = idx;
         }
         scene.add(cube);
+
+        // ============== add axes
+        function axis(start, end, name) {
+            if (!start.x){
+                start = {x : start[0], y : start[1], z : start[2]};
+                end = {x : end[0], y : end[1], z : end[2]};
+            }
+            axes[name] = {start : start, end : end};
+        }
+
+        axis([-1, -1, -1], [1, -1, -1], "x1");
+        axis([-1, -1, 1], [1, -1, 1], "x2");
+        axis([-1, 1, -1], [1, 1, -1], "x3");
+        axis([-1, 1, 1], [1, 1, 1], "x4");
+
+        axis([-1, -1, -1], [-1, 1, -1], "y1");
+        axis([-1, -1, 1], [-1, 1, 1], "y2");
+        axis([1, -1, -1], [1, 1, -1], "y3");
+        axis([1, -1, 1], [1, 1, 1], "y4");
+
+        axis([-1, -1, -1], [-1, -1, 1], "z1");
+        axis([-1, 1, -1], [-1, 1, 1], "z2");
+        axis([1, -1, -1], [1, -1, 1], "z3");
+        axis([1, 1, -1], [1, 1, 1], "z4");
 
         for (var cube_line_idx = 0; cube_line_idx < opaque_cube_lines.length; cube_line_idx++) {
             cube_line_geometry = new THREE.Geometry();
@@ -650,6 +676,201 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
          }
 
          */
+        function determine_if_face_visible(cube_face_idx){
+            var face = cube.geometry.faces[cube_face_idx];
+            var face_to_camera = new THREE.Vector3();
+            face_to_camera.copy(camera.position);
+            face_to_camera.sub(cube.geometry.vertices[face.a]);
+            var dp = face.normal.dot(face_to_camera);
+            return dp > 0;
+        }
+
+
+        function remove_axis(name){
+            var axis = axes[name];
+            $(".axis_label.axis_label_"+name).remove();
+            if (axis.line) {
+                scene.remove(axis.line);
+            }
+            if (axis.ticks) for (var i = 0; i < axis.ticks.length; i++) {
+                scene.remove(axis.ticks[i]);
+            }
+            axis.ticks = [];
+            if (axis.label){
+                scene.remove(axis.label);
+            }
+        }
+
+        function clear_axes(){
+            for (var axis_name in axes) {
+                remove_axis(axis_name);
+            }
+        }
+        clear_axes();
+
+        // render axes
+        if (model.metadata.show_axes) {
+
+            function get_axis_faces_metadata(positive_direction_cube_face_idx, negative_direction_cube_face_idx) {
+                var result = {};
+                result["+"] = {visible: determine_if_face_visible(positive_direction_cube_face_idx)};
+                result["-"] = {visible: determine_if_face_visible(negative_direction_cube_face_idx)};
+                return result;
+            }
+
+            function create_matrix(x, y, z){
+                var result = new THREE.Matrix4();
+                result.setPosition(new THREE.Vector3(x, y, z));
+                return result;
+            }
+
+
+            var axis_line_material = new THREE.LineBasicMaterial({color: 0xbb0000, opacity: 0.25, linewidth: 5});
+
+            function add_axis_line(name, start, end) {
+                var axis_geometry = new THREE.Geometry();
+                axis_geometry.vertices.push(new THREE.Vector3(start.x, start.y, start.z));
+                axis_geometry.vertices.push(new THREE.Vector3(end.x, end.y, end.z));
+                var line = new THREE.Line(axis_geometry, axis_line_material);
+                line.name = name;
+                scene.add(line);
+                axes[name].line = line;
+                return line;
+            }
+
+            function add_axis_label(name, position) {
+
+                var axis_letter = name[0];
+                var label_text = model.metadata.axis[axis_letter];
+
+                var canvas = document.createElement('canvas');
+                var context = canvas.getContext('2d');
+                var size = 512;
+                canvas.width = size;
+                canvas.height = size;
+
+
+
+                context.textAlign = 'center';
+                context.textBaseline = "middle";
+                context.font = 'bolder 40px sans-serif';
+
+                context.fillText(label_text, size/2, size/2);
+
+                var label_texture = new THREE.Texture(canvas);
+                label_texture.needsUpdate = true;
+
+                var label_material = new THREE.SpriteMaterial({ map: label_texture});
+                var label_sprite = new THREE.Sprite(label_material);
+                scene.add(label_sprite);
+
+                var label_position_vector = new THREE.Vector3(position.x, position.y, position.z);
+                //todo: proper label positioning
+                label_sprite.position.set(label_position_vector.x, label_position_vector.y, label_position_vector.z);
+                console.log("label: " + label_text);
+                axes[name].label = label_sprite;
+
+            }
+
+            var axis_ticks_line_material = new THREE.LineBasicMaterial({color: 0x0000bb, opacity: 0.25, linewidth: 5});
+
+            function axis_tick(start, end, name) {
+                if (start.x === undefined){
+                    start = {x : start[0], y : start[1], z : start[2]};
+                    end = {x : end[0], y : end[1], z : end[2]};
+                }
+                var axis_tick_line_geometry = new THREE.Geometry();
+                axis_tick_line_geometry.vertices.push(new THREE.Vector3(start.x * axis_length / 2, start.y * axis_length / 2, start.z * axis_length / 2));
+                axis_tick_line_geometry.vertices.push(new THREE.Vector3(end.x * axis_length / 2, end.y * axis_length / 2, end.z * axis_length / 2));
+                var tick_line_object = new THREE.Line(axis_tick_line_geometry, axis_ticks_line_material);
+                tick_line_object.name = name;
+                scene.add(tick_line_object);
+                return tick_line_object;
+            }
+
+            var tick_length = 0.1;
+            function axis_cross(name, point) {
+                if (point.x === undefined){
+                    point = {x : point[0], y : point[1], z : point[2]};
+                }
+                var axis_letter = name[0];
+                var ticks = axes[name].ticks;
+                if (!ticks) {
+                    ticks = [];
+                    axes[name].ticks = ticks;
+                }
+                if (axis_letter != "x") ticks.push(axis_tick({x : point.x - tick_length, y : point.y, z: point.z}, {x : point.x + tick_length, y : point.y, z : point.z}, "x" + point[axis_letter]));
+                if (axis_letter != "y") ticks.push(axis_tick({x : point.x, y : point.y  - tick_length, z: point.z}, {x : point.x, y : point.y + tick_length, z : point.z}, "y" + point[axis_letter]));
+                if (axis_letter != "z") ticks.push(axis_tick({x : point.x, y : point.y , z: point.z - tick_length}, {x : point.x, y : point.y, z : point.z  + tick_length}, "z" + point[axis_letter]));
+            }
+
+
+            function add_axis(axis_name) {
+                var axis = axes[axis_name];
+                var axis_start_end_koeff = axis_length / 2;
+                var start = axis.start;
+                var end = axis.end;
+                add_axis_line(axis_name,
+                    {x : axis_start_end_koeff * start.x, y : axis_start_end_koeff * start.y, z : axis_start_end_koeff * start.z},
+                    {x : axis_start_end_koeff * end.x, y : axis_start_end_koeff * end.y, z : axis_start_end_koeff * end.z});
+
+                var mid_pont_koeff = axis_start_end_koeff / 2;
+                add_axis_label(axis_name, {x : (start.x + end.x) * mid_pont_koeff, y: (start.y + end.y) * mid_pont_koeff, z: (start.z + end.z) * mid_pont_koeff});
+                //axis_cross("x1", {x : 0, y: -1, z: -1});
+            }
+
+            function add_axes(axes) {
+                Array.prototype.slice.call(arguments).forEach(add_axis);
+            }
+
+            var faces = {};
+            faces.x = get_axis_faces_metadata(1, 3);
+            faces.y = get_axis_faces_metadata(5, 7);
+            faces.z = get_axis_faces_metadata(9, 11);
+
+
+            if (faces.y["+"].visible) {
+                if (faces.x["+"].visible) {
+                    if (faces.z["+"].visible)        add_axes("x2", "y2", "z3");
+                    else if (faces.z["-"].visible)   add_axes("x1", "y4", "z3");
+                    else                             add_axes("x4", "y4", "z3");
+
+                } else if (faces.x["-"].visible) {
+                    if (faces.z["+"].visible)        add_axes("x2", "y1", "z1");
+                    else if (faces.z["-"].visible)   add_axes("x1", "y3", "z1");
+                    else                             add_axes("x3", "y1", "z1");
+                } else {
+                    if (faces.z["+"].visible)        add_axes("x2", "y2", "z2");
+                    else if (faces.z["-"].visible)   add_axes("x1", "y3", "z4");
+                    else                             add_axes("x3", "z2");
+                }
+            } else if (faces.y["-"].visible) {
+                if (faces.x["+"].visible) {
+                    if (faces.z["+"].visible)         add_axes("x1", "y2", "z1");
+                    else                              add_axes("x2", "y4", "z1");
+                } else if (faces.x["-"].visible) {
+                    if (faces.z["-"].visible)         add_axes("x2", "y3", "z3");
+                    else                              add_axes("x1", "y1", "z3");
+                } else {
+                    if (faces.z["+"].visible)         add_axes("x1", "y2", "z1");
+                    else if (faces.z["-"].visible)    add_axes("x2", "y3", "z3");
+                    else                              add_axes("x1", "z1");
+                }
+            } else {
+                if (faces.x["+"].visible) {
+                    if (faces.z["+"].visible)         add_axes("x2", "y2", "z3");
+                    else if (faces.z["-"].visible)    add_axes("x1", "y4", "z3");
+                    else                              add_axes("y4", "z3");
+                } else if (faces.x["-"].visible) {
+                    if (faces.z["+"].visible)         add_axes("x2", "y1", "z1");
+                    else if (faces.z["-"].visible)    add_axes("x1", "y3", "z1");
+                    else                              add_axes("y1", "z1");
+                } else {
+                    if (faces.z["+"].visible)         add_axes("x2", "y2");
+                    else                              add_axes("x1", "y3");
+                }
+            }
+        }
 
         for (var cube_face_idx = 0; cube_face_idx < cube.geometry.faces.length; cube_face_idx++) {
             var face = cube.geometry.faces[cube_face_idx];
@@ -849,7 +1070,14 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             axes_checkbox.bootstrapSwitch('onColor', 'primary');
             axes_checkbox.bootstrapSwitch('size', 'small');
             axes_checkbox.bootstrapSwitch('state', model.metadata.show_axes);
-            axes_checkbox.bootstrapSwitch('disabled', true);
+            axes_checkbox.focus(function(event){
+                $(event.target).blur();
+            });
+
+            axes_checkbox.bootstrapSwitch('onSwitchChange', function(event, state) {
+                model.metadata.show_axes = state;
+                render();
+            });
 
             $("#link").click(function () {
                 var $this = $(this);
