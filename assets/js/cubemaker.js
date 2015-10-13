@@ -209,30 +209,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         }
         scene.add(cube);
 
-        // ============== add axes
-        function axis(start, end, name) {
-            if (!start.x){
-                start = {x : start[0], y : start[1], z : start[2]};
-                end = {x : end[0], y : end[1], z : end[2]};
-            }
-            axes[name] = {start : start, end : end};
-        }
-
-        axis([-1, -1, -1], [1, -1, -1], "x1");
-        axis([-1, -1, 1], [1, -1, 1], "x2");
-        axis([-1, 1, -1], [1, 1, -1], "x3");
-        axis([-1, 1, 1], [1, 1, 1], "x4");
-
-        axis([-1, -1, -1], [-1, 1, -1], "y1");
-        axis([-1, -1, 1], [-1, 1, 1], "y2");
-        axis([1, -1, -1], [1, 1, -1], "y3");
-        axis([1, -1, 1], [1, 1, 1], "y4");
-
-        axis([-1, -1, -1], [-1, -1, 1], "z1");
-        axis([-1, 1, -1], [-1, 1, 1], "z2");
-        axis([1, -1, -1], [1, -1, 1], "z3");
-        axis([1, 1, -1], [1, 1, 1], "z4");
-
         for (var cube_line_idx = 0; cube_line_idx < opaque_cube_lines.length; cube_line_idx++) {
             cube_line_geometry = new THREE.Geometry();
             switch (cube_line_idx % opaque_cube_lines.length) {
@@ -361,6 +337,32 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var particle_system = new THREE.Points(particles, particle_material);
             scene.add(particle_system);
         });
+
+        // ============== add axes
+        function axis(start, end, name) {
+            if (!start.x){
+                start = {x : start[0], y : start[1], z : start[2]};
+                end = {x : end[0], y : end[1], z : end[2]};
+            }
+            axes[name] = new Axis(start, end, name);
+        }
+
+        axis([-1, -1, -1], [1, -1, -1], "x1");
+        axis([-1, -1, 1], [1, -1, 1], "x2");
+        axis([-1, 1, -1], [1, 1, -1], "x3");
+        axis([-1, 1, 1], [1, 1, 1], "x4");
+
+        axis([-1, -1, -1], [-1, 1, -1], "y1");
+        axis([-1, -1, 1], [-1, 1, 1], "y2");
+        axis([1, -1, -1], [1, 1, -1], "y3");
+        axis([1, -1, 1], [1, 1, 1], "y4");
+
+        axis([-1, -1, -1], [-1, -1, 1], "z1");
+        axis([-1, 1, -1], [-1, 1, 1], "z2");
+        axis([1, -1, -1], [1, -1, 1], "z3");
+        axis([1, 1, -1], [1, 1, 1], "z4");
+
+        add_all_axes();
 
         raycaster = new THREE.Raycaster();
         renderer = new THREE.WebGLRenderer({antialias: true, preserveDrawingBuffer: true});
@@ -697,7 +699,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
         context.textAlign = 'center';
         context.textBaseline = "middle";
-        context.font = 'bolder 40px sans-serif';
+        context.font = 'bolder 24px sans-serif';
 
         context.fillText(label_text, size/2, size/2);
 
@@ -730,8 +732,26 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         //axis_cross("x1", {x : 0, y: -1, z: -1});
     }
 
-    function add_axes(axes) {
-        Array.prototype.slice.call(arguments).forEach(add_axis);
+    function add_all_axes() {
+        ["x1", "x2", "x3", "x4", "y1", "y2", "y3", "y4", "z1", "z2", "z3", "z4"].forEach(add_axis);
+        set_visible_axes([]);
+    }
+
+    /**
+     * Make visible only axes with given names
+     */
+    function set_visible_axes(axes_names) {
+
+        for (var axis in axes) {
+            if (axes.hasOwnProperty(axis)) {
+                axes[axis].hide();
+            }
+        }
+
+        for (var i = 0; i < axes_names.length; i++) {
+            var axis_name = axes_names[i];
+            axes[axis_name].show();
+        }
     }
 
     function axis_cross(name, point) {
@@ -813,10 +833,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
          line_bbox_materials[cube_line_idx] = new THREE.MeshBasicMaterial({color: 0xffff00});
          }
          }
-
          */
-
-        clear_axes();
 
         // render axes
         if (model.metadata.show_axes) {
@@ -829,43 +846,43 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
             if (faces.y["+"].visible) {
                 if (faces.x["+"].visible) {
-                    if (faces.z["+"].visible)        add_axes("x2", "y2", "z3");
-                    else if (faces.z["-"].visible)   add_axes("x1", "y4", "z3");
-                    else                             add_axes("x4", "y4", "z3");
+                    if (faces.z["+"].visible)        set_visible_axes(["x2", "y2", "z3"]);
+                    else if (faces.z["-"].visible)   set_visible_axes(["x1", "y4", "z3"]);
+                    else                             set_visible_axes(["x4", "y4", "z3"]);
 
                 } else if (faces.x["-"].visible) {
-                    if (faces.z["+"].visible)        add_axes("x2", "y1", "z1");
-                    else if (faces.z["-"].visible)   add_axes("x1", "y3", "z1");
-                    else                             add_axes("x3", "y1", "z1");
+                    if (faces.z["+"].visible)        set_visible_axes(["x2", "y1", "z1"]);
+                    else if (faces.z["-"].visible)   set_visible_axes(["x1", "y3", "z1"]);
+                    else                             set_visible_axes(["x3", "y1", "z1"]);
                 } else {
-                    if (faces.z["+"].visible)        add_axes("x2", "y2", "z2");
-                    else if (faces.z["-"].visible)   add_axes("x1", "y3", "z4");
-                    else                             add_axes("x3", "z2");
+                    if (faces.z["+"].visible)        set_visible_axes(["x2", "y2", "z2"]);
+                    else if (faces.z["-"].visible)   set_visible_axes(["x1", "y3", "z4"]);
+                    else                             set_visible_axes(["x3", "z2"]);
                 }
             } else if (faces.y["-"].visible) {
                 if (faces.x["+"].visible) {
-                    if (faces.z["+"].visible)         add_axes("x1", "y2", "z1");
-                    else                              add_axes("x2", "y4", "z1");
+                    if (faces.z["+"].visible)         set_visible_axes(["x1", "y2", "z1"]);
+                    else                              set_visible_axes(["x2", "y4", "z1"]);
                 } else if (faces.x["-"].visible) {
-                    if (faces.z["-"].visible)         add_axes("x2", "y3", "z3");
-                    else                              add_axes("x1", "y1", "z3");
+                    if (faces.z["-"].visible)         set_visible_axes(["x2", "y3", "z3"]);
+                    else                              set_visible_axes(["x1", "y1", "z3"]);
                 } else {
-                    if (faces.z["+"].visible)         add_axes("x1", "y2", "z1");
-                    else if (faces.z["-"].visible)    add_axes("x2", "y3", "z3");
-                    else                              add_axes("x1", "z1");
+                    if (faces.z["+"].visible)         set_visible_axes(["x1", "y2", "z1"]);
+                    else if (faces.z["-"].visible)    set_visible_axes(["x2", "y3", "z3"]);
+                    else                              set_visible_axes(["x1", "z1"]);
                 }
             } else {
                 if (faces.x["+"].visible) {
-                    if (faces.z["+"].visible)         add_axes("x2", "y2", "z3");
-                    else if (faces.z["-"].visible)    add_axes("x1", "y4", "z3");
-                    else                              add_axes("y4", "z3");
+                    if (faces.z["+"].visible)         set_visible_axes(["x2", "y2", "z3"]);
+                    else if (faces.z["-"].visible)    set_visible_axes(["x1", "y4", "z3"]);
+                    else                              set_visible_axes(["y4", "z3"]);
                 } else if (faces.x["-"].visible) {
-                    if (faces.z["+"].visible)         add_axes("x2", "y1", "z1");
-                    else if (faces.z["-"].visible)    add_axes("x1", "y3", "z1");
-                    else                              add_axes("y1", "z1");
+                    if (faces.z["+"].visible)         set_visible_axes(["x2", "y1", "z1"]);
+                    else if (faces.z["-"].visible)    set_visible_axes(["x1", "y3", "z1"]);
+                    else                              set_visible_axes(["y1", "z1"]);
                 } else {
-                    if (faces.z["+"].visible)         add_axes("x2", "y2");
-                    else                              add_axes("x1", "y3");
+                    if (faces.z["+"].visible)         set_visible_axes(["x2", "y2"]);
+                    else                              set_visible_axes(["x1", "y3"]);
                 }
             }
         }
@@ -1129,6 +1146,28 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             position: camera.position,
             rotation: camera.rotation,
             center: controls.center
+        }
+    }
+
+
+    function Axis(start, end, name) {
+
+        return {
+            name: name,
+            start: start,
+            end: end,
+            show: show,
+            hide: hide
+        };
+
+        function show() {
+            this.line.visible = true;
+            this.label.visible = true;
+        }
+
+        function hide() {
+            this.line.visible = false;
+            this.label.visible = false;
         }
     }
 
