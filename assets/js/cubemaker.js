@@ -835,57 +835,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
          }
          */
 
-        // render axes
-        if (model.metadata.show_axes) {
+        render_axes();
 
-            var faces = {};
-            faces.x = get_axis_faces_metadata(1, 3);
-            faces.y = get_axis_faces_metadata(5, 7);
-            faces.z = get_axis_faces_metadata(9, 11);
-
-
-            if (faces.y["+"].visible) {
-                if (faces.x["+"].visible) {
-                    if (faces.z["+"].visible)        set_visible_axes(["x2", "y2", "z3"]);
-                    else if (faces.z["-"].visible)   set_visible_axes(["x1", "y4", "z3"]);
-                    else                             set_visible_axes(["x4", "y4", "z3"]);
-
-                } else if (faces.x["-"].visible) {
-                    if (faces.z["+"].visible)        set_visible_axes(["x2", "y1", "z1"]);
-                    else if (faces.z["-"].visible)   set_visible_axes(["x1", "y3", "z1"]);
-                    else                             set_visible_axes(["x3", "y1", "z1"]);
-                } else {
-                    if (faces.z["+"].visible)        set_visible_axes(["x2", "y2", "z2"]);
-                    else if (faces.z["-"].visible)   set_visible_axes(["x1", "y3", "z4"]);
-                    else                             set_visible_axes(["x3", "z2"]);
-                }
-            } else if (faces.y["-"].visible) {
-                if (faces.x["+"].visible) {
-                    if (faces.z["+"].visible)         set_visible_axes(["x1", "y2", "z1"]);
-                    else                              set_visible_axes(["x2", "y4", "z1"]);
-                } else if (faces.x["-"].visible) {
-                    if (faces.z["-"].visible)         set_visible_axes(["x2", "y3", "z3"]);
-                    else                              set_visible_axes(["x1", "y1", "z3"]);
-                } else {
-                    if (faces.z["+"].visible)         set_visible_axes(["x1", "y2", "z1"]);
-                    else if (faces.z["-"].visible)    set_visible_axes(["x2", "y3", "z3"]);
-                    else                              set_visible_axes(["x1", "z1"]);
-                }
-            } else {
-                if (faces.x["+"].visible) {
-                    if (faces.z["+"].visible)         set_visible_axes(["x2", "y2", "z3"]);
-                    else if (faces.z["-"].visible)    set_visible_axes(["x1", "y4", "z3"]);
-                    else                              set_visible_axes(["y4", "z3"]);
-                } else if (faces.x["-"].visible) {
-                    if (faces.z["+"].visible)         set_visible_axes(["x2", "y1", "z1"]);
-                    else if (faces.z["-"].visible)    set_visible_axes(["x1", "y3", "z1"]);
-                    else                              set_visible_axes(["y1", "z1"]);
-                } else {
-                    if (faces.z["+"].visible)         set_visible_axes(["x2", "y2"]);
-                    else                              set_visible_axes(["x1", "y3"]);
-                }
-            }
-        }
 
         for (var cube_face_idx = 0; cube_face_idx < cube.geometry.faces.length; cube_face_idx++) {
             var face = cube.geometry.faces[cube_face_idx];
@@ -1028,6 +979,60 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             INTERSECTED = null;
         }
         renderer.render(scene, camera);
+    }
+
+    function render_axes() {
+        // render axes
+        if (model.metadata.show_axes) {
+
+            var faces = {};
+            faces.x = get_axis_faces_metadata(1, 3);
+            faces.y = get_axis_faces_metadata(5, 7);
+            faces.z = get_axis_faces_metadata(9, 11);
+
+
+            if (faces.y["+"].visible) {
+                if (faces.x["+"].visible) {
+                    if (faces.z["+"].visible)        set_visible_axes(["x2", "y2", "z3"]);
+                    else if (faces.z["-"].visible)   set_visible_axes(["x1", "y4", "z3"]);
+                    else                             set_visible_axes(["x4", "y4", "z3"]);
+
+                } else if (faces.x["-"].visible) {
+                    if (faces.z["+"].visible)        set_visible_axes(["x2", "y1", "z1"]);
+                    else if (faces.z["-"].visible)   set_visible_axes(["x1", "y3", "z1"]);
+                    else                             set_visible_axes(["x3", "y1", "z1"]);
+                } else {
+                    if (faces.z["+"].visible)        set_visible_axes(["x2", "y2", "z2"]);
+                    else if (faces.z["-"].visible)   set_visible_axes(["x1", "y3", "z4"]);
+                    else                             set_visible_axes(["x3", "z2"]);
+                }
+            } else if (faces.y["-"].visible) {
+                if (faces.x["+"].visible) {
+                    if (faces.z["+"].visible)         set_visible_axes(["x1", "y2", "z1"]);
+                    else                              set_visible_axes(["x2", "y4", "z1"]);
+                } else if (faces.x["-"].visible) {
+                    if (faces.z["-"].visible)         set_visible_axes(["x2", "y3", "z3"]);
+                    else                              set_visible_axes(["x1", "y1", "z3"]);
+                } else {
+                    if (faces.z["+"].visible)         set_visible_axes(["x1", "y2", "z1"]);
+                    else if (faces.z["-"].visible)    set_visible_axes(["x2", "y3", "z3"]);
+                    else                              set_visible_axes(["x1", "z1"]);
+                }
+            } else {
+                if (faces.x["+"].visible) {
+                    if (faces.z["+"].visible)         set_visible_axes(["x2", "y2", "z3"]);
+                    else if (faces.z["-"].visible)    set_visible_axes(["x1", "y4", "z3"]);
+                    else                              set_visible_axes(["y4", "z3"]);
+                } else if (faces.x["-"].visible) {
+                    if (faces.z["+"].visible)         set_visible_axes(["x2", "y1", "z1"]);
+                    else if (faces.z["-"].visible)    set_visible_axes(["x1", "y3", "z1"]);
+                    else                              set_visible_axes(["y1", "z1"]);
+                } else {
+                    if (faces.z["+"].visible)         set_visible_axes(["x2", "y2"]);
+                    else                              set_visible_axes(["x1", "y3"]);
+                }
+            }
+        }
     }
 
     function activate() {
