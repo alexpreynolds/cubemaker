@@ -650,27 +650,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         return dp > 0;
     }
 
-    function remove_axis(name){
-        var axis = axes[name];
-        $(".axis_label.axis_label_"+name).remove();
-        if (axis.line) {
-            scene.remove(axis.line);
-        }
-        if (axis.ticks) for (var i = 0; i < axis.ticks.length; i++) {
-            scene.remove(axis.ticks[i]);
-        }
-        axis.ticks = [];
-        if (axis.label){
-            scene.remove(axis.label);
-        }
-    }
-
-    function clear_axes(){
-        for (var axis_name in axes) {
-            remove_axis(axis_name);
-        }
-    }
-
     function add_axis_line(name, start, end) {
         var axis_line_material = new THREE.LineBasicMaterial({color: 0xbb0000, opacity: 0.25, linewidth: 5});
         var axis_geometry = new THREE.Geometry();
@@ -695,9 +674,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         canvas.width = size;
         canvas.height = size;
 
-
-
-        context.textAlign = 'center';
+        context.textAlign = (name.indexOf('y') > -1) ?'right' : 'center';
         context.textBaseline = "middle";
         context.font = 'bolder 24px sans-serif';
 
@@ -723,12 +700,18 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         var axis_start_end_koeff = axis_length / 2;
         var start = axis.start;
         var end = axis.end;
-        add_axis_line(axis_name,
-            {x : axis_start_end_koeff * start.x, y : axis_start_end_koeff * start.y, z : axis_start_end_koeff * start.z},
-            {x : axis_start_end_koeff * end.x, y : axis_start_end_koeff * end.y, z : axis_start_end_koeff * end.z});
+        var start_vector = {x: axis_start_end_koeff * start.x, y: axis_start_end_koeff * start.y, z: axis_start_end_koeff * start.z};
+        var end_vector = {x: axis_start_end_koeff * end.x, y: axis_start_end_koeff * end.y, z: axis_start_end_koeff * end.z};
 
-        var mid_pont_koeff = axis_start_end_koeff / 2;
-        add_axis_label(axis_name, {x : (start.x + end.x) * mid_pont_koeff, y: (start.y + end.y) * mid_pont_koeff, z: (start.z + end.z) * mid_pont_koeff});
+        add_axis_line(axis_name, start_vector, end_vector);
+
+        var mid_pont_koeff = axis_start_end_koeff * 0.55;
+        var position = {
+            x: (start.x + end.x) * mid_pont_koeff,
+            y: (start.y + end.y) * mid_pont_koeff,
+            z: (start.z + end.z) * mid_pont_koeff
+        };
+        add_axis_label(axis_name, position);
         //axis_cross("x1", {x : 0, y: -1, z: -1});
     }
 
@@ -789,12 +772,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         var result = {};
         result["+"] = {visible: determine_if_face_visible(positive_direction_cube_face_idx)};
         result["-"] = {visible: determine_if_face_visible(negative_direction_cube_face_idx)};
-        return result;
-    }
-
-    function create_matrix(x, y, z){
-        var result = new THREE.Matrix4();
-        result.setPosition(new THREE.Vector3(x, y, z));
         return result;
     }
 
@@ -1153,7 +1130,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             center: controls.center
         }
     }
-
 
     function Axis(start, end, name) {
 
