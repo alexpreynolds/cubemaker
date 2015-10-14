@@ -712,7 +712,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             z: (start.z + end.z) * mid_pont_koeff
         };
         add_axis_label(axis_name, position);
-        //axis_cross("x1", {x : 0, y: -1, z: -1});
+        axis_cross("x1", {x : 0, y: -1, z: -1});
+        axis_cross("y1", {x : -1, y: 0, z: -1});
+        axis_cross("z1", {x : -1, y: -1, z: 0});
     }
 
     function add_all_axes() {
@@ -1138,7 +1140,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
     function Axis(start, end, name) {
 
-        return {
+        var axis = {
             name: name,
             start: start,
             end: end,
@@ -1146,14 +1148,26 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             hide: hide
         };
 
+        return axis;
+
         function show() {
-            this.line.visible = true;
-            this.label.visible = true;
+            set_elements_visibility(true);
         }
 
         function hide() {
-            this.line.visible = false;
-            this.label.visible = false;
+            set_elements_visibility(false);
+        }
+
+        function set_elements_visibility(visible) {
+            axis.line.visible = visible;
+            axis.label.visible = visible;
+
+            if(axis.ticks != undefined) {
+                for (var i = 0; i < axis.ticks.length; i++) {
+                    var tick = axis.ticks[i];
+                    tick.visible = visible;
+                }
+            }
         }
     }
 
