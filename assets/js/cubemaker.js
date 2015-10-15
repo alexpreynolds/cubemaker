@@ -651,7 +651,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     function add_axis_line(name, start, end) {
-        var axis_line_material = new THREE.LineBasicMaterial({color: 0xbb0000, opacity: 0.25, linewidth: 5});
+        var axis_line_material = new THREE.LineBasicMaterial({color: 0xbb0000, opacity: 0, linewidth: 5});
         var axis_geometry = new THREE.Geometry();
         axis_geometry.vertices.push(new THREE.Vector3(start.x, start.y, start.z));
         axis_geometry.vertices.push(new THREE.Vector3(end.x, end.y, end.z));
@@ -664,8 +664,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
     function add_axis_label(name, position) {
 
-        var axis_letter = name[0];
-        var label_text = model.metadata.axis[axis_letter];
+        //var axis_letter = name[0];
+        //var label_text = model.metadata.axis[axis_letter];
+        var label_text = name;
 
 
         var canvas = document.createElement('canvas');
@@ -703,18 +704,20 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         var start_vector = {x: axis_start_end_koeff * start.x, y: axis_start_end_koeff * start.y, z: axis_start_end_koeff * start.z};
         var end_vector = {x: axis_start_end_koeff * end.x, y: axis_start_end_koeff * end.y, z: axis_start_end_koeff * end.z};
 
+
+        axis_cross(axis_name, {x : start.x, y: start.y, z: start.z});
+        axis_cross(axis_name, {x : end.x, y: end.y, z: end.z});
+
+
         add_axis_line(axis_name, start_vector, end_vector);
 
-        var mid_pont_koeff = axis_start_end_koeff * 0.55;
+        var mid_point_koeff = axis_start_end_koeff * 0.55;
         var position = {
-            x: (start.x + end.x) * mid_pont_koeff,
-            y: (start.y + end.y) * mid_pont_koeff,
-            z: (start.z + end.z) * mid_pont_koeff
+            x: (start.x + end.x) * mid_point_koeff,
+            y: (start.y + end.y) * mid_point_koeff,
+            z: (start.z + end.z) * mid_point_koeff
         };
         add_axis_label(axis_name, position);
-        axis_cross("x1", {x : 0, y: -1, z: -1});
-        axis_cross("y1", {x : -1, y: 0, z: -1});
-        axis_cross("z1", {x : -1, y: -1, z: 0});
     }
 
     function add_all_axes() {
@@ -750,9 +753,22 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             ticks = [];
             axes[name].ticks = ticks;
         }
-        if (axis_letter != "x") ticks.push(axis_tick({x : point.x - tick_length, y : point.y, z: point.z}, {x : point.x + tick_length, y : point.y, z : point.z}, "x" + point[axis_letter]));
-        if (axis_letter != "y") ticks.push(axis_tick({x : point.x, y : point.y  - tick_length, z: point.z}, {x : point.x, y : point.y + tick_length, z : point.z}, "y" + point[axis_letter]));
-        if (axis_letter != "z") ticks.push(axis_tick({x : point.x, y : point.y , z: point.z - tick_length}, {x : point.x, y : point.y, z : point.z  + tick_length}, "z" + point[axis_letter]));
+
+       if (["z1", "z2", "y1", "y2"].indexOf(name) > -1) {
+            ticks.push(axis_tick({x : point.x - tick_length, y : point.y, z: point.z}, {x : point.x, y : point.y, z : point.z}, "x" + point[axis_letter]));
+       }
+
+        if (["z3", "z4", "y3", "y4"].indexOf(name) > -1) {
+            ticks.push(axis_tick({x : point.x, y : point.y , z: point.z}, {x : point.x + tick_length, y : point.y, z : point.z}, "z" + point[axis_letter]));
+        }
+
+        if (["x1", "x3", "y1", "y3"].indexOf(name) > -1) {
+            ticks.push(axis_tick({x : point.x, y : point.y , z: point.z - tick_length}, {x : point.x, y : point.y, z : point.z}, "z" + point[axis_letter]));
+        }
+
+        if(["x2", "x4", "y2", "y4"].indexOf(name) > -1) {
+            ticks.push(axis_tick({x : point.x, y : point.y , z: point.z}, {x : point.x, y : point.y, z : point.z + tick_length}, "z" + point[axis_letter]));
+        }
     }
 
     function axis_tick(start, end, name) {

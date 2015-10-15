@@ -3,9 +3,9 @@
     "title": "Cubemaker",
     "subtitle": "Use mouse or arrow keys to rotate, scrollwheel to zoom, and double-tap arrow keys to animate",
     "axis": {
-      "x": "PC1",
-      "y": "PC2",
-      "z": "PC3"
+      "x": "x",
+      "y": "y",
+      "z": "z"
     },
     "selected_class": "Lineage",
     "show_axes": true,
