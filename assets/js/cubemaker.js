@@ -783,7 +783,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             if(["x3", "z2", "x4", "z4"].indexOf(axis_name) > -1) {
                 start = {x: point.x, y: point.y, z: point.z};
                 end = {x: point.x, y: point.y + tick_length, z: point.z};
-                label_position = {x: point.x, y: point.y + tick_length*2, z: point.z};
+                label_position = {x: point.x, y: point.y + tick_length*1.5, z: point.z};
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
@@ -800,8 +800,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 tick_line_object.name = name;
 
                 var tick_text_params = {
-                    size: 400,
-                    font: 'bolder 12px sans-serif'
+                    size: 512,
+                    font: 'bolder 15px sans-serif'
                 };
                 var tick_label = add_label(label, {x: label_position.x * axis_length / 2,y: label_position.y * axis_length / 2,z: label_position.z * axis_length / 2}, tick_text_params);
                 scene.add(tick_line_object);
