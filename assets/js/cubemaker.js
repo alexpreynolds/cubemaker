@@ -737,10 +737,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             }
         }
 
-        for (var i = 0; i < axes_names.length; i++) {
-            var axis_name = axes_names[i];
+        axes_names.forEach(function (axis_name) {
             axes[axis_name].show();
-        }
+        });
     }
 
     function axis_cross(name, point) {
@@ -755,19 +754,19 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             axes[name].ticks = ticks;
         }
 
-       if (["z1", "z2", "y1", "y2"].indexOf(name) > -1) {
+       if (["z1", "z2", "y2"].indexOf(name) > -1) {
             ticks.push(axis_tick({x : point.x - tick_length, y : point.y, z: point.z}, {x : point.x, y : point.y, z : point.z}, "x" + point[axis_letter]));
        }
 
-        if (["z3", "z4", "y3", "y4"].indexOf(name) > -1) {
+        if (["z3", "z4", "y3"].indexOf(name) > -1) {
             ticks.push(axis_tick({x : point.x, y : point.y , z: point.z}, {x : point.x + tick_length, y : point.y, z : point.z}, "z" + point[axis_letter]));
         }
 
-        if (["x1", "x3", "y1", "y3"].indexOf(name) > -1) {
+        if (["x1", "x3", "y1"].indexOf(name) > -1) {
             ticks.push(axis_tick({x : point.x, y : point.y , z: point.z - tick_length}, {x : point.x, y : point.y, z : point.z}, "z" + point[axis_letter]));
         }
 
-        if(["x2", "x4", "y2", "y4"].indexOf(name) > -1) {
+        if(["x2", "x4", "y4"].indexOf(name) > -1) {
             ticks.push(axis_tick({x : point.x, y : point.y , z: point.z}, {x : point.x, y : point.y, z : point.z + tick_length}, "z" + point[axis_letter]));
         }
     }
