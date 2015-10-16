@@ -704,9 +704,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         var start_vector = {x: axis_start_end_koeff * start.x, y: axis_start_end_koeff * start.y, z: axis_start_end_koeff * start.z};
         var end_vector = {x: axis_start_end_koeff * end.x, y: axis_start_end_koeff * end.y, z: axis_start_end_koeff * end.z};
 
-
-        axis_cross(axis_name, {x : start.x, y: start.y, z: start.z});
-        axis_cross(axis_name, {x : end.x, y: end.y, z: end.z});
+        var intermediate_points = calculate_ticks_coordinates(start, end, 10);
+        intermediate_points.forEach(function (point) {
+            axis_cross(axis_name, point);
+        });
 
 
         add_axis_line(axis_name, start_vector, end_vector);
@@ -784,6 +785,50 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         tick_line_object.name = name;
         scene.add(tick_line_object);
         return tick_line_object;
+    }
+
+    function calculate_ticks_coordinates(start, end, number_of_ticks) {
+
+        // determine axis along which ticks should be placed
+        var axis = determine_axis(start, end);
+        var intermediate_values = get_intermediate_values(start[axis], end[axis], number_of_ticks);
+        var intermediate_points = get_intermediate_points(start, intermediate_values, axis);
+        return intermediate_points;
+
+        function get_intermediate_points(start, intermediate_values, axis) {
+            var points = [];
+            for (var i = 0; i < intermediate_values.length; i++) {
+                var value = intermediate_values[i];
+                var point = $.extend({}, start);
+                point[axis] = value;
+                points.push(point);
+            }
+            return points;
+        }
+
+        function get_intermediate_values(start, end, count) {
+            var diff = Math.abs(start - end);
+            var step = diff / count;
+            var results = [start];
+            var value = start;
+            for (var i = 0; i < count - 1; i++) {
+                value =  parseFloat((value + step).toFixed(2));
+                results.push(value);
+            }
+            results.push(end);
+            return results;
+        }
+
+        function determine_axis(start, end) {
+            if (start.x != end.x) {
+                return "x";
+            } else if (start.y != end.y) {
+                return "y";
+            } else if (start.z != end.z) {
+                return "z";
+            }
+        }
+
     }
 
     function get_axis_faces_metadata(positive_direction_cube_face_idx, negative_direction_cube_face_idx) {
