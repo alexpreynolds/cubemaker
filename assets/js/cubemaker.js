@@ -4,6 +4,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
     // ====== internal variables declaration section
     const TICKS_VALUES_PRECISION = 2;
+    const TICKS_PER_AXIS = 4;
     var root_element = $("#" + rootElementId);
     var camera, scene, raycaster, renderer, controls;
     var container, stats;
@@ -701,7 +702,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         add_axis_line(axis);
         add_axis_label(axis);
 
-        var ticks_info = calculate_axis_ticks(start, end, 3);
+        var ticks_info = calculate_axis_ticks(start, end, TICKS_PER_AXIS);
         ticks_info.forEach(function (tick) {
             add_axis_tick(axis_name, tick.position, tick.value);
         });
@@ -709,7 +710,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         function add_axis_label(axis) {
             var start = axis.start;
             var end = axis.end;
-            var mid_point_koeff = axis_start_end_koeff * 0.6;
+            var mid_point_koeff = axis_start_end_koeff * 0.65;
             var position = {
                 x: (start.x + end.x) * mid_point_koeff,
                 y: (start.y + end.y) * mid_point_koeff,
@@ -721,8 +722,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var text_align = (axis_letter == "y") ?'right' : 'center';
             var text_params = {text_align: text_align};
 
-            //axis.label = add_label(label_text, position, text_params);
-            axis.label = add_label(axis.name, position, text_params);
+            axis.label = add_label(label_text, position, text_params);
+            //axis.label = add_label(axis.name, position, text_params);
         }
 
         function add_axis_line(axis) {
@@ -751,31 +752,38 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var tick_name = axis_name + point[axis_letter];
             var start, end, label_position;
 
-            if (["z1", "z2", "y2"].indexOf(axis_name) > -1) {
+            if (["z1", "y2"].indexOf(axis_name) > -1) {
                 start = {x: point.x - tick_length, y: point.y, z: point.z};
                 end = {x: point.x, y: point.y, z: point.z};
-                label_position = {x: point.x - tick_length - tick_length/2, y: point.y - tick_length/4, z: point.z};
+                label_position = {x: point.x - tick_length*2, y: point.y - tick_length/4, z: point.z};
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
-            if (["z3", "z4", "y3"].indexOf(axis_name) > -1) {
+            if (["z3", "y3"].indexOf(axis_name) > -1) {
                 start = {x: point.x, y: point.y, z: point.z};
                 end = {x: point.x + tick_length, y: point.y, z: point.z};
-                label_position = {x: point.x + tick_length +  tick_length/2, y: point.y - tick_length/4, z: point.z};
+                label_position = {x: point.x + tick_length*2, y: point.y - tick_length/4, z: point.z};
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
-            if (["x1", "x3", "y1"].indexOf(axis_name) > -1) {
+            if (["x1", "y1"].indexOf(axis_name) > -1) {
                 start = {x: point.x, y: point.y, z: point.z - tick_length};
                 end = {x: point.x, y: point.y, z: point.z};
-                label_position = {x: point.x, y: point.y - tick_length/4, z: point.z - tick_length -  tick_length/2};
+                label_position = {x: point.x, y: point.y - tick_length/4, z: point.z - tick_length*2};
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
-            if(["x2", "x4", "y4"].indexOf(axis_name) > -1) {
+            if(["x2", "y4"].indexOf(axis_name) > -1) {
                 start = {x: point.x, y: point.y, z: point.z};
                 end = {x: point.x, y: point.y, z: point.z + tick_length};
-                label_position = {x: point.x, y: point.y - tick_length/4, z: point.z + tick_length +  tick_length/2};
+                label_position = {x: point.x, y: point.y - tick_length/4, z: point.z + tick_length*2};
+                ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
+            }
+
+            if(["x3", "z2", "x4", "z4"].indexOf(axis_name) > -1) {
+                start = {x: point.x, y: point.y, z: point.z};
+                end = {x: point.x, y: point.y + tick_length, z: point.z};
+                label_position = {x: point.x, y: point.y + tick_length*2, z: point.z};
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
@@ -791,7 +799,11 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 var tick_line_object = new THREE.Line(axis_tick_line_geometry, axis_ticks_line_material);
                 tick_line_object.name = name;
 
-                var tick_label = add_label(label, {x: label_position.x * axis_length / 2,y: label_position.y * axis_length / 2,z: label_position.z * axis_length / 2}, {size: 512, font: 'bolder 20px sans-serif'});
+                var tick_text_params = {
+                    size: 400,
+                    font: 'bolder 12px sans-serif'
+                };
+                var tick_label = add_label(label, {x: label_position.x * axis_length / 2,y: label_position.y * axis_length / 2,z: label_position.z * axis_length / 2}, tick_text_params);
                 scene.add(tick_line_object);
 
                 return {line: tick_line_object, label: tick_label};
