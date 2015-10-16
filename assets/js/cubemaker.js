@@ -650,34 +650,31 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         return dp > 0;
     }
 
-    function add_axis_line(name, start, end) {
+    function add_line(start, end) {
         var axis_line_material = new THREE.LineBasicMaterial({color: 0xbb0000, opacity: 0, linewidth: 5});
         var axis_geometry = new THREE.Geometry();
         axis_geometry.vertices.push(new THREE.Vector3(start.x, start.y, start.z));
         axis_geometry.vertices.push(new THREE.Vector3(end.x, end.y, end.z));
         var line = new THREE.Line(axis_geometry, axis_line_material);
-        line.name = name;
         scene.add(line);
-        axes[name].line = line;
         return line;
     }
 
-    function add_axis_label(name, position) {
+    /*Adds text label to scene*/
+    function add_label(label_text, position, text_params) {
 
-        //var axis_letter = name[0];
-        //var label_text = model.metadata.axis[axis_letter];
-        var label_text = name;
-
+        if(text_params == undefined) {
+            text_params = {};   // to avoid undefined exceptions
+        }
 
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
-        var size = 1024;
+        var size = text_params.size || 1024;
         canvas.width = size;
         canvas.height = size;
 
-        context.textAlign = (name.indexOf('y') > -1) ?'right' : 'center';
-        context.textBaseline = "middle";
-        context.font = 'bolder 48px sans-serif';
+        context.textAlign = text_params.text_align || "center";
+        context.font = text_params.font || 'bolder 48px sans-serif';
 
         context.fillText(label_text, size/2, size/2);
 
@@ -689,11 +686,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         scene.add(label_sprite);
 
         var label_position_vector = new THREE.Vector3(position.x, position.y, position.z);
-        //todo: proper label positioning
         label_sprite.position.set(label_position_vector.x, label_position_vector.y, label_position_vector.z);
         console.log("label: " + label_text);
-        axes[name].label = label_sprite;
 
+        return label_sprite;
     }
 
     function add_axis(axis_name) {
@@ -701,24 +697,132 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         var axis_start_end_koeff = axis_length / 2;
         var start = axis.start;
         var end = axis.end;
-        var start_vector = {x: axis_start_end_koeff * start.x, y: axis_start_end_koeff * start.y, z: axis_start_end_koeff * start.z};
-        var end_vector = {x: axis_start_end_koeff * end.x, y: axis_start_end_koeff * end.y, z: axis_start_end_koeff * end.z};
 
-        var intermediate_points = calculate_ticks_coordinates(start, end, 10);
+        add_axis_line(axis);
+        add_axis_label(axis);
+
+        var intermediate_points = calculate_axis_ticks_coordinates(start, end, 10);
         intermediate_points.forEach(function (point) {
-            axis_cross(axis_name, point);
+            add_axis_tick(axis_name, point);
         });
 
+        function add_axis_label(axis) {
+            var start = axis.start;
+            var end = axis.end;
+            var mid_point_koeff = axis_start_end_koeff * 0.55;
+            var position = {
+                x: (start.x + end.x) * mid_point_koeff,
+                y: (start.y + end.y) * mid_point_koeff,
+                z: (start.z + end.z) * mid_point_koeff
+            };
 
-        add_axis_line(axis_name, start_vector, end_vector);
+            var axis_letter = axis.name[0];
+            var label_text = model.metadata.axis[axis_letter];
+            var text_align = (axis_letter == "y") ?'right' : 'center';
+            var text_params = {text_align: text_align};
 
-        var mid_point_koeff = axis_start_end_koeff * 0.55;
-        var position = {
-            x: (start.x + end.x) * mid_point_koeff,
-            y: (start.y + end.y) * mid_point_koeff,
-            z: (start.z + end.z) * mid_point_koeff
-        };
-        add_axis_label(axis_name, position);
+            axis.label = add_label(label_text, position, text_params);
+        }
+
+        function add_axis_line(axis) {
+            var start = axis.start;
+            var end = axis.end;
+            var start_vector = {x: axis_start_end_koeff * start.x, y: axis_start_end_koeff * start.y, z: axis_start_end_koeff * start.z};
+            var end_vector = {x: axis_start_end_koeff * end.x, y: axis_start_end_koeff * end.y, z: axis_start_end_koeff * end.z};
+            var line = add_line(start_vector, end_vector);
+
+            line.name = axis.name;
+            axis.line = line;
+        }
+
+        function add_axis_tick(axis_name, point) {
+            var tick_length = 0.1;
+            if (point.x === undefined){
+                point = {x : point[0], y : point[1], z : point[2]};
+            }
+            var axis_letter = axis_name[0];
+            var ticks = axes[axis_name].ticks;
+            if (!ticks) {
+                ticks = [];
+                axes[axis_name].ticks = ticks;
+            }
+
+            if (["z1", "z2", "y2"].indexOf(axis_name) > -1) {
+                ticks.push(create_axis_tick({x : point.x - tick_length, y : point.y, z: point.z}, {x : point.x, y : point.y, z : point.z}, "x" + point[axis_letter]));
+            }
+
+            if (["z3", "z4", "y3"].indexOf(axis_name) > -1) {
+                ticks.push(create_axis_tick({x : point.x, y : point.y , z: point.z}, {x : point.x + tick_length, y : point.y, z : point.z}, "z" + point[axis_letter]));
+            }
+
+            if (["x1", "x3", "y1"].indexOf(axis_name) > -1) {
+                ticks.push(create_axis_tick({x : point.x, y : point.y , z: point.z - tick_length}, {x : point.x, y : point.y, z : point.z}, "z" + point[axis_letter]));
+            }
+
+            if(["x2", "x4", "y4"].indexOf(axis_name) > -1) {
+                ticks.push(create_axis_tick({x : point.x, y : point.y , z: point.z}, {x : point.x, y : point.y, z : point.z + tick_length}, "z" + point[axis_letter]));
+            }
+
+            function create_axis_tick(start, end, name) {
+                if (start.x === undefined){
+                    start = {x : start[0], y : start[1], z : start[2]};
+                    end = {x : end[0], y : end[1], z : end[2]};
+                }
+                var axis_ticks_line_material = new THREE.LineBasicMaterial({color: 0x0000bb, opacity: 0.25, linewidth: 5});
+                var axis_tick_line_geometry = new THREE.Geometry();
+                axis_tick_line_geometry.vertices.push(new THREE.Vector3(start.x * axis_length / 2, start.y * axis_length / 2, start.z * axis_length / 2));
+                axis_tick_line_geometry.vertices.push(new THREE.Vector3(end.x * axis_length / 2, end.y * axis_length / 2, end.z * axis_length / 2));
+                var tick_line_object = new THREE.Line(axis_tick_line_geometry, axis_ticks_line_material);
+                tick_line_object.name = name;
+                scene.add(tick_line_object);
+                return tick_line_object;
+            }
+        }
+
+        function calculate_axis_ticks_coordinates(start, end, number_of_ticks) {
+
+            // determine axis along which ticks should be placed
+            var axis = determine_axis(start, end);
+            var intermediate_values = get_intermediate_values(start[axis], end[axis], number_of_ticks);
+            var intermediate_points = get_intermediate_points(start, intermediate_values, axis);
+            return intermediate_points;
+
+            function get_intermediate_points(start, intermediate_values, axis) {
+                var points = [];
+                for (var i = 0; i < intermediate_values.length; i++) {
+                    var value = intermediate_values[i];
+                    var point = $.extend({}, start);
+                    point[axis] = value;
+                    points.push(point);
+                }
+                return points;
+            }
+
+            function get_intermediate_values(start, end, count) {
+                var diff = Math.abs(start - end);
+                var step = diff / count;
+                var results = [start];
+                var value = start;
+                for (var i = 0; i < count - 1; i++) {
+                    value =  parseFloat((value + step).toFixed(2));
+                    results.push(value);
+                }
+                results.push(end);
+                return results;
+            }
+
+            function determine_axis(start, end) {
+                if (start.x != end.x) {
+                    return "x";
+                } else if (start.y != end.y) {
+                    return "y";
+                } else if (start.z != end.z) {
+                    return "z";
+                }
+            }
+
+        }
+
     }
 
     function add_all_axes() {
@@ -740,94 +844,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         axes_names.forEach(function (axis_name) {
             axes[axis_name].show();
         });
-    }
-
-    function axis_cross(name, point) {
-        var tick_length = 0.1;
-        if (point.x === undefined){
-            point = {x : point[0], y : point[1], z : point[2]};
-        }
-        var axis_letter = name[0];
-        var ticks = axes[name].ticks;
-        if (!ticks) {
-            ticks = [];
-            axes[name].ticks = ticks;
-        }
-
-       if (["z1", "z2", "y2"].indexOf(name) > -1) {
-            ticks.push(axis_tick({x : point.x - tick_length, y : point.y, z: point.z}, {x : point.x, y : point.y, z : point.z}, "x" + point[axis_letter]));
-       }
-
-        if (["z3", "z4", "y3"].indexOf(name) > -1) {
-            ticks.push(axis_tick({x : point.x, y : point.y , z: point.z}, {x : point.x + tick_length, y : point.y, z : point.z}, "z" + point[axis_letter]));
-        }
-
-        if (["x1", "x3", "y1"].indexOf(name) > -1) {
-            ticks.push(axis_tick({x : point.x, y : point.y , z: point.z - tick_length}, {x : point.x, y : point.y, z : point.z}, "z" + point[axis_letter]));
-        }
-
-        if(["x2", "x4", "y4"].indexOf(name) > -1) {
-            ticks.push(axis_tick({x : point.x, y : point.y , z: point.z}, {x : point.x, y : point.y, z : point.z + tick_length}, "z" + point[axis_letter]));
-        }
-    }
-
-    function axis_tick(start, end, name) {
-        if (start.x === undefined){
-            start = {x : start[0], y : start[1], z : start[2]};
-            end = {x : end[0], y : end[1], z : end[2]};
-        }
-        var axis_ticks_line_material = new THREE.LineBasicMaterial({color: 0x0000bb, opacity: 0.25, linewidth: 5});
-        var axis_tick_line_geometry = new THREE.Geometry();
-        axis_tick_line_geometry.vertices.push(new THREE.Vector3(start.x * axis_length / 2, start.y * axis_length / 2, start.z * axis_length / 2));
-        axis_tick_line_geometry.vertices.push(new THREE.Vector3(end.x * axis_length / 2, end.y * axis_length / 2, end.z * axis_length / 2));
-        var tick_line_object = new THREE.Line(axis_tick_line_geometry, axis_ticks_line_material);
-        tick_line_object.name = name;
-        scene.add(tick_line_object);
-        return tick_line_object;
-    }
-
-    function calculate_ticks_coordinates(start, end, number_of_ticks) {
-
-        // determine axis along which ticks should be placed
-        var axis = determine_axis(start, end);
-        var intermediate_values = get_intermediate_values(start[axis], end[axis], number_of_ticks);
-        var intermediate_points = get_intermediate_points(start, intermediate_values, axis);
-        return intermediate_points;
-
-        function get_intermediate_points(start, intermediate_values, axis) {
-            var points = [];
-            for (var i = 0; i < intermediate_values.length; i++) {
-                var value = intermediate_values[i];
-                var point = $.extend({}, start);
-                point[axis] = value;
-                points.push(point);
-            }
-            return points;
-        }
-
-        function get_intermediate_values(start, end, count) {
-            var diff = Math.abs(start - end);
-            var step = diff / count;
-            var results = [start];
-            var value = start;
-            for (var i = 0; i < count - 1; i++) {
-                value =  parseFloat((value + step).toFixed(2));
-                results.push(value);
-            }
-            results.push(end);
-            return results;
-        }
-
-        function determine_axis(start, end) {
-            if (start.x != end.x) {
-                return "x";
-            } else if (start.y != end.y) {
-                return "y";
-            } else if (start.z != end.z) {
-                return "z";
-            }
-        }
-
     }
 
     function get_axis_faces_metadata(positive_direction_cube_face_idx, negative_direction_cube_face_idx) {
