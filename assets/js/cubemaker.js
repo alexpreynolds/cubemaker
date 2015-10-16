@@ -3,7 +3,7 @@ var CUBE_MAKER = CUBE_MAKER || {};
 CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
     // ====== internal variables declaration section
-
+    const TICKS_VALUES_PRECISION = 2;
     var root_element = $("#" + rootElementId);
     var camera, scene, raycaster, renderer, controls;
     var container, stats;
@@ -701,9 +701,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         add_axis_line(axis);
         add_axis_label(axis);
 
-        var intermediate_points = calculate_axis_ticks_coordinates(start, end, 3);
-        intermediate_points.forEach(function (point) {
-            add_axis_tick(axis_name, point, start.x);
+        var ticks_info = calculate_axis_ticks(start, end, 3);
+        ticks_info.forEach(function (tick) {
+            add_axis_tick(axis_name, tick.position, tick.value);
         });
 
         function add_axis_label(axis) {
@@ -798,13 +798,37 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             }
         }
 
-        function calculate_axis_ticks_coordinates(start, end, number_of_ticks) {
+        function calculate_axis_ticks(start, end, number_of_ticks) {
 
             // determine axis along which ticks should be placed
             var axis = determine_axis(start, end);
-            var intermediate_values = get_intermediate_values(start[axis], end[axis], number_of_ticks);
-            var intermediate_points = get_intermediate_points(start, intermediate_values, axis);
-            return intermediate_points;
+            var intermediate_coordinate_values = get_intermediate_coordinate_values(start[axis], end[axis], number_of_ticks);
+            var intermediate_points = get_intermediate_points(start, intermediate_coordinate_values, axis);
+            var tick_values = get_tick_values(axis, number_of_ticks);
+
+            var ticks_info = tick_values.map(function (value, index) {
+                return {value: value, position: intermediate_points[index]};
+            });
+
+            return ticks_info;
+
+            function get_tick_values(axis, count) {
+                var range = model.metadata.range[axis];
+                var min = range[0];
+                var max = range[1];
+
+                var diff = Math.abs(min - max);
+                var step = diff / (count - 1);
+                var results = [min.toFixed(TICKS_VALUES_PRECISION)];
+                var value = min;
+                for (var i = 0; i < count - 2; i++) {
+                    value =  parseFloat((value + step).toFixed(TICKS_VALUES_PRECISION));
+                    results.push(value);
+                }
+                results.push(max.toFixed(TICKS_VALUES_PRECISION));
+
+                return results;
+            }
 
             function get_intermediate_points(start, intermediate_values, axis) {
                 var points = [];
@@ -817,13 +841,13 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 return points;
             }
 
-            function get_intermediate_values(start, end, count) {
+            function get_intermediate_coordinate_values(start, end, count) {
                 var diff = Math.abs(start - end);
                 var step = diff / (count - 1);
                 var results = [start];
                 var value = start;
                 for (var i = 0; i < count - 2; i++) {
-                    value =  parseFloat((value + step).toFixed(2));
+                    value =  parseFloat((value + step).toFixed(TICKS_VALUES_PRECISION));
                     results.push(value);
                 }
                 results.push(end);
