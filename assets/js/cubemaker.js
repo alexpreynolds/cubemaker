@@ -4,7 +4,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
     // ====== internal variables declaration section
     const TICKS_VALUES_PRECISION = 2;
-    const TICKS_PER_AXIS = 4;
+    const TICKS_PER_AXIS = 10;
     var root_element = $("#" + rootElementId);
     var camera, scene, raycaster, renderer, controls;
     var container, stats;
@@ -668,29 +668,35 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             text_params = {};   // to avoid undefined exceptions
         }
 
-        var canvas = document.createElement('canvas');
-        var context = canvas.getContext('2d');
-        var size = text_params.size || 1024;
-        canvas.width = size;
-        canvas.height = size;
+        var text3d = new THREE.TextGeometry( label_text, {
+            size: text_params.size || 0.02,
+            height: 0,
+            curveSegments: 2,
+            font: "helvetiker"
 
-        context.textAlign = text_params.text_align || "center";
-        context.font = text_params.font || 'bolder 48px sans-serif';
+        });
 
-        context.fillText(label_text, size/2, size/2);
+        var material = new THREE.MeshFaceMaterial( [
+            new THREE.MeshBasicMaterial( { color: 0x000000, overdraw: 0.5 } )
+        ] );
 
-        var label_texture = new THREE.Texture(canvas);
-        label_texture.needsUpdate = true;
+        var text_mesh = new THREE.Mesh( text3d, material );
 
-        var label_material = new THREE.SpriteMaterial({ map: label_texture});
-        var label_sprite = new THREE.Sprite(label_material);
-        scene.add(label_sprite);
+        text_mesh.position.x = position.x;
+        text_mesh.position.y = position.y;
+        text_mesh.position.z = position.z;
 
-        var label_position_vector = new THREE.Vector3(position.x, position.y, position.z);
-        label_sprite.position.set(label_position_vector.x, label_position_vector.y, label_position_vector.z);
-        console.log("label: " + label_text);
+        text_mesh.centroid = new THREE.Vector3();
+        var box = text3d.computeBoundingBox();
+        text_mesh.centroid.addVectors(text3d.boundingBox.min, text3d.boundingBox.max);
+        text_mesh.centroid.divideScalar(2);
 
-        return label_sprite;
+
+        text_mesh.type = "label";
+        scene.add( text_mesh );
+
+
+        return text_mesh;
     }
 
     function add_axis(axis_name) {
@@ -719,11 +725,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
             var axis_letter = axis.name[0];
             var label_text = model.metadata.axis[axis_letter];
-            var text_align = (axis_letter == "y") ?'right' : 'center';
-            var text_params = {text_align: text_align};
+            var text_params = {size: 0.05};
 
-            axis.label = add_label(label_text, position, text_params);
-            //axis.label = add_label(axis.name, position, text_params);
+            //axis.label = add_label(label_text, position, text_params);
+            axis.label = add_label(axis.name, position, text_params);
         }
 
         function add_axis_line(axis) {
@@ -800,8 +805,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 tick_line_object.name = name;
 
                 var tick_text_params = {
-                    size: 512,
-                    font: 'bolder 15px sans-serif'
+                    size: 0.02
                 };
                 var tick_label = add_label(label, {x: label_position.x * axis_length / 2,y: label_position.y * axis_length / 2,z: label_position.z * axis_length / 2}, tick_text_params);
                 scene.add(tick_line_object);
@@ -946,6 +950,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
          */
 
         render_axes();
+        adjust_labels();
 
 
         for (var cube_face_idx = 0; cube_face_idx < cube.geometry.faces.length; cube_face_idx++) {
@@ -1089,66 +1094,75 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             INTERSECTED = null;
         }
         renderer.render(scene, camera);
-    }
 
-    function render_axes() {
+        function render_axes() {
+            // render axes
+            if (model.metadata.show_axes) {
 
-
-        // render axes
-        if (model.metadata.show_axes) {
-
-            var faces = {};
-            faces.x = get_axis_faces_metadata(1, 3);
-            faces.y = get_axis_faces_metadata(5, 7);
-            faces.z = get_axis_faces_metadata(9, 11);
+                var faces = {};
+                faces.x = get_axis_faces_metadata(1, 3);
+                faces.y = get_axis_faces_metadata(5, 7);
+                faces.z = get_axis_faces_metadata(9, 11);
 
 
-            if (faces.y["+"].visible) {
-                if (faces.x["+"].visible) {
-                    if (faces.z["+"].visible)        set_visible_axes(["x2", "y2", "z3"]);
-                    else if (faces.z["-"].visible)   set_visible_axes(["x1", "y4", "z3"]);
-                    else                             set_visible_axes(["x4", "y4", "z3"]);
+                if (faces.y["+"].visible) {
+                    if (faces.x["+"].visible) {
+                        if (faces.z["+"].visible)        set_visible_axes(["x2", "y2", "z3"]);
+                        else if (faces.z["-"].visible)   set_visible_axes(["x1", "y4", "z3"]);
+                        else                             set_visible_axes(["x4", "y4", "z3"]);
 
-                } else if (faces.x["-"].visible) {
-                    if (faces.z["+"].visible)        set_visible_axes(["x2", "y1", "z1"]);
-                    else if (faces.z["-"].visible)   set_visible_axes(["x1", "y3", "z1"]);
-                    else                             set_visible_axes(["x3", "y1", "z1"]);
+                    } else if (faces.x["-"].visible) {
+                        if (faces.z["+"].visible)        set_visible_axes(["x2", "y1", "z1"]);
+                        else if (faces.z["-"].visible)   set_visible_axes(["x1", "y3", "z1"]);
+                        else                             set_visible_axes(["x3", "y1", "z1"]);
+                    } else {
+                        if (faces.z["+"].visible)        set_visible_axes(["x2", "y2", "z2"]);
+                        else if (faces.z["-"].visible)   set_visible_axes(["x1", "y3", "z4"]);
+                        else                             set_visible_axes(["x3", "z2"]);
+                    }
+                } else if (faces.y["-"].visible) {
+                    if (faces.x["+"].visible) {
+                        if (faces.z["+"].visible)         set_visible_axes(["x1", "y2", "z1"]);
+                        else                              set_visible_axes(["x2", "y4", "z1"]);
+                    } else if (faces.x["-"].visible) {
+                        if (faces.z["-"].visible)         set_visible_axes(["x2", "y3", "z3"]);
+                        else                              set_visible_axes(["x1", "y1", "z3"]);
+                    } else {
+                        if (faces.z["+"].visible)         set_visible_axes(["x1", "y2", "z1"]);
+                        else if (faces.z["-"].visible)    set_visible_axes(["x2", "y3", "z3"]);
+                        else                              set_visible_axes(["x1", "z1"]);
+                    }
                 } else {
-                    if (faces.z["+"].visible)        set_visible_axes(["x2", "y2", "z2"]);
-                    else if (faces.z["-"].visible)   set_visible_axes(["x1", "y3", "z4"]);
-                    else                             set_visible_axes(["x3", "z2"]);
-                }
-            } else if (faces.y["-"].visible) {
-                if (faces.x["+"].visible) {
-                    if (faces.z["+"].visible)         set_visible_axes(["x1", "y2", "z1"]);
-                    else                              set_visible_axes(["x2", "y4", "z1"]);
-                } else if (faces.x["-"].visible) {
-                    if (faces.z["-"].visible)         set_visible_axes(["x2", "y3", "z3"]);
-                    else                              set_visible_axes(["x1", "y1", "z3"]);
-                } else {
-                    if (faces.z["+"].visible)         set_visible_axes(["x1", "y2", "z1"]);
-                    else if (faces.z["-"].visible)    set_visible_axes(["x2", "y3", "z3"]);
-                    else                              set_visible_axes(["x1", "z1"]);
+                    if (faces.x["+"].visible) {
+                        if (faces.z["+"].visible)         set_visible_axes(["x2", "y2", "z3"]);
+                        else if (faces.z["-"].visible)    set_visible_axes(["x1", "y4", "z3"]);
+                        else                              set_visible_axes(["y4", "z3"]);
+                    } else if (faces.x["-"].visible) {
+                        if (faces.z["+"].visible)         set_visible_axes(["x2", "y1", "z1"]);
+                        else if (faces.z["-"].visible)    set_visible_axes(["x1", "y3", "z1"]);
+                        else                              set_visible_axes(["y1", "z1"]);
+                    } else {
+                        if (faces.z["+"].visible)         set_visible_axes(["x2", "y2"]);
+                        else                              set_visible_axes(["x1", "y3"]);
+                    }
                 }
             } else {
-                if (faces.x["+"].visible) {
-                    if (faces.z["+"].visible)         set_visible_axes(["x2", "y2", "z3"]);
-                    else if (faces.z["-"].visible)    set_visible_axes(["x1", "y4", "z3"]);
-                    else                              set_visible_axes(["y4", "z3"]);
-                } else if (faces.x["-"].visible) {
-                    if (faces.z["+"].visible)         set_visible_axes(["x2", "y1", "z1"]);
-                    else if (faces.z["-"].visible)    set_visible_axes(["x1", "y3", "z1"]);
-                    else                              set_visible_axes(["y1", "z1"]);
-                } else {
-                    if (faces.z["+"].visible)         set_visible_axes(["x2", "y2"]);
-                    else                              set_visible_axes(["x1", "y3"]);
-                }
+                // hide all axes
+                set_visible_axes([])
             }
-        } else {
-            // hide all axes
-            set_visible_axes([])
         }
+
+        function adjust_labels() {
+            scene.children.forEach(function (child) {
+                if(child.type == "label") {
+                    child.lookAt(camera.position);
+                }
+            });
+        }
+
     }
+
+
 
     function activate() {
         setup_action_handlers();
