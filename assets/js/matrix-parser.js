@@ -1,6 +1,6 @@
 var CUBE_MAKER = CUBE_MAKER || {};
 
-CUBE_MAKER.FileParser = function (file) {
+CUBE_MAKER.MatrixParser = function (matrix_text) {
 
     return {
         parse: parse

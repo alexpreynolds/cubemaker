@@ -2,7 +2,7 @@ $(function () {
 
     var CubeMaker = CUBE_MAKER.CubeMaker;
     var ExportUtil = CUBE_MAKER.ExportUtil;
-    var FileParser = CUBE_MAKER.FileParser;
+    var MatrixParser = CUBE_MAKER.MatrixParser;
 
     var cube_maker;
     var export_util;
@@ -46,16 +46,14 @@ $(function () {
             cube_maker.reload(data);
         });
 
-
         $(document).on("click", "#matrix-import-btn", function () {
-            var files = $("#matrix-file-input").prop('files');
+            var file_content = read_file("matrix-file-input", function (reader) {
+                var file_content = reader.target.result;
+                var data = new MatrixParser(file_content).parse();
+                cube_maker.reload(data);
+            });
 
-            if(!files || !files[0]) {
-                return;
-            }
 
-            var data = new FileParser(files[0]).parse();
-            cube_maker.reload(data);
         });
     }
 
@@ -85,6 +83,19 @@ $(function () {
         $(".notification .warning.webgl").show();
 
         return false;
+    }
+
+    function read_file(input_id, success) {
+        var files = $("#" + input_id).prop('files');
+
+        if (!files || !files[0]) {
+            return;
+        }
+
+        var file_reader = new FileReader();
+
+        file_reader.onloadend = success;
+        file_reader.readAsText(files[0]);
     }
 
 });
