@@ -2,6 +2,7 @@ $(function () {
 
     var CubeMaker = CUBE_MAKER.CubeMaker;
     var ExportUtil = CUBE_MAKER.ExportUtil;
+    var FileParser = CUBE_MAKER.FileParser;
 
     var cube_maker;
     var export_util;
@@ -40,8 +41,20 @@ $(function () {
             $("#link").val(export_util.to_url());
         });
 
-        $(document).on("click", "#import-btn", function () {
-            var data = $("#import-data").val();
+        $(document).on("click", "#json-import-btn", function () {
+            var data = $("#json-import-data").val();
+            cube_maker.reload(data);
+        });
+
+
+        $(document).on("click", "#matrix-import-btn", function () {
+            var files = $("#matrix-file-input").prop('files');
+
+            if(!files || !files[0]) {
+                return;
+            }
+
+            var data = new FileParser(files[0]).parse();
             cube_maker.reload(data);
         });
     }
