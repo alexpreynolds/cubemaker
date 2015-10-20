@@ -43,7 +43,7 @@ $(function () {
 
         $(document).on("click", "#json-import-btn", function () {
             var data = $("#json-import-data").val();
-            cube_maker.reload(data);
+            cube_maker.reload(JSON.parse(data));
         });
 
         $(document).on("click", "#matrix-import-btn", function () {

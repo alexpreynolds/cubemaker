@@ -1253,7 +1253,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     function reload(data) {
-        import_sample(data);
+        model = data;
+        $(document).trigger("source-change");
         clear();
         init();
         animate();
