@@ -719,8 +719,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var label_text = model.metadata.axis[axis_letter];
             var text_params = {size: 0.05};
 
-            //axis.label = add_label(label_text, position, text_params);
-            axis.label = add_label(axis.name, position, text_params);
+            axis.label = add_label(label_text, position, text_params);
+            //axis.label = add_label(axis.name, position, text_params);
         }
 
         function add_axis_line(axis) {
