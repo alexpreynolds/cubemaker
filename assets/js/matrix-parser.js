@@ -26,10 +26,11 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
     }
 
     function calculate_ranges(data) {
+        var first = data[0];
         var range = {
-            x: {min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY},
-            y: {min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY},
-            z: {min: Number.POSITIVE_INFINITY, max: Number.NEGATIVE_INFINITY}
+            x: {min: first.x, max: first.x},
+            y: {min: first.y, max: first.y},
+            z: {min: first.z, max: first.z}
         };
 
         data.forEach(function (value) {

@@ -279,7 +279,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var point_type = model.metadata.classes[selected_class][point_type_index];
 
             var class_name = point_type.name;
-            var class_rgb = rgb_array_to_str(point_type.rgb);
 
             var particles = new THREE.Geometry();
 
@@ -697,7 +696,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             }
 
             function align_right(geometry) {
-
                 if(!geometry.boundingBox) geometry.computeBoundingBox();
                 var alignment_point = geometry.boundingBox.min.negate();
                 geometry.translate(alignment_point.x, alignment_point.y/2, alignment_point.z);
