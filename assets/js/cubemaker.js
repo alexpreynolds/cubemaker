@@ -673,7 +673,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             height: 0,
             curveSegments: 2,
             font: "helvetiker"
-
         });
 
         var material = new THREE.MeshFaceMaterial( [
@@ -682,13 +681,37 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
         var text_mesh = new THREE.Mesh( text3d, material );
         text_mesh.position.set(position.x, position.y, position.z);
-        text_mesh.geometry.center();
 
+        align_text(text_mesh.geometry, text_params.alignment);
         text_mesh.type = "label";
         scene.add( text_mesh );
 
-
         return text_mesh;
+
+
+        function align_text(geometry, alignment) {
+            switch (alignment) {
+                case "right" : align_right(geometry); break;
+                case "left": align_left(geometry); break;
+                default : align_center(geometry);
+            }
+
+            function align_right(geometry) {
+
+                if(!geometry.boundingBox) geometry.computeBoundingBox();
+                var alignment_point = geometry.boundingBox.min.negate();
+                geometry.translate(alignment_point.x, alignment_point.y/2, alignment_point.z);
+            }
+
+            function align_left(geometry) {
+                if(!geometry.boundingBox) geometry.computeBoundingBox();
+                var alignment_point = geometry.boundingBox.max.negate();
+                geometry.translate(alignment_point.x, alignment_point.y/2, alignment_point.z);
+            }
+            function align_center(geometry) {
+                THREE.GeometryUtils.center(geometry);
+            }
+        }
     }
 
     function add_axis(axis_name) {
@@ -797,7 +820,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 tick_line_object.name = name;
 
                 var tick_text_params = {
-                    size: 0.02
+                    size: 0.02,
+                    alignment: name[0] === "y" ? "left" : "center"
                 };
                 var tick_label = add_label(label, {x: label_position.x * axis_length / 2,y: label_position.y * axis_length / 2,z: label_position.z * axis_length / 2}, tick_text_params);
                 scene.add(tick_line_object);
