@@ -1171,14 +1171,11 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         function adjust_labels() {
             scene.children.forEach(function (child) {
                 if(child.type == "label") {
-                    child.lookAt(camera.position);
+                    child.quaternion.copy( camera.quaternion )
                 }
             });
         }
-
     }
-
-
 
     function activate() {
         setup_action_handlers();
