@@ -709,7 +709,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 geometry.translate(alignment_point.x, alignment_point.y/2, alignment_point.z);
             }
             function align_center(geometry) {
-                THREE.GeometryUtils.center(geometry);
+                geometry.center();
             }
         }
     }
