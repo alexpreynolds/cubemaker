@@ -42,6 +42,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     var play = false;
     var axes = {};
     var axis_length = 1;
+    var bounding_box_scale_fudge = 0.9;
 
     // executes on start
     activate();
@@ -185,7 +186,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         container = document.createElement('div');
         container.setAttribute('id', 'container');
         root_element.append(container);
-        camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 5000);
+        camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 5000);
         scene = new THREE.Scene();
 
         var cube_geometry = new THREE.BoxGeometry(1.005, 1.005, 1.005);
@@ -323,16 +324,16 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                     transparent: true,
                     alphaTest: 0.5
                 }));
-            bounding_box.position.x = 0.9 * rescaled_point_xyz[0];
-            bounding_box.position.y = 0.9 * rescaled_point_xyz[1];
-            bounding_box.position.z = 0.9 * rescaled_point_xyz[2];
+            bounding_box.position.x = bounding_box_scale_fudge * rescaled_point_xyz[0];
+            bounding_box.position.y = bounding_box_scale_fudge * rescaled_point_xyz[1];
+            bounding_box.position.z = bounding_box_scale_fudge * rescaled_point_xyz[2];
             bounding_box.name = id;
             bounding_box.subname = class_name;
             scene.add(bounding_box);
             bounding_boxes.push(bounding_box);
             var particle = new THREE.Vector3(bounding_box.position.x,
-                bounding_box.position.y,
-                bounding_box.position.z);
+                                             bounding_box.position.y,
+                                             bounding_box.position.z);
             particles.vertices.push(particle);
 
             var particle_system = new THREE.Points(particles, particle_material);
@@ -341,9 +342,17 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
         // ============== add axes
         function axis(start, end, name) {
-            if (!start.x){
-                start = {x : start[0], y : start[1], z : start[2]};
-                end = {x : end[0], y : end[1], z : end[2]};
+            if (!start.x) {
+                start = {
+                    x : start[0],
+                    y : start[1],
+                    z : start[2]
+                };
+                end = {
+                    x : end[0],
+                    y : end[1],
+                    z : end[2]
+                };
             }
             axes[name] = new Axis(start, end, name);
         }
@@ -759,7 +768,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
         function add_axis_tick(axis_name, point, label) {
             var tick_length = 0.1;
-            if (point.x === undefined){
+            if (point.x === undefined) {
                 point = {x : point[0], y : point[1], z : point[2]};
             }
             var axis_letter = axis_name[0];
@@ -773,6 +782,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var start, end, label_position;
 
             if (["z1", "y2"].indexOf(axis_name) > -1) {
+                if (axis_name == "y2")
+                    point.y *= bounding_box_scale_fudge;
+                else
+                    point.z *= bounding_box_scale_fudge;
                 start = {x: point.x - tick_length, y: point.y, z: point.z};
                 end = {x: point.x, y: point.y, z: point.z};
                 label_position = {x: point.x - tick_length*2, y: point.y, z: point.z};
@@ -780,6 +793,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             }
 
             if (["z3", "y3"].indexOf(axis_name) > -1) {
+                if (axis_name == "y3")
+                    point.y *= bounding_box_scale_fudge;
+                else
+                    point.z *= bounding_box_scale_fudge;
                 start = {x: point.x, y: point.y, z: point.z};
                 end = {x: point.x + tick_length, y: point.y, z: point.z};
                 label_position = {x: point.x + tick_length*2, y: point.y, z: point.z};
@@ -787,6 +804,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             }
 
             if (["x1", "y1"].indexOf(axis_name) > -1) {
+                if (axis_name == "x1")
+                    point.x *= bounding_box_scale_fudge;
+                else
+                    point.y *= bounding_box_scale_fudge;                
                 start = {x: point.x, y: point.y, z: point.z - tick_length};
                 end = {x: point.x, y: point.y, z: point.z};
                 label_position = {x: point.x, y: point.y, z: point.z - tick_length*2};
@@ -794,6 +815,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             }
 
             if(["x2", "y4"].indexOf(axis_name) > -1) {
+                if (axis_name == "x2")
+                    point.x *= bounding_box_scale_fudge;
+                else
+                    point.y *= bounding_box_scale_fudge;                                
                 start = {x: point.x, y: point.y, z: point.z};
                 end = {x: point.x, y: point.y, z: point.z + tick_length};
                 label_position = {x: point.x, y: point.y, z: point.z + tick_length*2};
@@ -801,6 +826,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             }
 
             if(["x3", "z2", "x4", "z4"].indexOf(axis_name) > -1) {
+                if ((axis_name == "x3") || (axis_name == "x4"))
+                    point.x *= bounding_box_scale_fudge;
+                else if ((axis_name == "z2") || (axis_name == "z4"))
+                    point.z *= bounding_box_scale_fudge;                
                 start = {x: point.x, y: point.y, z: point.z};
                 end = {x: point.x, y: point.y + tick_length, z: point.z};
                 label_position = {x: point.x, y: point.y + tick_length*1.5, z: point.z};
@@ -808,7 +837,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             }
 
             function create_axis_tick(start, end, name, label, label_position) {
-                if (start.x === undefined){
+                if (start.x === undefined) {
                     start = {x : start[0], y : start[1], z : start[2]};
                     end = {x : end[0], y : end[1], z : end[2]};
                 }
