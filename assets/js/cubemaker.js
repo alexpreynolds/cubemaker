@@ -707,7 +707,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 geometry.translate(alignment_point.x, alignment_point.y/2, alignment_point.z);
             }
             function align_center(geometry) {
-                THREE.GeometryUtils.center(geometry);
+                geometry.center();
             }
         }
     }
@@ -1169,14 +1169,11 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         function adjust_labels() {
             scene.children.forEach(function (child) {
                 if(child.type == "label") {
-                    child.lookAt(camera.position);
+                    child.quaternion.copy( camera.quaternion )
                 }
             });
         }
-
     }
-
-
 
     function activate() {
         setup_action_handlers();
