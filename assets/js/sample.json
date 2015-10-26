@@ -7,21 +7,22 @@
         "name": "PC1",
         "color": "red",
         "thickness": 1,
-        "tick_color": "black",
-        "tick_thickness": 1
+        "tick_color": "red",
+        "tick_thickness": 1,
+        "tick_length": 0.1
       },
       "y": {
         "name": "PC2",
         "color": "green",
         "thickness": 1,
-        "tick_color": "black",
+        "tick_color": "green",
         "tick_thickness": 1
       },
       "z": {
         "name": "PC3",
         "color": "blue",
         "thickness": 1,
-        "tick_color": "black",
+        "tick_color": "blue",
         "tick_thickness": 1
       }
     },

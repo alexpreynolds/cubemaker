@@ -5,8 +5,11 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     // ====== internal variables declaration section
     const TICKS_VALUES_PRECISION = 2;
     const TICKS_PER_AXIS = 4;
-    var AXIS_LABEL_DISTANCE_KOEFF = 0.70;
-    var BOUNDING_BOX_SCALE_FUDGE = 0.9;
+    const AXIS_LABEL_DISTANCE_KOEFF = 0.70;
+    const BOUNDING_BOX_SCALE_FUDGE = 0.9;
+    const DEFAULT_TICK_LENGTH = 0.1;
+    const DEFAULT_LINE_THICKNESS = 1;
+    const DEFAULT_LINE_COLOR = "black";
     var root_element = $("#" + rootElementId);
     var camera, scene, raycaster, renderer, controls;
     var container, stats;
@@ -659,8 +662,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             options = {};
         }
 
-        var thickness = options.thickness || 5;
-        var color = options.color || 0x000000;
+        var thickness = options.thickness || DEFAULT_LINE_THICKNESS;
+        var color = options.color || DEFAULT_LINE_COLOR;
         var axis_line_material = new THREE.LineBasicMaterial({color: color, opacity: 0, linewidth: thickness});
         var axis_geometry = new THREE.Geometry();
         axis_geometry.vertices.push(new THREE.Vector3(start.x, start.y, start.z));
@@ -730,7 +733,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     function get_axis_metadata(axis_name) {
-        return model.metadata.axis[axis_name[0]];
+        return model.metadata.axis[axis_name[0]] || {};
     }
 
     function rescale_vector(vector, scaling, dimensions_to_scale) {
@@ -795,7 +798,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         }
 
         function add_axis_tick(axis_name, point, label) {
-            var tick_length = 0.1;
+
+            var axis_metadata = get_axis_metadata(axis_name[0]);
+            var tick_length = axis_metadata.tick_length || DEFAULT_TICK_LENGTH;
+
             if (point.x === undefined) {
                 point = {x: point[0], y: point[1], z: point[2]};
             }
@@ -840,7 +846,15 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             function create_axis_tick(start, end, name, label, label_position) {
                 var rescaled_start = rescale_vector(start, axis_start_end_koeff);
                 var rescaled_end = rescale_vector(end, axis_start_end_koeff);
-                var tick_line_object = add_line(rescaled_start, rescaled_end);
+
+                var axis_metadata = get_axis_metadata(name[0]);
+
+                var tick_line_options = {
+                    color: axis_metadata.tick_color,
+                    thickness: axis_metadata.tick_thickness
+                };
+
+                var tick_line_object = add_line(rescaled_start, rescaled_end, tick_line_options);
                 tick_line_object.name = name;
 
                 var tick_text_params = {
