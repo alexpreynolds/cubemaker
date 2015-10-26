@@ -5,6 +5,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     // ====== internal variables declaration section
     const TICKS_VALUES_PRECISION = 2;
     const TICKS_PER_AXIS = 4;
+    var AXIS_LABEL_DISTANCE_KOEFF = 0.70;
+    var BOUNDING_BOX_SCALE_FUDGE = 0.9;
     var root_element = $("#" + rootElementId);
     var camera, scene, raycaster, renderer, controls;
     var container, stats;
@@ -42,7 +44,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     var play = false;
     var axes = {};
     var axis_length = 1;
-    var bounding_box_scale_fudge = 0.9;
 
 
     // executes on start
@@ -325,9 +326,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                     transparent: true,
                     alphaTest: 0.5
                 }));
-            bounding_box.position.x = bounding_box_scale_fudge * rescaled_point_xyz[0];
-            bounding_box.position.y = bounding_box_scale_fudge * rescaled_point_xyz[1];
-            bounding_box.position.z = bounding_box_scale_fudge * rescaled_point_xyz[2];
+            bounding_box.position.x = BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[0];
+            bounding_box.position.y = BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[1];
+            bounding_box.position.z = BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[2];
             bounding_box.name = id;
             bounding_box.subname = class_name;
             scene.add(bounding_box);
@@ -739,7 +740,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         function add_axis_label(axis) {
             var start = axis.start;
             var end = axis.end;
-            var mid_point_koeff = axis_start_end_koeff * 0.65;
+
+            var mid_point_koeff = axis_start_end_koeff * AXIS_LABEL_DISTANCE_KOEFF;
             var position = {
                 x: (start.x + end.x) * mid_point_koeff,
                 y: (start.y + end.y) * mid_point_koeff,
@@ -861,9 +863,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
             // rescale axes to calculate proper ticks coordinates
             var rescaled_start = $.extend({}, start);
-            rescaled_start[axis] = rescaled_start[axis] * bounding_box_scale_fudge;
+            rescaled_start[axis] = rescaled_start[axis] * BOUNDING_BOX_SCALE_FUDGE;
             var rescaled_end = $.extend({}, end);
-            rescaled_end[axis] = rescaled_end[axis] * bounding_box_scale_fudge;
+            rescaled_end[axis] = rescaled_end[axis] * BOUNDING_BOX_SCALE_FUDGE;
 
             var intermediate_coordinate_values = get_intermediate_coordinate_values(rescaled_start[axis], rescaled_end[axis], number_of_ticks);
             var intermediate_points = get_intermediate_points(rescaled_start, intermediate_coordinate_values, axis);
