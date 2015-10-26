@@ -188,7 +188,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         container = document.createElement('div');
         container.setAttribute('id', 'container');
         root_element.append(container);
-        camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, 0.1, 5000);
+        camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 5000);
         scene = new THREE.Scene();
 
         var cube_geometry = new THREE.BoxGeometry(1.005, 1.005, 1.005);
