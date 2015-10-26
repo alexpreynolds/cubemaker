@@ -790,38 +790,31 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var tick_name = axis_name + point[axis_letter];
             var start, end, label_position;
 
-            if (["z1", "y2"].indexOf(axis_name) > -1) {
+            if (["z1", "y2", "z2"].indexOf(axis_name) > -1) {
                 start = {x: point.x - tick_length, y: point.y, z: point.z};
                 end = {x: point.x, y: point.y, z: point.z};
                 label_position = {x: point.x - tick_length * 2, y: point.y, z: point.z};
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
-            if (["z3", "y3"].indexOf(axis_name) > -1) {
+            if (["z3", "y3", "z4"].indexOf(axis_name) > -1) {
                 start = {x: point.x, y: point.y, z: point.z};
                 end = {x: point.x + tick_length, y: point.y, z: point.z};
                 label_position = {x: point.x + tick_length * 2, y: point.y, z: point.z};
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
-            if (["x1", "y1"].indexOf(axis_name) > -1) {
+            if (["x1", "y1", "x3"].indexOf(axis_name) > -1) {
                 start = {x: point.x, y: point.y, z: point.z - tick_length};
                 end = {x: point.x, y: point.y, z: point.z};
                 label_position = {x: point.x, y: point.y, z: point.z - tick_length * 2};
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
-            if (["x2", "y4"].indexOf(axis_name) > -1) {
+            if (["x2", "y4", "x4"].indexOf(axis_name) > -1) {
                 start = {x: point.x, y: point.y, z: point.z};
                 end = {x: point.x, y: point.y, z: point.z + tick_length};
                 label_position = {x: point.x, y: point.y, z: point.z + tick_length * 2};
-                ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
-            }
-
-            if (["x3", "z2", "x4", "z4"].indexOf(axis_name) > -1) {
-                start = {x: point.x, y: point.y, z: point.z};
-                end = {x: point.x, y: point.y + tick_length, z: point.z};
-                label_position = {x: point.x, y: point.y + tick_length * 1.5, z: point.z};
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
