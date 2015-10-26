@@ -3,9 +3,27 @@
     "title": "Cubemaker",
     "subtitle": "Use mouse or arrow keys to rotate, scrollwheel to zoom, and double-tap arrow keys to animate",
     "axis": {
-      "x": "PC1",
-      "y": "PC2",
-      "z": "PC3"
+      "x": {
+        "name": "PC1",
+        "color": "red",
+        "thickness": 1,
+        "tick_color": "blue",
+        "tick_thickness": 1
+      },
+      "y": {
+        "name": "PC2",
+        "color": "red",
+        "thickness": 1,
+        "tick_color": "blue",
+        "tick_thickness": 1
+      },
+      "z": {
+        "name": "PC3",
+        "color": "red",
+        "thickness": 1,
+        "tick_color": "blue",
+        "tick_thickness": 1
+      }
     },
     "selected_class": "Lineage",
     "show_axes": true,

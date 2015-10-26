@@ -654,8 +654,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         return dp > 0;
     }
 
-    function add_line(start, end) {
-        var axis_line_material = new THREE.LineBasicMaterial({color: 0xbb0000, opacity: 0, linewidth: 5});
+    function add_line(start, end, options) {
+        var thickness = options.thickness || 5;
+        var color = options.color || 0xbb0000;
+        var axis_line_material = new THREE.LineBasicMaterial({color: color, opacity: 0, linewidth: thickness});
         var axis_geometry = new THREE.Geometry();
         axis_geometry.vertices.push(new THREE.Vector3(start.x, start.y, start.z));
         axis_geometry.vertices.push(new THREE.Vector3(end.x, end.y, end.z));
@@ -723,7 +725,14 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         }
     }
 
+    function get_axis_metadata(axis_name) {
+        return model.metadata.axis[axis_name[0]];
+    }
+
     function add_axis(axis_name) {
+
+        var axis_metadata = get_axis_metadata(axis_name);
+
         var axis = axes[axis_name];
         var axis_start_end_koeff = axis_length / 2;
         var start = axis.start;
@@ -748,12 +757,11 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 z: (start.z + end.z) * mid_point_koeff
             };
 
-            var axis_letter = axis.name[0];
-            var label_text = model.metadata.axis[axis_letter];
+            var label_text = axis_metadata.name;
             var text_params = {size: 0.05};
 
-            //axis.label = add_label(label_text, position, text_params);
-            axis.label = add_label(axis.name, position, text_params);
+            axis.label = add_label(label_text, position, text_params);
+            //axis.label = add_label(axis.name, position, text_params);
         }
 
         function add_axis_line(axis) {
@@ -769,7 +777,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 y: axis_start_end_koeff * end.y,
                 z: axis_start_end_koeff * end.z
             };
-            var line = add_line(start_vector, end_vector);
+
+            var axis_metadata = get_axis_metadata(axis.name);
+            var options = {color: axis_metadata.color, thickness: axis_metadata.thickness};
+            var line = add_line(start_vector, end_vector, options);
 
             line.name = axis.name;
             axis.line = line;
@@ -921,9 +932,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                     return "z";
                 }
             }
-
         }
-
     }
 
     function add_all_axes() {
