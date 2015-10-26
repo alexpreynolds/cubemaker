@@ -655,8 +655,12 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     function add_line(start, end, options) {
+        if (options == undefined) {
+            options = {};
+        }
+
         var thickness = options.thickness || 5;
-        var color = options.color || 0xbb0000;
+        var color = options.color || 0x000000;
         var axis_line_material = new THREE.LineBasicMaterial({color: color, opacity: 0, linewidth: thickness});
         var axis_geometry = new THREE.Geometry();
         axis_geometry.vertices.push(new THREE.Vector3(start.x, start.y, start.z));
@@ -729,6 +733,18 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         return model.metadata.axis[axis_name[0]];
     }
 
+    function rescale_vector(vector, scaling, dimensions_to_scale) {
+        if (!dimensions_to_scale || dimensions_to_scale.length == 0) {
+            dimensions_to_scale = ["x", "y", "z"];
+        }
+        var rescaled_vector = $.extend({}, vector);
+        dimensions_to_scale.forEach(function (dimension) {
+            rescaled_vector[dimension] = rescaled_vector[dimension] * scaling;
+        });
+
+        return rescaled_vector;
+    }
+
     function add_axis(axis_name) {
 
         var axis_metadata = get_axis_metadata(axis_name);
@@ -767,16 +783,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         function add_axis_line(axis) {
             var start = axis.start;
             var end = axis.end;
-            var start_vector = {
-                x: axis_start_end_koeff * start.x,
-                y: axis_start_end_koeff * start.y,
-                z: axis_start_end_koeff * start.z
-            };
-            var end_vector = {
-                x: axis_start_end_koeff * end.x,
-                y: axis_start_end_koeff * end.y,
-                z: axis_start_end_koeff * end.z
-            };
+            var start_vector = rescale_vector(start, axis_start_end_koeff);
+            var end_vector = rescale_vector(end, axis_start_end_koeff);
 
             var axis_metadata = get_axis_metadata(axis.name);
             var options = {color: axis_metadata.color, thickness: axis_metadata.thickness};
@@ -830,46 +838,32 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             }
 
             function create_axis_tick(start, end, name, label, label_position) {
-                if (start.x === undefined) {
-                    start = {x: start[0], y: start[1], z: start[2]};
-                    end = {x: end[0], y: end[1], z: end[2]};
-                }
-                var axis_ticks_line_material = new THREE.LineBasicMaterial({
-                    color: 0x0000bb,
-                    opacity: 0.25,
-                    linewidth: 5
-                });
-                var axis_tick_line_geometry = new THREE.Geometry();
-                axis_tick_line_geometry.vertices.push(new THREE.Vector3(start.x * axis_length / 2, start.y * axis_length / 2, start.z * axis_length / 2));
-                axis_tick_line_geometry.vertices.push(new THREE.Vector3(end.x * axis_length / 2, end.y * axis_length / 2, end.z * axis_length / 2));
-                var tick_line_object = new THREE.Line(axis_tick_line_geometry, axis_ticks_line_material);
+                var rescaled_start = rescale_vector(start, axis_start_end_koeff);
+                var rescaled_end = rescale_vector(end, axis_start_end_koeff);
+                var tick_line_object = add_line(rescaled_start, rescaled_end);
                 tick_line_object.name = name;
 
                 var tick_text_params = {
                     size: 0.02,
                     alignment: name[0] === "y" ? "left" : "center"
                 };
-                var tick_label = add_label(label, {
-                    x: label_position.x * axis_length / 2,
-                    y: label_position.y * axis_length / 2,
-                    z: label_position.z * axis_length / 2
-                }, tick_text_params);
+
+                var actual_label_position = rescale_vector(label_position, axis_start_end_koeff);
+                var tick_label = add_label(label, actual_label_position, tick_text_params);
                 scene.add(tick_line_object);
 
                 return {line: tick_line_object, label: tick_label};
             }
         }
-
+        
         function calculate_axis_ticks(start, end, number_of_ticks) {
 
             // determine axis along which ticks should be placed
             var axis = determine_axis(start, end);
 
             // rescale axes to calculate proper ticks coordinates
-            var rescaled_start = $.extend({}, start);
-            rescaled_start[axis] = rescaled_start[axis] * BOUNDING_BOX_SCALE_FUDGE;
-            var rescaled_end = $.extend({}, end);
-            rescaled_end[axis] = rescaled_end[axis] * BOUNDING_BOX_SCALE_FUDGE;
+            var rescaled_start = rescale_vector(start, BOUNDING_BOX_SCALE_FUDGE, [axis]);
+            var rescaled_end = rescale_vector(end, BOUNDING_BOX_SCALE_FUDGE, [axis]);
 
             var intermediate_coordinate_values = get_intermediate_coordinate_values(rescaled_start[axis], rescaled_end[axis], number_of_ticks);
             var intermediate_points = get_intermediate_points(rescaled_start, intermediate_coordinate_values, axis);
