@@ -119,6 +119,23 @@
         -97.4840574820861,
         430.242836265501
       ]
+    },
+    "materials": {
+      "opaque_cube_line_material": {
+        "color": "0xbbbbbb",
+        "thickness": 3
+      },
+      "cube_materials": {
+        "first": {
+          "color": "0xf7f7f7"
+        },
+        "second": {
+          "color": "0xf4f4f4"
+        },
+        "third" : {
+          "color": "0xf1f1f1"
+        }
+      }
     }
   },
   "data": [

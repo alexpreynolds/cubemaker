@@ -11,19 +11,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     const DEFAULT_LINE_THICKNESS = 1;
     const DEFAULT_LINE_COLOR = "black";
     var root_element = $("#" + rootElementId);
-    var camera, scene, raycaster, renderer, controls;
-    var container, stats;
+    var camera, scene, raycaster, renderer, controls, container, cube, vertex_materials;
     var mouse = new THREE.Vector2(), INTERSECTED;
-    var cube = null;
-    var cube_materials = null;
-    var opaque_cube_lines = new Array(6);
-    var cube_line_geometry = null;
-    var opaque_cube_line_material = new THREE.LineBasicMaterial({color: 0xbbbbbb, opacity: 0.25, linewidth: 3});
-    var red_cube_line_material = new THREE.LineBasicMaterial({color: 0xff0000, opacity: 0.25, linewidth: 3});
-    var green_cube_line_material = new THREE.LineBasicMaterial({color: 0x00ff00, opacity: 0.25, linewidth: 3});
-    var blue_cube_line_material = new THREE.LineBasicMaterial({color: 0x0000ff, opacity: 0.25, linewidth: 3});
-    var cube_line_materials;
-    var vertex_materials;
+    var opaque_cube_line_material, red_cube_line_material, green_cube_line_material, blue_cube_line_material;
     var bounding_boxes = [];
     var horizontal_fudge = 1.75;
     var x_deg = 70;
@@ -165,12 +155,17 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
     function init() {
         mouse = new THREE.Vector2();
-        opaque_cube_lines = new Array(6);
-        opaque_cube_line_material = new THREE.LineBasicMaterial({color: 0xbbbbbb, opacity: 0.25, linewidth: 3});
+        var opaque_cube_lines = new Array(6);
+
+        var opaque_line_metadata = get_materials_metadata().opaque_cube_line_material || {};
+        var opaque_line_color = parse_color(opaque_line_metadata.color) || 0xbbbbbb;
+        var opaque_line_width = opaque_line_metadata.thickness || 3;
+
+        opaque_cube_line_material = new THREE.LineBasicMaterial({color: opaque_line_color, opacity: 0.25, linewidth: opaque_line_width});
         red_cube_line_material = new THREE.LineBasicMaterial({color: 0xff0000, opacity: 0.25, linewidth: 3});
         green_cube_line_material = new THREE.LineBasicMaterial({color: 0x00ff00, opacity: 0.25, linewidth: 3});
         blue_cube_line_material = new THREE.LineBasicMaterial({color: 0x0000ff, opacity: 0.25, linewidth: 3});
-        cube_line_materials = new Array(6);
+        var cube_line_materials = new Array(6);
         for (var cube_line_materials_idx = 0; cube_line_materials_idx < cube_line_materials.length; cube_line_materials_idx++) {
             cube_line_materials[cube_line_materials_idx] = new THREE.LineBasicMaterial().clone(opaque_cube_line_material);
         }
@@ -195,19 +190,25 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         scene = new THREE.Scene();
 
         var cube_geometry = new THREE.BoxGeometry(1.005, 1.005, 1.005);
-        cube_materials = [
-            new THREE.MeshBasicMaterial({color: 0xf7f7f7, transparent: true, opacity: 1, side: THREE.BackSide}),
-            new THREE.MeshBasicMaterial({color: 0xf7f7f7, transparent: true, opacity: 1, side: THREE.BackSide}),
-            new THREE.MeshBasicMaterial({color: 0xf7f7f7, transparent: true, opacity: 1, side: THREE.BackSide}),
-            new THREE.MeshBasicMaterial({color: 0xf7f7f7, transparent: true, opacity: 1, side: THREE.BackSide}),
-            new THREE.MeshBasicMaterial({color: 0xf4f4f4, transparent: true, opacity: 1, side: THREE.BackSide}),
-            new THREE.MeshBasicMaterial({color: 0xf4f4f4, transparent: true, opacity: 1, side: THREE.BackSide}),
-            new THREE.MeshBasicMaterial({color: 0xf4f4f4, transparent: true, opacity: 1, side: THREE.BackSide}),
-            new THREE.MeshBasicMaterial({color: 0xf4f4f4, transparent: true, opacity: 1, side: THREE.BackSide}),
-            new THREE.MeshBasicMaterial({color: 0xf1f1f1, transparent: true, opacity: 1, side: THREE.BackSide}),
-            new THREE.MeshBasicMaterial({color: 0xf1f1f1, transparent: true, opacity: 1, side: THREE.BackSide}),
-            new THREE.MeshBasicMaterial({color: 0xf1f1f1, transparent: true, opacity: 1, side: THREE.BackSide}),
-            new THREE.MeshBasicMaterial({color: 0xf1f1f1, transparent: true, opacity: 1, side: THREE.BackSide})
+
+        var cube_material_metadata = get_materials_metadata().cube_materials || {};
+        var first_cube_material_color = parse_color(cube_material_metadata.first.color) || 0xf7f7f7;
+        var second_cube_material_color = parse_color(cube_material_metadata.second.color) || 0xf4f4f4;
+        var third_cube_material_color = parse_color(cube_material_metadata.third.color) || 0xf1f1f1;
+
+        var cube_materials = [
+            new THREE.MeshBasicMaterial({color: first_cube_material_color, transparent: true, opacity: 1, side: THREE.BackSide}),
+            new THREE.MeshBasicMaterial({color: first_cube_material_color, transparent: true, opacity: 1, side: THREE.BackSide}),
+            new THREE.MeshBasicMaterial({color: first_cube_material_color, transparent: true, opacity: 1, side: THREE.BackSide}),
+            new THREE.MeshBasicMaterial({color: first_cube_material_color, transparent: true, opacity: 1, side: THREE.BackSide}),
+            new THREE.MeshBasicMaterial({color: second_cube_material_color, transparent: true, opacity: 1, side: THREE.BackSide}),
+            new THREE.MeshBasicMaterial({color: second_cube_material_color, transparent: true, opacity: 1, side: THREE.BackSide}),
+            new THREE.MeshBasicMaterial({color: second_cube_material_color, transparent: true, opacity: 1, side: THREE.BackSide}),
+            new THREE.MeshBasicMaterial({color: second_cube_material_color, transparent: true, opacity: 1, side: THREE.BackSide}),
+            new THREE.MeshBasicMaterial({color: third_cube_material_color, transparent: true, opacity: 1, side: THREE.BackSide}),
+            new THREE.MeshBasicMaterial({color: third_cube_material_color, transparent: true, opacity: 1, side: THREE.BackSide}),
+            new THREE.MeshBasicMaterial({color: third_cube_material_color, transparent: true, opacity: 1, side: THREE.BackSide}),
+            new THREE.MeshBasicMaterial({color: third_cube_material_color, transparent: true, opacity: 1, side: THREE.BackSide})
         ];
         var cube_material = new THREE.MeshFaceMaterial(cube_materials);
         cube = new THREE.Mesh(cube_geometry, cube_material);
@@ -663,7 +664,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         }
 
         var thickness = options.thickness || DEFAULT_LINE_THICKNESS;
-        var color = options.color || DEFAULT_LINE_COLOR;
+        var color = parse_color(options.color) || DEFAULT_LINE_COLOR;
         var axis_line_material = new THREE.LineBasicMaterial({color: color, opacity: 0, linewidth: thickness});
         var axis_geometry = new THREE.Geometry();
         axis_geometry.vertices.push(new THREE.Vector3(start.x, start.y, start.z));
@@ -736,6 +737,14 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         return model.metadata.axis[axis_name[0]] || {};
     }
 
+    function get_materials_metadata() {
+        return model.metadata.materials || {};
+    }
+
+    function parse_color(color) {
+        return $.isNumeric(color) ? parseInt(color) : color;
+    }
+
     function rescale_vector(vector, scaling, dimensions_to_scale) {
         if (!dimensions_to_scale || dimensions_to_scale.length == 0) {
             dimensions_to_scale = ["x", "y", "z"];
@@ -790,7 +799,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var end_vector = rescale_vector(end, axis_start_end_koeff);
 
             var axis_metadata = get_axis_metadata(axis.name);
-            var options = {color: axis_metadata.color, thickness: axis_metadata.thickness};
+            var options = {color: parse_color(axis_metadata.color), thickness: axis_metadata.thickness};
             var line = add_line(start_vector, end_vector, options);
 
             line.name = axis.name;
