@@ -4,65 +4,186 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
     const DELIMITER = "\t";
     var index_to_name = {};
 
-
     return {
         parse: parse
     };
 
     function parse() {
-        var result = get_default_sample();
+        var result = {};
         var lines = text_to_array_of_lines(matrix_text);
         index_to_name = create_index_to_name_relation(lines[0]);
 
-        lines.slice(1).forEach(function (line) {
-            var obj = line_to_object(line);
-            result.data.push(obj);
-        });
-
-        result.metadata.range = calculate_ranges(result.data);
-        result.metadata.axis = get_axes_metadata(lines[0]);
+        result.data = parse_data(lines);
+        result.metadata = parse_metadata(lines, result.data);
 
         return result;
     }
 
-    function calculate_ranges(data) {
-        var first = data[0];
-        var range = {
-            x: {min: first.x, max: first.x},
-            y: {min: first.y, max: first.y},
-            z: {min: first.z, max: first.z}
-        };
+    function parse_data(data_lines) {
 
-        data.forEach(function (value) {
-            range.x.min = value.x < range.x.min ? value.x: range.x.min;
-            range.x.max = value.x > range.x.max ? value.x: range.x.max;
-
-            range.y.min = value.y < range.y.min ? value.y: range.y.min;
-            range.y.max = value.y > range.y.max ? value.y: range.y.max;
-
-            range.z.min = value.z < range.z.min ? value.z: range.z.min;
-            range.z.max = value.z > range.z.max ? value.z: range.z.max;
+        var data = [];
+        data_lines.slice(1).forEach(function (line) {
+            var obj = line_to_object(line);
+            data.push(obj);
         });
 
-        return {x: [range.x.min, range.x.max], y:[range.y.min, range.y.max], z: [range.z.min, range.z.max]};
+        return data;
     }
 
-    function get_axes_metadata(first_line) {
+    function parse_metadata(raw_lines, parsed_data) {
+        var metadata = get_default_metadata();
 
-        var arr = line_to_array(first_line);
-        var default_axis_metadata = {
-            "color": "red",
-            "thickness": 1,
-            "tick_color": "red",
-            "tick_thickness": 1,
-            "tick_length": 0.1
-        };
+        metadata.range = calculate_ranges(parsed_data);
+        metadata.axis = parse_axes_metadata(raw_lines[0]);
+        metadata.classes = parse_classes();
+        metadata.selected_class = Object.keys(metadata.classes)[0];     // set first class as selected
 
-        return {
-            x: $.extend({name: arr[0]}, default_axis_metadata),
-            y: $.extend({name: arr[1]}, default_axis_metadata),
-            z: $.extend({name: arr[2]}, default_axis_metadata)
-        };
+        return metadata;
+
+        function parse_axes_metadata(first_line) {
+
+            var arr = line_to_array(first_line);
+            var default_axis_metadata = {
+                "color": "red",
+                "thickness": 1,
+                "tick_color": "red",
+                "tick_thickness": 1,
+                "tick_length": 0.1
+            };
+
+            return {
+                x: $.extend({name: arr[0]}, default_axis_metadata),
+                y: $.extend({name: arr[1]}, default_axis_metadata),
+                z: $.extend({name: arr[2]}, default_axis_metadata)
+            };
+        }
+
+        function calculate_ranges(data) {
+            var first = data[0];
+            var range = {
+                x: {min: first.x, max: first.x},
+                y: {min: first.y, max: first.y},
+                z: {min: first.z, max: first.z}
+            };
+
+            data.forEach(function (value) {
+                range.x.min = value.x < range.x.min ? value.x: range.x.min;
+                range.x.max = value.x > range.x.max ? value.x: range.x.max;
+
+                range.y.min = value.y < range.y.min ? value.y: range.y.min;
+                range.y.max = value.y > range.y.max ? value.y: range.y.max;
+
+                range.z.min = value.z < range.z.min ? value.z: range.z.min;
+                range.z.max = value.z > range.z.max ? value.z: range.z.max;
+            });
+
+            return {x: [range.x.min, range.x.max], y:[range.y.min, range.y.max], z: [range.z.min, range.z.max]};
+        }
+
+        function get_default_metadata() {
+            return {
+                "title": "Cubemaker",
+                "subtitle": "Use mouse or arrow keys to rotate, scrollwheel to zoom, and double-tap arrow keys to animate",
+                "axis": {},
+                "selected_class": "",
+                "show_axes": true,
+                "classes": {},
+                "range": {},
+                "materials": {
+                    "opaque_cube_line_material": {
+                        "color": "0xbbbbbb",
+                        "thickness": 3
+                    },
+                    "back_cube_material": {
+                        "color": "0xf7f7f7"
+                    }
+                }
+            }
+        }
+
+
+        function parse_classes() {
+
+            //TODO[Alexander Serebriyan]: implement actual class parsing
+            return {
+                "Lineage": [
+                    {
+                        "name": "Paraxial mesoderm deratives",
+                        "rgb": [
+                            238,
+                            23,
+                            23
+                        ]
+                    },
+                    {
+                        "name": "Lymphoid",
+                        "rgb": [
+                            222,
+                            99,
+                            20
+                        ]
+                    },
+                    {
+                        "name": "Primitive",
+                        "rgb": [
+                            128,
+                            128,
+                            255
+                        ]
+                    },
+                    {
+                        "name": "Ectoderm",
+                        "rgb": [
+                            0,
+                            0,
+                            255
+                        ]
+                    }
+                ],
+                "Tissue": [
+                    {
+                        "name": "Skin",
+                        "rgb": [
+                            127,
+                            255,
+                            0
+                        ]
+                    },
+                    {
+                        "name": "Muscle",
+                        "rgb": [
+                            178,
+                            34,
+                            34
+                        ]
+                    },
+                    {
+                        "name": "Immune",
+                        "rgb": [
+                            218,
+                            165,
+                            32
+                        ]
+                    },
+                    {
+                        "name": "Gingival",
+                        "rgb": [
+                            188,
+                            143,
+                            143
+                        ]
+                    },
+                    {
+                        "name": "Stem",
+                        "rgb": [
+                            70,
+                            130,
+                            180
+                        ]
+                    }
+                ]
+            }
+        }
     }
 
 
@@ -123,6 +244,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
         return line.split(DELIMITER);
     }
 
+
     function transform_value(field, value) {
         var relation = {
             Lineage: {
@@ -141,107 +263,6 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
         };
 
         return field in relation ? relation[field][value] : value;
-    }
-
-    function get_default_sample() {
-        return {
-            metadata: {
-                "title": "Cubemaker",
-                "subtitle": "Use mouse or arrow keys to rotate, scrollwheel to zoom, and double-tap arrow keys to animate",
-                "axis": {},
-                "selected_class": "",
-                "show_axes": true,
-                "classes": {
-                    "Lineage": [
-                        {
-                            "name": "Paraxial mesoderm deratives",
-                            "rgb": [
-                                238,
-                                23,
-                                23
-                            ]
-                        },
-                        {
-                            "name": "Lymphoid",
-                            "rgb": [
-                                222,
-                                99,
-                                20
-                            ]
-                        },
-                        {
-                            "name": "Primitive",
-                            "rgb": [
-                                128,
-                                128,
-                                255
-                            ]
-                        },
-                        {
-                            "name": "Ectoderm",
-                            "rgb": [
-                                0,
-                                0,
-                                255
-                            ]
-                        }
-                    ],
-                    "Tissue": [
-                        {
-                            "name": "Skin",
-                            "rgb": [
-                                127,
-                                255,
-                                0
-                            ]
-                        },
-                        {
-                            "name": "Muscle",
-                            "rgb": [
-                                178,
-                                34,
-                                34
-                            ]
-                        },
-                        {
-                            "name": "Immune",
-                            "rgb": [
-                                218,
-                                165,
-                                32
-                            ]
-                        },
-                        {
-                            "name": "Gingival",
-                            "rgb": [
-                                188,
-                                143,
-                                143
-                            ]
-                        },
-                        {
-                            "name": "Stem",
-                            "rgb": [
-                                70,
-                                130,
-                                180
-                            ]
-                        }
-                    ]
-                },
-                "range": {},
-                "materials": {
-                    "opaque_cube_line_material": {
-                        "color": "0xbbbbbb",
-                        "thickness": 3
-                    },
-                    "back_cube_material": {
-                        "color": "0xf7f7f7"
-                    }
-                }
-            },
-            data: []
-        };
     }
 
     function but_last(array) {
