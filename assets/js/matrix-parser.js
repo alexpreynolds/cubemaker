@@ -2,6 +2,10 @@ var CUBE_MAKER = CUBE_MAKER || {};
 
 CUBE_MAKER.MatrixParser = function (matrix_text) {
     const DELIMITER = "\t";
+    const LINAGE_COLUMN = "Lineage";
+    const NAME_COLUMN = "Name";
+    const TISSUE_COLUMN = "Tissue";
+
     var index_to_name = {};
 
     return {
@@ -35,7 +39,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
 
         metadata.range = calculate_ranges(parsed_data);
         metadata.axis = parse_axes_metadata(raw_lines[0]);
-        metadata.classes = parse_classes();
+        metadata.classes = parse_classes(raw_lines);
         metadata.selected_class = Object.keys(metadata.classes)[0];     // set first class as selected
 
         return metadata;
@@ -102,86 +106,44 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
         }
 
 
-        function parse_classes() {
+        function parse_classes(raw_lines) {
+            var header = raw_lines[0].split(DELIMITER);
+            var relation = get_name_index_relation_for_classes();
 
-            //TODO[Alexander Serebriyan]: implement actual class parsing
-            return {
-                "Lineage": [
-                    {
-                        "name": "Paraxial mesoderm deratives",
-                        "rgb": [
-                            238,
-                            23,
-                            23
-                        ]
-                    },
-                    {
-                        "name": "Lymphoid",
-                        "rgb": [
-                            222,
-                            99,
-                            20
-                        ]
-                    },
-                    {
-                        "name": "Primitive",
-                        "rgb": [
-                            128,
-                            128,
-                            255
-                        ]
-                    },
-                    {
-                        "name": "Ectoderm",
-                        "rgb": [
-                            0,
-                            0,
-                            255
-                        ]
-                    }
-                ],
-                "Tissue": [
-                    {
-                        "name": "Skin",
-                        "rgb": [
-                            127,
-                            255,
-                            0
-                        ]
-                    },
-                    {
-                        "name": "Muscle",
-                        "rgb": [
-                            178,
-                            34,
-                            34
-                        ]
-                    },
-                    {
-                        "name": "Immune",
-                        "rgb": [
-                            218,
-                            165,
-                            32
-                        ]
-                    },
-                    {
-                        "name": "Gingival",
-                        "rgb": [
-                            188,
-                            143,
-                            143
-                        ]
-                    },
-                    {
-                        "name": "Stem",
-                        "rgb": [
-                            70,
-                            130,
-                            180
-                        ]
-                    }
-                ]
+            var class_values_count = Object.keys(relation).reduce(function (sum, clazz) {
+                return sum + clazz.length;
+            }, 0);
+
+            var colors = generate_random_colors(class_values_count);
+
+            var classes = {};
+
+            var color_index = 0;
+            Object.keys(relation).forEach(function (clazz) {
+                var class_values = [];
+                Object.keys(relation[clazz]).forEach(function (clazz_name) {
+                    class_values.push({
+                        name: clazz_name,
+                        rgb: colors[color_index]
+                    });
+                    color_index++;
+                });
+                classes[clazz] = class_values;
+                class_values = [];
+            });
+
+            return classes;
+        }
+
+        function generate_random_colors(count) {
+            var colors = [];
+            for (var i = 0; i < count; i++) {
+                colors.push([random_int(255), random_int(255), random_int(255)])
+            }
+            return colors;
+
+            function random_int(max) {
+                return Math.floor(Math.random() * max);
             }
         }
     }
@@ -210,7 +172,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
         };
         values.forEach(function (value, index) {
             var field = get_field_name(index);
-            if(field == "Tissue" || field == "Lineage") {
+            if(field == TISSUE_COLUMN || field == LINAGE_COLUMN) {
                 obj.type[field] = transform_value(field, value);
             } else {
                 obj[field] = $.isNumeric(value) ? parseFloat(value) : value;
@@ -246,7 +208,14 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
 
 
     function transform_value(field, value) {
-        var relation = {
+        var relation = get_name_index_relation_for_classes();
+
+        return field in relation ? relation[field][value] : value;
+    }
+
+    function get_name_index_relation_for_classes(matrix_lines) {
+
+        return {
             Lineage: {
                 'Paraxial mesoderm deratives': 0,
                 'Lymphoid': 1,
@@ -261,8 +230,6 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
                 'Stem': 4
             }
         };
-
-        return field in relation ? relation[field][value] : value;
     }
 
     function but_last(array) {
