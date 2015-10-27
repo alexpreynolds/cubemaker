@@ -26,7 +26,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     var dp_line_geos = new Array(6);
     var dp_lines = new Array(6);
     var dp_line_names = new Array(6);
-    var selected_class = model.metadata.selected_class;
+    var selected_class = get_selected_class();
     var rotate = false;
     var Directions = {UP: "up", DOWN: "down", RIGHT: "right", LEFT: "left"};
     var rotation_direction;
@@ -37,6 +37,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     var play = false;
     var axes = {};
     var axis_length = 1;
+    var default_point_rgb = [0,204,204];
 
 
     // executes on start
@@ -280,28 +281,39 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         var offset_x = offset_y = offset_z = -0.5;
 
         $.each(model.data, function (point_index, point_data) {
-            var point_type_index = point_data["type"][selected_class];
-            var point_type = model.metadata.classes[selected_class][point_type_index];
 
-            var class_name = point_type.name;
+            var particle_material;
 
-            var particles = new THREE.Geometry();
+            if(selected_class) {
+                var point_type_index = point_data["type"][selected_class];
+                var point_type = model.metadata.classes[selected_class][point_type_index];
+                var class_name = point_type.name;
 
-            if (!vertex_materials[selected_class]) {
-                vertex_materials[selected_class] = {};
-            }
+                if (!vertex_materials[selected_class]) {
+                    vertex_materials[selected_class] = {};
+                }
 
-            var particle_material = vertex_materials[selected_class][class_name];
+                particle_material = vertex_materials[selected_class][class_name];
 
-            if (!particle_material) {
+                if (!particle_material) {
+
+                    particle_material = new THREE.PointsMaterial({
+                        map: create_vertex_texture(point_type.rgb ),
+                        transparent: true,
+                        size: 0.2,
+                        alphaTest: 0.15
+                    });
+                    vertex_materials[selected_class][class_name] = particle_material;
+                }
+            } else {
                 particle_material = new THREE.PointsMaterial({
-                    map: create_vertex_texture(point_type.rgb),
+                    map: create_vertex_texture(default_point_rgb),
                     transparent: true,
                     size: 0.2,
                     alphaTest: 0.15
                 });
-                vertex_materials[selected_class][class_name] = particle_material;
             }
+
 
             // A particle has basically zero radius, so we build a bounding box around the particle, which we can
             // use with the raycaster to better mimic mouseover and mouseout events. For example, a mouseover might
@@ -330,10 +342,12 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             bounding_box.position.x = BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[0];
             bounding_box.position.y = BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[1];
             bounding_box.position.z = BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[2];
-            bounding_box.name = id;
-            bounding_box.subname = class_name;
+            bounding_box.name = id || "";
+            bounding_box.subname = class_name || "";
             scene.add(bounding_box);
             bounding_boxes.push(bounding_box);
+
+            var particles = new THREE.Geometry();
             var particle = new THREE.Vector3(bounding_box.position.x,
                 bounding_box.position.y,
                 bounding_box.position.z);
@@ -1323,6 +1337,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
     function reload(data) {
         model = data;
+        selected_class = get_selected_class();
         $(document).trigger("source-change");
         clear();
         init();
@@ -1343,6 +1358,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             rotation: camera.rotation,
             center: controls.center
         }
+    }
+
+    function get_selected_class() {
+        return model.metadata.selected_class;
     }
 
     function Axis(start, end, name) {

@@ -149,7 +149,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
                 "title": "Cubemaker",
                 "subtitle": "Use mouse or arrow keys to rotate, scrollwheel to zoom, and double-tap arrow keys to animate",
                 "axis": {},
-                "selected_class": "Lineage",
+                "selected_class": "",
                 "show_axes": true,
                 "classes": {
                     "Lineage": [
