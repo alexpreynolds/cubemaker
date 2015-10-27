@@ -20,7 +20,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
         });
 
         result.metadata.range = calculate_ranges(result.data);
-        result.metadata.axis = get_axis_names(lines[0]);
+        result.metadata.axis = get_axes_metadata(lines[0]);
 
         return result;
     }
@@ -47,12 +47,24 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
         return {x: [range.x.min, range.x.max], y:[range.y.min, range.y.max], z: [range.z.min, range.z.max]};
     }
 
-    function get_axis_names(first_line) {
+    function get_axes_metadata(first_line) {
+
         var arr = line_to_array(first_line);
+        var default_axis_metadata = {
+            "color": "red",
+            "thickness": 1,
+            "tick_color": "red",
+            "tick_thickness": 1,
+            "tick_length": 0.1
+        };
+
         return {
-            x: arr[0], y:arr[1], z:arr[2]
-        }
+            x: $.extend({name: arr[0]}, default_axis_metadata),
+            y: $.extend({name: arr[1]}, default_axis_metadata),
+            z: $.extend({name: arr[2]}, default_axis_metadata)
+        };
     }
+
 
     function create_index_to_name_relation(first_line) {
         var names = line_to_array(first_line);
@@ -217,7 +229,16 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
                         }
                     ]
                 },
-                "range": {}
+                "range": {},
+                "materials": {
+                    "opaque_cube_line_material": {
+                        "color": "0xbbbbbb",
+                        "thickness": 3
+                    },
+                    "back_cube_material": {
+                        "color": "0xf7f7f7"
+                    }
+                }
             },
             data: []
         };
