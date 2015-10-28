@@ -2,7 +2,7 @@ var CUBE_MAKER = CUBE_MAKER || {};
 
 CUBE_MAKER.MatrixParser = function (matrix_text) {
     const DELIMITER = "\t";
-    const LINAGE_COLUMN = "Lineage";
+    const LINEAGE_COLUMN = "Lineage";
     const TISSUE_COLUMN = "Tissue";
 
     // mapping of column index in matrix to column name, e.g. {0: PC1, 1: PC2, 2: PC3, 3: Name}
@@ -58,9 +58,9 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
             values.forEach(function (value, index) {
 
                 // get field name based on column index in matrix
-                var field = get_field_name(index);
+                var field = get_field_name(index).trim();
 
-                if(field == TISSUE_COLUMN || field == LINAGE_COLUMN) {
+                if(field == TISSUE_COLUMN || field == LINEAGE_COLUMN) {
 
                     // for tissue or lineage keep numeric value instead of string
                     obj.type[field] = transform_value(field, value);
@@ -233,9 +233,9 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
 
         // find tissue and lineage column indexes;
         header.forEach(function (column_name, index) {
-            if(column_name == LINAGE_COLUMN) {
+            if(column_name.trim() == LINEAGE_COLUMN) {
                 lineage_column_index = index;
-            } else if (column_name == TISSUE_COLUMN) {
+            } else if (column_name.trim() == TISSUE_COLUMN) {
                 tissue_column_index = index;
             }
         });
@@ -260,11 +260,11 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
                 var row_values = row_to_array(row);
                 // if there is linage column in matrix then create map of all possible subclasses
                 if(lineage_column_index > -1) {
-                    if(!(LINAGE_COLUMN in classes)) {
-                        classes[LINAGE_COLUMN] = {};
+                    if(!(LINEAGE_COLUMN in classes)) {
+                        classes[LINEAGE_COLUMN] = {};
                     }
                     var lineage_subclass = row_values[lineage_column_index];
-                    classes[LINAGE_COLUMN][lineage_subclass] = "";
+                    classes[LINEAGE_COLUMN][lineage_subclass] = "";
                 }
 
                 // same for tissue
