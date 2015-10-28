@@ -240,7 +240,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
             matrix_rows.slice(1).forEach(function (row) {
                 var row_values = row_to_array(row);
                 // if there is linage column in matrix then create map of all possible subclasses
-                if(lineage_column_index) {
+                if(lineage_column_index > -1) {
                     if(!(LINAGE_COLUMN in classes)) {
                         classes[LINAGE_COLUMN] = {};
                     }
@@ -249,7 +249,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
                 }
 
                 // same for tissue
-                if(tissue_column_index) {
+                if(tissue_column_index > -1) {
                     if(!(TISSUE_COLUMN in classes)) {
                         classes[TISSUE_COLUMN] = {};
                     }

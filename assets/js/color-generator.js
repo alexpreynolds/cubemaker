@@ -67,4 +67,4 @@ CUBE_MAKER.ColorGenerator = function ColorGenerator(hue, saturation, value) {
         }
         return RGB;
     }
-}
+};
