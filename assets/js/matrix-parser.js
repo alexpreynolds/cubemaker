@@ -151,14 +151,12 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
         }
 
 
-        function parse_classes(raw_lines) {
-            var header = row_to_array(raw_lines[0]);
+        function parse_classes() {
 
             // count total number of subclasses to generate colors palette
             var class_values_count = Object.keys(class_to_index_relation).reduce(function (sum, clazz) {
                 return sum + clazz.length;
             }, 0);
-
             var colors = generate_random_colors(class_values_count);
 
             // build classes and subclasses tree with colors
@@ -181,15 +179,12 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
         }
 
         function generate_random_colors(count) {
+            var color_generator = new CUBE_MAKER.ColorGenerator(0.35, 0.99, 0.99);
             var colors = [];
             for (var i = 0; i < count; i++) {
-                colors.push([random_int(255), random_int(255), random_int(255)])
+                colors.push(color_generator.generate_color())
             }
             return colors;
-
-            function random_int(max) {
-                return Math.floor(Math.random() * max);
-            }
         }
     }
 
@@ -214,7 +209,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
 
     function get_name_index_relation_for_classes(matrix_rows) {
 
-        var lineage_column_index, tissue_column_index;
+        var lineage_column_index = -1, tissue_column_index = -1;
         var header = row_to_array(matrix_rows[0]);
 
         // find tissue and lineage column indexes;
