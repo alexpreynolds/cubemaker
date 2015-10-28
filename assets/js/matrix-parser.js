@@ -5,8 +5,20 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
     const LINAGE_COLUMN = "Lineage";
     const TISSUE_COLUMN = "Tissue";
 
-    var index_to_name = {};
-    var class_to_index_relation = {};
+    // mapping of column index in matrix to column name, e.g. {0: PC1, 1: PC2, 2: PC3, 3: Name}
+    var column_index_to_name_map = {};
+
+    /**
+     *  Since we store classes in JSON model as numbers, we need to create mapping of subclass string value to it's
+     *  numeric representation.
+     *
+     *  Example:
+     *  {
+     *      Lineage: { "Ectoderm": 0, "Lymphoid": 1, "Paraxial mesoderm deratives" : 2, "Primitive": 3 },
+     *      Tissue: { "Gingival": 1, "Immune": 3, "Muscle": 2, "Skin": 0, "Stem": 4 }
+     *  }
+     */
+    var class_to_index_map = {};
 
     return {
         parse: parse
@@ -15,8 +27,8 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
     function parse() {
         var result = {};
         var rows = text_to_array_of_rows(matrix_text);
-        index_to_name = create_index_to_name_relation(rows[0]);
-        class_to_index_relation = get_name_index_relation_for_classes(rows);
+        column_index_to_name_map = create_column_index_to_name_map(rows[0]);
+        class_to_index_map = create_name_to_index_map_for_classes(rows);
 
         result.data = parse_data(rows);
         result.metadata = parse_metadata(rows, result.data);
@@ -34,6 +46,9 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
 
         return data;
 
+        /**
+         * Transforms matrix row into JSON object
+         */
         function row_to_object(row) {
             var values = row_to_array(row);
 
@@ -41,8 +56,13 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
                 type: {}
             };
             values.forEach(function (value, index) {
+
+                // get field name based on column index in matrix
                 var field = get_field_name(index);
+
                 if(field == TISSUE_COLUMN || field == LINAGE_COLUMN) {
+
+                    // for tissue or lineage keep numeric value instead of string
                     obj.type[field] = transform_value(field, value);
                 } else {
                     obj[field] = $.isNumeric(value) ? parseFloat(value) : value;
@@ -50,32 +70,31 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
             });
 
             return obj;
+        }
 
-            function get_field_name(index) {
-                var relation = {
-                    0: "x",
-                    1: "y",
-                    2: "z",
-                    Name: "id"
-                };
+        function get_field_name(index) {
+            var relation = {
+                0: "x",
+                1: "y",
+                2: "z",
+                Name: "id"
+            };
 
-                if(index < 3) {
-                    return relation[index];
+            if(index < 3) {
+                return relation[index];
+            } else {
+                var name = column_index_to_name_map[index];
+                if(name in relation) {
+                    return relation[name];
                 } else {
-                    var name = index_to_name[index];
-                    if(name in relation) {
-                        return relation[name];
-                    } else {
-                        return name;
-                    }
+                    return name;
                 }
-
             }
+
         }
 
         function transform_value(field, value) {
-
-            return field in class_to_index_relation ? class_to_index_relation[field][value] : value;
+            return field in class_to_index_map ? class_to_index_map[field][value] : value;
         }
     }
 
@@ -154,7 +173,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
         function parse_classes() {
 
             // count total number of subclasses to generate colors palette
-            var class_values_count = Object.keys(class_to_index_relation).reduce(function (sum, clazz) {
+            var class_values_count = Object.keys(class_to_index_map).reduce(function (sum, clazz) {
                 return sum + clazz.length;
             }, 0);
             var colors = generate_random_colors(class_values_count);
@@ -162,9 +181,9 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
             // build classes and subclasses tree with colors
             var classes = {};
             var color_index = 0;
-            Object.keys(class_to_index_relation).forEach(function (clazz) {
+            Object.keys(class_to_index_map).forEach(function (clazz) {
                 var class_values = [];
-                Object.keys(class_to_index_relation[clazz]).forEach(function (clazz_name) {
+                Object.keys(class_to_index_map[clazz]).forEach(function (clazz_name) {
                     class_values.push({
                         name: clazz_name,
                         rgb: colors[color_index]
@@ -188,7 +207,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
         }
     }
 
-    function create_index_to_name_relation(first_row) {
+    function create_column_index_to_name_map(first_row) {
         var names = row_to_array(first_row);
 
         var relation = {};
@@ -207,7 +226,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
         return row.split(DELIMITER);
     }
 
-    function get_name_index_relation_for_classes(matrix_rows) {
+    function create_name_to_index_map_for_classes(matrix_rows) {
 
         var lineage_column_index = -1, tissue_column_index = -1;
         var header = row_to_array(matrix_rows[0]);

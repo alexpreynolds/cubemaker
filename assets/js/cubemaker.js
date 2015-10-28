@@ -441,7 +441,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     function update_key() {
-        if (!model.metadata.classes)
+
+        // if there is no classes then skip class switcher element creation
+        if (!model.metadata.classes || !selected_class)
             return;
 
         var content = document.createElement('div');
@@ -537,6 +539,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 }
             });
         });
+
+
 
         $('#graph_key').remove();
         var graph_key = document.createElement('div');
@@ -888,7 +892,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 return {line: tick_line_object, label: tick_label};
             }
         }
-        
+
         function calculate_axis_ticks(start, end, number_of_ticks) {
 
             // determine axis along which ticks should be placed
