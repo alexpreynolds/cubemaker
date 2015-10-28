@@ -3,10 +3,10 @@ var CUBE_MAKER = CUBE_MAKER || {};
 CUBE_MAKER.MatrixParser = function (matrix_text) {
     const DELIMITER = "\t";
     const LINAGE_COLUMN = "Lineage";
-    const NAME_COLUMN = "Name";
     const TISSUE_COLUMN = "Tissue";
 
     var index_to_name = {};
+    var class_to_index_relation = {};
 
     return {
         parse: parse
@@ -14,24 +14,69 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
 
     function parse() {
         var result = {};
-        var lines = text_to_array_of_lines(matrix_text);
-        index_to_name = create_index_to_name_relation(lines[0]);
+        var rows = text_to_array_of_rows(matrix_text);
+        index_to_name = create_index_to_name_relation(rows[0]);
+        class_to_index_relation = get_name_index_relation_for_classes(rows);
 
-        result.data = parse_data(lines);
-        result.metadata = parse_metadata(lines, result.data);
+        result.data = parse_data(rows);
+        result.metadata = parse_metadata(rows, result.data);
 
         return result;
     }
 
-    function parse_data(data_lines) {
+    function parse_data(data_rows) {
 
         var data = [];
-        data_lines.slice(1).forEach(function (line) {
-            var obj = line_to_object(line);
+        data_rows.slice(1).forEach(function (row) {
+            var obj = row_to_object(row);
             data.push(obj);
         });
 
         return data;
+
+        function row_to_object(row) {
+            var values = row_to_array(row);
+
+            var obj = {
+                type: {}
+            };
+            values.forEach(function (value, index) {
+                var field = get_field_name(index);
+                if(field == TISSUE_COLUMN || field == LINAGE_COLUMN) {
+                    obj.type[field] = transform_value(field, value);
+                } else {
+                    obj[field] = $.isNumeric(value) ? parseFloat(value) : value;
+                }
+            });
+
+            return obj;
+
+            function get_field_name(index) {
+                var relation = {
+                    0: "x",
+                    1: "y",
+                    2: "z",
+                    Name: "id"
+                };
+
+                if(index < 3) {
+                    return relation[index];
+                } else {
+                    var name = index_to_name[index];
+                    if(name in relation) {
+                        return relation[name];
+                    } else {
+                        return name;
+                    }
+                }
+
+            }
+        }
+
+        function transform_value(field, value) {
+
+            return field in class_to_index_relation ? class_to_index_relation[field][value] : value;
+        }
     }
 
     function parse_metadata(raw_lines, parsed_data) {
@@ -46,7 +91,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
 
         function parse_axes_metadata(first_line) {
 
-            var arr = line_to_array(first_line);
+            var arr = row_to_array(first_line);
             var default_axis_metadata = {
                 "color": "red",
                 "thickness": 1,
@@ -107,21 +152,21 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
 
 
         function parse_classes(raw_lines) {
-            var header = raw_lines[0].split(DELIMITER);
-            var relation = get_name_index_relation_for_classes();
+            var header = row_to_array(raw_lines[0]);
 
-            var class_values_count = Object.keys(relation).reduce(function (sum, clazz) {
+            // count total number of subclasses to generate colors palette
+            var class_values_count = Object.keys(class_to_index_relation).reduce(function (sum, clazz) {
                 return sum + clazz.length;
             }, 0);
 
             var colors = generate_random_colors(class_values_count);
 
+            // build classes and subclasses tree with colors
             var classes = {};
-
             var color_index = 0;
-            Object.keys(relation).forEach(function (clazz) {
+            Object.keys(class_to_index_relation).forEach(function (clazz) {
                 var class_values = [];
-                Object.keys(relation[clazz]).forEach(function (clazz_name) {
+                Object.keys(class_to_index_relation[clazz]).forEach(function (clazz_name) {
                     class_values.push({
                         name: clazz_name,
                         rgb: colors[color_index]
@@ -148,9 +193,8 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
         }
     }
 
-
-    function create_index_to_name_relation(first_line) {
-        var names = line_to_array(first_line);
+    function create_index_to_name_relation(first_row) {
+        var names = row_to_array(first_row);
 
         var relation = {};
         names.forEach(function (name, index) {
@@ -160,76 +204,67 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
         return relation;
     }
 
-    function text_to_array_of_lines(text) {
+    function text_to_array_of_rows(text) {
         return but_last(text.split("\n"));
     }
 
-    function line_to_object(line) {
-        var values = line_to_array(line);
+    function row_to_array(row) {
+        return row.split(DELIMITER);
+    }
 
-        var obj = {
-            type: {}
-        };
-        values.forEach(function (value, index) {
-            var field = get_field_name(index);
-            if(field == TISSUE_COLUMN || field == LINAGE_COLUMN) {
-                obj.type[field] = transform_value(field, value);
-            } else {
-                obj[field] = $.isNumeric(value) ? parseFloat(value) : value;
+    function get_name_index_relation_for_classes(matrix_rows) {
+
+        var lineage_column_index, tissue_column_index;
+        var header = row_to_array(matrix_rows[0]);
+
+        // find tissue and lineage column indexes;
+        header.forEach(function (column_name, index) {
+            if(column_name == LINAGE_COLUMN) {
+                lineage_column_index = index;
+            } else if (column_name == TISSUE_COLUMN) {
+                tissue_column_index = index;
             }
         });
 
-        return obj;
+        var class_tree = create_class_tree(matrix_rows, lineage_column_index, tissue_column_index);
+        set_subclass_indexes(class_tree);
 
-        function get_field_name(index) {
-            var relation = {
-                0: "x",
-                1: "y",
-                2: "z",
-                Name: "id"
-            };
-            if(index < 3) {
-                return relation[index];
-            } else {
-                var name = index_to_name[index];
-                if(name in relation) {
-                    return relation[name];
-                } else {
-                    return name;
-                }
-            }
+        return class_tree;
 
+        function set_subclass_indexes(class_tree) {
+            Object.keys(class_tree).forEach(function (class_name) {
+                var subclasses = class_tree[class_name];
+                Object.keys(subclasses).forEach(function (subclass_name, index) {
+                    subclasses[subclass_name] = index;
+                });
+            })
         }
-    }
 
-    function line_to_array(line) {
-        return line.split(DELIMITER);
-    }
+        function create_class_tree(matrix_rows, lineage_column_index, tissue_column_index) {
+            var classes = {};
+            matrix_rows.slice(1).forEach(function (row) {
+                var row_values = row_to_array(row);
+                // if there is linage column in matrix then create map of all possible subclasses
+                if(lineage_column_index) {
+                    if(!(LINAGE_COLUMN in classes)) {
+                        classes[LINAGE_COLUMN] = {};
+                    }
+                    var lineage_subclass = row_values[lineage_column_index];
+                    classes[LINAGE_COLUMN][lineage_subclass] = "";
+                }
 
+                // same for tissue
+                if(tissue_column_index) {
+                    if(!(TISSUE_COLUMN in classes)) {
+                        classes[TISSUE_COLUMN] = {};
+                    }
+                    var tissue_subclass = row_values[tissue_column_index];
+                    classes[TISSUE_COLUMN][tissue_subclass] = "";
+                }
+            });
 
-    function transform_value(field, value) {
-        var relation = get_name_index_relation_for_classes();
-
-        return field in relation ? relation[field][value] : value;
-    }
-
-    function get_name_index_relation_for_classes(matrix_lines) {
-
-        return {
-            Lineage: {
-                'Paraxial mesoderm deratives': 0,
-                'Lymphoid': 1,
-                'Primitive': 2,
-                'Ectoderm': 3
-            },
-            Tissue: {
-                'Skin': 0,
-                'Muscle': 1,
-                'Immune': 2,
-                'Gingival': 3,
-                'Stem': 4
-            }
-        };
+            return classes;
+        }
     }
 
     function but_last(array) {
