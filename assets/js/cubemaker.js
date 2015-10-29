@@ -455,7 +455,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
         var selected_class_combo = document.createElement('div');
         selected_class_combo.className = "class_combo";
-        $(selected_class_combo).append('<a class="dropdown-toggle" href="#"><span class="caret"></span>' + selected_class + '</a>');
+        $(selected_class_combo).append('<a id="class_dropdown_link" class="dropdown-toggle" href="#">' + selected_class + '</a>');
 
         var selected_class_dropdown = document.createElement('ul');
         selected_class_dropdown.id = "categories-options";
@@ -480,7 +480,11 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             });
         });
 
-        $(selected_class_combo).append(selected_class_dropdown);
+        if(Object.keys(model.metadata.classes).length > 1) {
+
+            $(selected_class_combo).append(selected_class_dropdown);
+            $('a', selected_class_combo).prepend('<span class="caret"></span>');
+        }
         class_title_div.insertBefore(selected_class_combo, class_title_div.childNodes[0]);
 
         content.appendChild(class_title_div);
