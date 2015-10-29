@@ -102,12 +102,13 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
         function parse_axes_metadata(first_line) {
 
             var arr = row_to_array(first_line);
+            var defaults = CUBE_MAKER.CubeMaker.get_defaults();
             var default_axis_metadata = {
-                "color": "red",
-                "thickness": 1,
-                "tick_color": "red",
-                "tick_thickness": 1,
-                "tick_length": 0.1
+                "color": defaults.LINE_COLOR,
+                "thickness": defaults.LINE_THICKNESS,
+                "tick_color": defaults.TICK_COLOR,
+                "tick_thickness": defaults.TICK_THICKNESS,
+                "tick_length": defaults.TICK_LENGTH
             };
 
             return {

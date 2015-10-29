@@ -3,13 +3,21 @@ var CUBE_MAKER = CUBE_MAKER || {};
 CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
     // ====== internal variables declaration section
-    const TICKS_VALUES_PRECISION = 2;
-    const TICKS_PER_AXIS = 4;
-    const AXIS_LABEL_DISTANCE_KOEFF = 0.75;
-    const BOUNDING_BOX_SCALE_FUDGE = 0.9;
-    const DEFAULT_TICK_LENGTH = 0.1;
-    const DEFAULT_LINE_THICKNESS = 1;
-    const DEFAULT_LINE_COLOR = "black";
+    var defaults = {
+        AXIS_LABEL_DISTANCE_KOEFF: 0.75,
+        BOUNDING_BOX_SCALE_FUDGE: 0.9,
+        TICK_LENGTH: 0.1,
+        TICK_COLOR: "black",
+        TICK_THICKNESS: 1,
+        TICKS_VALUES_PRECISION: 2,
+        TICKS_PER_AXIS: 4,
+        LINE_COLOR: "black",
+        LINE_THICKNESS: 1,
+        POINT_COLOR: [164,0,0]
+    };
+
+    CUBE_MAKER.CubeMaker.get_defaults = get_defaults;
+
     var root_element = $("#" + rootElementId);
     var camera, scene, raycaster, renderer, controls, container, cube, vertex_materials;
     var mouse = new THREE.Vector2(), INTERSECTED;
@@ -37,7 +45,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     var play = false;
     var axes = {};
     var axis_length = 1;
-    var default_point_rgb = [164,0,0];
 
 
     // executes on start
@@ -339,9 +346,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                     transparent: true,
                     alphaTest: 0.5
                 }));
-            bounding_box.position.x = BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[0];
-            bounding_box.position.y = BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[1];
-            bounding_box.position.z = BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[2];
+            bounding_box.position.x = defaults.BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[0];
+            bounding_box.position.y = defaults.BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[1];
+            bounding_box.position.z = defaults.BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[2];
             bounding_box.name = id || "";
             bounding_box.subname = class_name || "";
             scene.add(bounding_box);
@@ -682,8 +689,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             options = {};
         }
 
-        var thickness = options.thickness || DEFAULT_LINE_THICKNESS;
-        var color = parse_color(options.color) || DEFAULT_LINE_COLOR;
+        var thickness = options.thickness || defaults.LINE_THICKNESS;
+        var color = parse_color(options.color) || defaults.LINE_COLOR;
         var axis_line_material = new THREE.LineBasicMaterial({color: color, opacity: 0, linewidth: thickness});
         var axis_geometry = new THREE.Geometry();
         axis_geometry.vertices.push(new THREE.Vector3(start.x, start.y, start.z));
@@ -787,7 +794,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         add_axis_line(axis);
         add_axis_label(axis);
 
-        var ticks_info = calculate_axis_ticks(start, end, TICKS_PER_AXIS);
+        var ticks_info = calculate_axis_ticks(start, end, defaults.TICKS_PER_AXIS);
         ticks_info.forEach(function (tick) {
             add_axis_tick(axis_name, tick.position, tick.value);
         });
@@ -796,7 +803,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var start = axis.start;
             var end = axis.end;
 
-            var mid_point_koeff = axis_start_end_koeff * AXIS_LABEL_DISTANCE_KOEFF;
+            var mid_point_koeff = axis_start_end_koeff * defaults.AXIS_LABEL_DISTANCE_KOEFF;
             var position = {
                 x: (start.x + end.x) * mid_point_koeff,
                 y: (start.y + end.y) * mid_point_koeff,
@@ -806,8 +813,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var label_text = axis_metadata.name;
             var text_params = {size: 0.05};
 
-            //axis.label = add_label(label_text, position, text_params);
-            axis.label = add_label(axis.name, position, text_params);
+            axis.label = add_label(label_text, position, text_params);
+            //axis.label = add_label(axis.name, position, text_params);
         }
 
         function add_axis_line(axis) {
@@ -827,7 +834,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         function add_axis_tick(axis_name, tick_position, label) {
 
             var axis_metadata = get_axis_metadata(axis_name[0]);
-            var tick_length = axis_metadata.tick_length || DEFAULT_TICK_LENGTH;
+            var tick_length = axis_metadata.tick_length || defaults.TICK_LENGTH;
 
             if (tick_position.x === undefined) {
                 tick_position = {x: tick_position[0], y: tick_position[1], z: tick_position[2]};
@@ -907,8 +914,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var axis = determine_axis(start, end);
 
             // rescale axes to calculate proper ticks coordinates
-            var rescaled_start = rescale_vector(start, BOUNDING_BOX_SCALE_FUDGE, [axis]);
-            var rescaled_end = rescale_vector(end, BOUNDING_BOX_SCALE_FUDGE, [axis]);
+            var rescaled_start = rescale_vector(start, defaults.BOUNDING_BOX_SCALE_FUDGE, [axis]);
+            var rescaled_end = rescale_vector(end, defaults.BOUNDING_BOX_SCALE_FUDGE, [axis]);
 
             var intermediate_coordinate_values = get_intermediate_coordinate_values(rescaled_start[axis], rescaled_end[axis], number_of_ticks);
             var intermediate_points = get_intermediate_points(rescaled_start, intermediate_coordinate_values, axis);
@@ -927,13 +934,13 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
                 var diff = Math.abs(min - max);
                 var step = diff / (count - 1);
-                var results = [min.toFixed(TICKS_VALUES_PRECISION)];
+                var results = [min.toFixed(defaults.TICKS_VALUES_PRECISION)];
                 var value = min;
                 for (var i = 0; i < count - 2; i++) {
-                    value = parseFloat((value + step).toFixed(TICKS_VALUES_PRECISION));
+                    value = parseFloat((value + step).toFixed(defaults.TICKS_VALUES_PRECISION));
                     results.push(value);
                 }
-                results.push(max.toFixed(TICKS_VALUES_PRECISION));
+                results.push(max.toFixed(defaults.TICKS_VALUES_PRECISION));
 
                 return results;
             }
@@ -955,7 +962,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 var results = [start];
                 var value = start;
                 for (var i = 0; i < count - 2; i++) {
-                    value = parseFloat((value + step).toFixed(TICKS_VALUES_PRECISION));
+                    value = parseFloat((value + step).toFixed(defaults.TICKS_VALUES_PRECISION));
                     results.push(value);
                 }
                 results.push(end);
@@ -1374,6 +1381,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
     function get_selected_class() {
         return model.metadata.selected_class;
+    }
+
+    function get_defaults() {
+        return $.extend({}, defaults);
     }
 
     function Axis(start, end, name) {
