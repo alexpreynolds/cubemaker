@@ -1,7 +1,8 @@
 var CUBE_MAKER = CUBE_MAKER || {};
 
 CUBE_MAKER.MatrixParser = function (matrix_text) {
-    const DELIMITER = "\t";
+    const COLUMNS_DELIMITER = "\t";
+    const EOL_PATTERN = /\r\n|\r|\n|/g;
 
     // mapping of column index in matrix to column name, e.g. {0: PC1, 1: PC2, 2: PC3, 3: Name}
     var column_index_to_name_map = {};
@@ -211,11 +212,11 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
     }
 
     function text_to_array_of_rows(text) {
-        return but_last(text.split("\n"));
+        return but_last(text.split(EOL_PATTERN));
     }
 
     function row_to_array(row) {
-        return row.split(DELIMITER);
+        return row.split(COLUMNS_DELIMITER);
     }
 
     function create_name_to_index_map_for_classes(matrix_rows) {
