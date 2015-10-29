@@ -37,7 +37,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     var play = false;
     var axes = {};
     var axis_length = 1;
-    var default_point_rgb = [0,204,204];
+    var default_point_rgb = [164,0,0];
 
 
     // executes on start
