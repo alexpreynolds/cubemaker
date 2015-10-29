@@ -2,8 +2,6 @@ var CUBE_MAKER = CUBE_MAKER || {};
 
 CUBE_MAKER.MatrixParser = function (matrix_text) {
     const DELIMITER = "\t";
-    const LINEAGE_COLUMN = "Lineage";
-    const TISSUE_COLUMN = "Tissue";
 
     // mapping of column index in matrix to column name, e.g. {0: PC1, 1: PC2, 2: PC3, 3: Name}
     var column_index_to_name_map = {};
@@ -60,9 +58,8 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
                 // get field name based on column index in matrix
                 var field = get_field_name(index).trim();
 
-                if(field == TISSUE_COLUMN || field == LINEAGE_COLUMN) {
-
-                    // for tissue or lineage keep numeric value instead of string
+                if(index > 3) {
+                    // for category columns keep numeric value instead of string
                     obj.type[field] = transform_value(field, value);
                 } else {
                     obj[field] = $.isNumeric(value) ? parseFloat(value) : value;
@@ -77,20 +74,14 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
                 0: "x",
                 1: "y",
                 2: "z",
-                Name: "id"
+                3: "id"
             };
 
-            if(index < 3) {
+            if(index < 4) {
                 return relation[index];
             } else {
-                var name = column_index_to_name_map[index];
-                if(name in relation) {
-                    return relation[name];
-                } else {
-                    return name;
-                }
+                return column_index_to_name_map[index];
             }
-
         }
 
         function transform_value(field, value) {
@@ -181,16 +172,16 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
             // build classes and subclasses tree with colors
             var classes = {};
             var color_index = 0;
-            Object.keys(class_to_index_map).forEach(function (clazz) {
+            Object.keys(class_to_index_map).forEach(function (class_name) {
                 var class_values = [];
-                Object.keys(class_to_index_map[clazz]).forEach(function (clazz_name) {
+                Object.keys(class_to_index_map[class_name]).forEach(function (sub_class_name) {
                     class_values.push({
-                        name: clazz_name,
+                        name: sub_class_name.trim(),
                         rgb: colors[color_index]
                     });
                     color_index++;
                 });
-                classes[clazz] = class_values;
+                classes[class_name.trim()] = class_values;
                 class_values = [];
             });
 
@@ -228,19 +219,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
 
     function create_name_to_index_map_for_classes(matrix_rows) {
 
-        var lineage_column_index = -1, tissue_column_index = -1;
-        var header = row_to_array(matrix_rows[0]);
-
-        // find tissue and lineage column indexes;
-        header.forEach(function (column_name, index) {
-            if(column_name.trim() == LINEAGE_COLUMN) {
-                lineage_column_index = index;
-            } else if (column_name.trim() == TISSUE_COLUMN) {
-                tissue_column_index = index;
-            }
-        });
-
-        var class_tree = create_class_tree(matrix_rows, lineage_column_index, tissue_column_index);
+        var class_tree = create_class_tree(matrix_rows);
         set_subclass_indexes(class_tree);
 
         return class_tree;
@@ -254,27 +233,26 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
             })
         }
 
-        function create_class_tree(matrix_rows, lineage_column_index, tissue_column_index) {
+        function create_class_tree(matrix_rows) {
             var classes = {};
+            var header = row_to_array(matrix_rows[0]).slice(4);
             matrix_rows.slice(1).forEach(function (row) {
                 var row_values = row_to_array(row);
-                // if there is linage column in matrix then create map of all possible subclasses
-                if(lineage_column_index > -1) {
-                    if(!(LINEAGE_COLUMN in classes)) {
-                        classes[LINEAGE_COLUMN] = {};
-                    }
-                    var lineage_subclass = row_values[lineage_column_index];
-                    classes[LINEAGE_COLUMN][lineage_subclass] = "";
-                }
 
-                // same for tissue
-                if(tissue_column_index > -1) {
-                    if(!(TISSUE_COLUMN in classes)) {
-                        classes[TISSUE_COLUMN] = {};
+
+                // create map of all possible classes and subclasses
+                row_values.slice(4).forEach(function (class_value, index) {
+                    var class_name = header[index].trim();
+
+                    //add new class to map
+                    if(!(class_name in classes)) {
+                        classes[class_name] = {};
                     }
-                    var tissue_subclass = row_values[tissue_column_index];
-                    classes[TISSUE_COLUMN][tissue_subclass] = "";
-                }
+
+                    // add subclass to current class
+                    classes[class_name][class_value] = "";
+                });
+
             });
 
             return classes;
