@@ -189,7 +189,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
         }
 
         function generate_random_colors(count) {
-            var color_generator = new CUBE_MAKER.ColorGenerator(0.35, 0.99, 0.99);
+            var color_generator = new CUBE_MAKER.ColorGenerator(-0.618033988749895, 0.99, 0.643);
             var colors = [];
             for (var i = 0; i < count; i++) {
                 colors.push(color_generator.generate_color())
