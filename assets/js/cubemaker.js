@@ -806,8 +806,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var label_text = axis_metadata.name;
             var text_params = {size: 0.05};
 
-            axis.label = add_label(label_text, position, text_params);
-            //axis.label = add_label(axis.name, position, text_params);
+            //axis.label = add_label(label_text, position, text_params);
+            axis.label = add_label(axis.name, position, text_params);
         }
 
         function add_axis_line(axis) {
@@ -824,13 +824,13 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             axis.line = line;
         }
 
-        function add_axis_tick(axis_name, point, label) {
+        function add_axis_tick(axis_name, tick_position, label) {
 
             var axis_metadata = get_axis_metadata(axis_name[0]);
             var tick_length = axis_metadata.tick_length || DEFAULT_TICK_LENGTH;
 
-            if (point.x === undefined) {
-                point = {x: point[0], y: point[1], z: point[2]};
+            if (tick_position.x === undefined) {
+                tick_position = {x: tick_position[0], y: tick_position[1], z: tick_position[2]};
             }
             var axis_letter = axis_name[0];
             var ticks = axes[axis_name].ticks;
@@ -839,36 +839,40 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 axes[axis_name].ticks = ticks;
             }
 
-            var tick_name = axis_name + point[axis_letter];
+            var tick_name = axis_name + tick_position[axis_letter];
             var start, end, label_position;
 
+            // for Y axis we have labels aligned left, so we need to keep those labels closer to ticks
+            var tick_label_shift_koeff = axis_letter == "y" ? 1.2 : 2.1;
+
             if (["z1", "y2", "z2"].indexOf(axis_name) > -1) {
-                start = {x: point.x - tick_length, y: point.y, z: point.z};
-                end = {x: point.x, y: point.y, z: point.z};
-                label_position = {x: point.x - tick_length * 2, y: point.y, z: point.z};
+                start = {x: tick_position.x - tick_length, y: tick_position.y, z: tick_position.z};
+                end = {x: tick_position.x, y: tick_position.y, z: tick_position.z};
+                label_position = {x: tick_position.x - tick_length * tick_label_shift_koeff, y: tick_position.y, z: tick_position.z};
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
             if (["z3", "y3", "z4"].indexOf(axis_name) > -1) {
-                start = {x: point.x, y: point.y, z: point.z};
-                end = {x: point.x + tick_length, y: point.y, z: point.z};
-                label_position = {x: point.x + tick_length * 2, y: point.y, z: point.z};
+                start = {x: tick_position.x, y: tick_position.y, z: tick_position.z};
+                end = {x: tick_position.x + tick_length, y: tick_position.y, z: tick_position.z};
+                label_position = {x: tick_position.x + tick_length * tick_label_shift_koeff, y: tick_position.y, z: tick_position.z};
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
             if (["x1", "y1", "x3"].indexOf(axis_name) > -1) {
-                start = {x: point.x, y: point.y, z: point.z - tick_length};
-                end = {x: point.x, y: point.y, z: point.z};
-                label_position = {x: point.x, y: point.y, z: point.z - tick_length * 2};
+                start = {x: tick_position.x, y: tick_position.y, z: tick_position.z - tick_length};
+                end = {x: tick_position.x, y: tick_position.y, z: tick_position.z};
+                label_position = {x: tick_position.x, y: tick_position.y, z: tick_position.z - tick_length * tick_label_shift_koeff};
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
             if (["x2", "y4", "x4"].indexOf(axis_name) > -1) {
-                start = {x: point.x, y: point.y, z: point.z};
-                end = {x: point.x, y: point.y, z: point.z + tick_length};
-                label_position = {x: point.x, y: point.y, z: point.z + tick_length * 2};
+                start = {x: tick_position.x, y: tick_position.y, z: tick_position.z};
+                end = {x: tick_position.x, y: tick_position.y, z: tick_position.z + tick_length};
+                label_position = {x: tick_position.x, y: tick_position.y, z: tick_position.z + tick_length * tick_label_shift_koeff};
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
+
 
             function create_axis_tick(start, end, name, label, label_position) {
                 var rescaled_start = rescale_vector(start, axis_start_end_koeff);
