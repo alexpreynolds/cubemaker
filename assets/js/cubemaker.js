@@ -717,7 +717,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             weight: "normal",
             height: 0,
             curveSegments: 3,
-            font: "helvetiker"
+            font: "HelveticaNeueCyr"
         });
 
         var material = new THREE.MeshFaceMaterial([

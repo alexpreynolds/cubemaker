@@ -164,24 +164,17 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
 
 
         function parse_classes() {
-
-            // count total number of subclasses to generate colors palette
-            var class_values_count = Object.keys(class_to_index_map).reduce(function (sum, clazz) {
-                return sum + clazz.length;
-            }, 0);
-            var colors = generate_random_colors(class_values_count);
+            var color_generator = new CUBE_MAKER.ColorGenerator(-0.618033988749895, 0.99, 0.85);
 
             // build classes and subclasses tree with colors
             var classes = {};
-            var color_index = 0;
             Object.keys(class_to_index_map).forEach(function (class_name) {
                 var class_values = [];
                 Object.keys(class_to_index_map[class_name]).forEach(function (sub_class_name) {
                     class_values.push({
                         name: sub_class_name.trim(),
-                        rgb: colors[color_index]
+                        rgb: color_generator.generate_color()
                     });
-                    color_index++;
                 });
                 classes[class_name.trim()] = class_values;
                 class_values = [];
@@ -190,15 +183,6 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
             return classes;
         }
 
-        function generate_random_colors(count) {
-            //var color_generator = new CUBE_MAKER.ColorGenerator(-0.618033988749895, 0.99, 0.643);
-            var color_generator = new CUBE_MAKER.ColorGenerator(-0.618033988749895, 0.99, 0.85);
-            var colors = [];
-            for (var i = 0; i < count; i++) {
-                colors.push(color_generator.generate_color())
-            }
-            return colors;
-        }
     }
 
     function create_column_index_to_name_map(first_row) {
