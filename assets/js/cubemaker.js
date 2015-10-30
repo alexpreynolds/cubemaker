@@ -314,7 +314,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 }
             } else {
                 particle_material = new THREE.PointsMaterial({
-                    map: create_vertex_texture(default_point_rgb),
+                    map: create_vertex_texture(defaults.POINT_COLOR),
                     transparent: true,
                     size: 0.2,
                     alphaTest: 0.15

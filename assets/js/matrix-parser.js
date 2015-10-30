@@ -2,7 +2,7 @@ var CUBE_MAKER = CUBE_MAKER || {};
 
 CUBE_MAKER.MatrixParser = function (matrix_text) {
     const COLUMNS_DELIMITER = "\t";
-    const EOL_PATTERN = /\r\n|\r|\n|/g;
+    const EOL_PATTERN = /\r\n|\r|\n/g;
 
     // mapping of column index in matrix to column name, e.g. {0: PC1, 1: PC2, 2: PC3, 3: Name}
     var column_index_to_name_map = {};
