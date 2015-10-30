@@ -870,7 +870,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         }
 
         function add_axis_tick(axis_name, tick_position, label) {
-
             var axis_metadata = get_axis_metadata(axis_name[0]);
             var tick_length = axis_metadata.tick_length || defaults.TICK_LENGTH;
 
@@ -939,10 +938,17 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 };
 
                 var actual_label_position = rescale_vector(label_position, axis_start_end_koeff);
-                var tick_label = add_mesh_label(label, actual_label_position, tick_text_params);
+                var tick_label = add_mesh_label(to_scientific_notation(label, 5), actual_label_position, tick_text_params);
                 scene.add(tick_line_object);
 
                 return {line: tick_line_object, label: tick_label};
+            }
+
+            function to_scientific_notation(value, max_length) {
+                  if(parseFloat(value).toFixed(0).toString().length > max_length) {
+                      return parseFloat(value).toExponential(2);
+                  }
+                return value;
             }
         }
 
