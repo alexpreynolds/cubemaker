@@ -13,7 +13,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         TICKS_PER_AXIS: 4,
         LINE_COLOR: "black",
         LINE_THICKNESS: 1,
-        POINT_COLOR: [164,0,0]
+        POINT_COLOR: [164,0,0],
+        MAX_TICK_LABEL_LENGTH: 5,
+        EXPONENTIAL_PRECISION: 2
     };
 
     CUBE_MAKER.CubeMaker.get_defaults = get_defaults;
@@ -938,16 +940,16 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 };
 
                 var actual_label_position = rescale_vector(label_position, axis_start_end_koeff);
-                var tick_label = add_mesh_label(to_scientific_notation(label, 5), actual_label_position, tick_text_params);
+                var tick_label = add_mesh_label(to_scientific_notation(label, defaults.MAX_TICK_LABEL_LENGTH), actual_label_position, tick_text_params);
                 scene.add(tick_line_object);
 
                 return {line: tick_line_object, label: tick_label};
             }
 
             function to_scientific_notation(value, max_length) {
-                  if(parseFloat(value).toFixed(0).toString().length > max_length) {
-                      return parseFloat(value).toExponential(2);
-                  }
+                if (parseFloat(value).toFixed(0).toString().length > max_length) {
+                    return parseFloat(value).toExponential(defaults.EXPONENTIAL_PRECISION);
+                }
                 return value;
             }
         }
