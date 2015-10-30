@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en">
     <head>
 	    <meta charset="utf-8"/>
@@ -36,9 +35,20 @@
             </header>
             <div class="modal-body">
                 <p style="margin-bottom: 10px;">Paste JSON-formatted Cubemaker data object:</p>
-                <textarea id="import-data" style="width:100%" rows="10"></textarea>
+                <textarea id="json-import-data" style="width:100%" rows="10"></textarea>
             </div>
-            <footer><a id="import-btn" href="#" class="btn btn-small js-modal-close">Import</a></footer>
+            <footer><a id="json-import-btn" href="#" class="btn btn-small js-modal-close">Import</a></footer>
+        </div>
+
+        <div id="import-mtx-dialog" class="modal-box">
+            <header> <a href="#" class="js-modal-close close">&#x00D7;</a>
+                <h3>Cubemaker - Import Matrix</h3>
+            </header>
+            <div class="modal-body">
+                <p style="margin-bottom: 10px;">Specify file that contains tab-delimited data matrix</p>
+                <input id="matrix-file-input" type="file"/>
+            </div>
+            <footer><a id="matrix-import-btn" href="#" class="btn btn-small js-modal-close">Import</a></footer>
         </div>
         
         <div id="export-link-dialog" class="modal-box">
@@ -64,7 +74,7 @@
                 <label for="import-buttons">Import</label>
                 <div class="btn-group" id="import-buttons">
                     <button value="json" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="import-json-dialog" name="json">json</button>
-                    <button id="import-mtx-btn" value="link" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="import-mtx-dialog" name="mtx" disabled="disabled">matrix</button>
+                    <button id="import-mtx-btn" value="link" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="import-mtx-dialog" name="mtx">matrix</button>
                 </div>
             </div>
             <div id="export-bgroup">
@@ -99,6 +109,8 @@
         <script type="text/javascript" src="assets/js/lib/canvg.js"></script>
         <script type="text/javascript" src="assets/js/cubemaker.js"></script>
         <script type="text/javascript" src="assets/js/export-util.js"></script>
+        <script type="text/javascript" src="assets/js/color-generator.js"></script>
+        <script type="text/javascript" src="assets/js/matrix-parser.js"></script>
         <script type="text/javascript" src="assets/js/app.js"></script>
     </body>
 </html>
