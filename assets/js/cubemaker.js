@@ -706,7 +706,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     /*Adds text label to scene*/
-    function add_label(label_text, position, text_params) {
+    function add_mesh_label(label_text, position, text_params) {
 
         if (text_params == undefined) {
             text_params = {};   // to avoid undefined exceptions
@@ -764,6 +764,38 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         }
     }
 
+    /*Adds text label to scene*/
+    function add_sprite_label(label_text, position, text_params) {
+
+        if(text_params == undefined) {
+            text_params = {};   // to avoid undefined exceptions
+        }
+
+        var canvas = document.createElement('canvas');
+        var context = canvas.getContext('2d');
+        var size = text_params.size || 512;
+        canvas.width = size;
+        canvas.height = size;
+
+        context.textAlign = text_params.text_align || "center";
+        context.font = text_params.font || 'bolder 32px helvetica';
+
+        context.fillText(label_text, size/2, size/2);
+
+        var label_texture = new THREE.Texture(canvas);
+        label_texture.needsUpdate = true;
+
+        var label_material = new THREE.SpriteMaterial({ map: label_texture});
+        var label_sprite = new THREE.Sprite(label_material);
+        scene.add(label_sprite);
+
+        var label_position_vector = new THREE.Vector3(position.x, position.y, position.z);
+        label_sprite.position.set(label_position_vector.x, label_position_vector.y, label_position_vector.z);
+        console.log("label: " + label_text);
+
+        return label_sprite;
+    }
+
     function get_axis_metadata(axis_name) {
         return model.metadata.axis[axis_name[0]] || {};
     }
@@ -819,7 +851,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var label_text = axis_metadata.name;
             var text_params = {size: 0.06};
 
-            axis.label = add_label(label_text, position, text_params);
+            axis.label = add_sprite_label(label_text, position);
             //axis.label = add_label(axis.name, position, text_params);
         }
 
@@ -907,7 +939,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 };
 
                 var actual_label_position = rescale_vector(label_position, axis_start_end_koeff);
-                var tick_label = add_label(label, actual_label_position, tick_text_params);
+                var tick_label = add_mesh_label(label, actual_label_position, tick_text_params);
                 scene.add(tick_line_object);
 
                 return {line: tick_line_object, label: tick_label};
