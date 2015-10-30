@@ -161,7 +161,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         }
     }
 
-    function init() {
+    function init(xd, yd, zr) {
         mouse = new THREE.Vector2();
         var opaque_cube_lines = new Array(6);
 
@@ -180,11 +180,11 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         vertex_materials = {};
         bounding_boxes = [];
         horizontal_fudge = 1.75;
-        x_deg = 70;
+        x_deg = (typeof xd === 'undefined') ? 70 : xd;
         x_rad = Math.PI / 180 * x_deg;
-        y_deg = 45;
+        y_deg = (typeof yd === 'undefined') ? 45 : yd;
         y_rad = Math.PI / 180 * y_deg;
-        z_rad = 2.8;
+        z_rad = (typeof zr === 'undefined') ? 2.8 : zr;
         id_label = null;
         flag = true;
         dp_line_geos = new Array(6);
@@ -1342,7 +1342,16 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 if (newValue != selected_class) {
                     switch_category(newValue);
                     clear();
+                    var previous_position = camera.position;
+                    var previous_rotation = camera.rotation;
                     init();
+                    /* set the camera to where and how it was prior to the category switch event */
+                    camera.position.set(previous_position.x, 
+                                        previous_position.y, 
+                                        previous_position.z);
+                    camera.rotation.set(previous_rotation.x, 
+                                        previous_rotation.y, 
+                                        previous_rotation.z);
                     animate();
                 }
             });
