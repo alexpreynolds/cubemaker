@@ -38,7 +38,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     var rotate = false;
     var Directions = {UP: "up", DOWN: "down", RIGHT: "right", LEFT: "left"};
     var rotation_direction;
-    var rotationSpeed = 0.005;
+    var rotation_speed = 0.005;
     var mousedown = false;
     var Keys = {LEFT: '37', UP: '38', RIGHT: '39', DOWN: '40', ESC: '27'};
     var last_key = null;
@@ -652,13 +652,13 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         if (rotate) {
 
             if (rotation_direction == Directions.LEFT) {
-                controls.rotateLeft(-rotationSpeed);
+                controls.rotateLeft(-rotation_speed);
             } else if (rotation_direction == Directions.RIGHT) {
-                controls.rotateLeft(rotationSpeed);
+                controls.rotateLeft(rotation_speed);
             } else if (rotation_direction == Directions.UP) {
-                controls.rotateUp(-rotationSpeed);
+                controls.rotateUp(-rotation_speed);
             } else if (rotation_direction == Directions.DOWN) {
-                controls.rotateUp(rotationSpeed);
+                controls.rotateUp(rotation_speed);
             }
         }
     }
