@@ -709,8 +709,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
         var text3d = new THREE.TextGeometry(label_text, {
             size: text_params.size || 0.02,
+            weight: "normal",
             height: 0,
-            curveSegments: 2,
+            curveSegments: 3,
             font: "helvetiker"
         });
 
@@ -811,7 +812,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             };
 
             var label_text = axis_metadata.name;
-            var text_params = {size: 0.05};
+            var text_params = {size: 0.06};
 
             axis.label = add_label(label_text, position, text_params);
             //axis.label = add_label(axis.name, position, text_params);
