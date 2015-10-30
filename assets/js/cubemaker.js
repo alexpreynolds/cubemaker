@@ -780,7 +780,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         canvas.height = size;
 
         context.textAlign = text_params.text_align || "center";
-        context.font = text_params.font || 'bolder 32px helvetica';
+        context.font = text_params.font || 'normal 32px helvetica, arial, sans-serif';
 
         context.fillText(label_text, size/2, size/2);
 
