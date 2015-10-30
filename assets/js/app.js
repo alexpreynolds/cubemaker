@@ -15,17 +15,13 @@ $(function () {
         }
 
         $.getJSON("assets/js/sample.json", function (sample) {
-
             cube_maker = new CubeMaker("cube-container", sample);
-
             export_util = new ExportUtil(cube_maker);
-
         });
 
         // set settings panel action handlers
         set_action_handlers();
     }
-
 
     function set_action_handlers() {
 
@@ -52,11 +48,8 @@ $(function () {
                 var data = new MatrixParser(file_content).parse();
                 cube_maker.reload(data);
             });
-
-
         });
     }
-
 
     function check_WebGL() {
         var canvas = document.createElement("canvas");

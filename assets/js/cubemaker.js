@@ -461,6 +461,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         class_title_div.className = "key_title";
 
         var selected_class_combo = document.createElement('div');
+        selected_class_combo.id = "class_combo_container";
         selected_class_combo.className = "class_combo";
         $(selected_class_combo).append('<a id="class_dropdown_link" class="dropdown-toggle" href="#">' + selected_class + '</a>');
 
@@ -470,6 +471,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
         $(".dropdown-toggle", selected_class_combo).click(function () {
             $(this).addClass("active");
+            $(selected_class_dropdown).width(parseInt($(selected_class_combo).width()));
             $(selected_class_dropdown).addClass("open");
             $(selected_class_combo).trigger("show-category-selector");
         });
@@ -490,7 +492,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         if(Object.keys(model.metadata.classes).length > 1) {
 
             $(selected_class_combo).append(selected_class_dropdown);
-            $('a', selected_class_combo).prepend('<span class="caret"></span>');
+            $('a', selected_class_combo).prepend('<span class="caret rotate_180"></span>');
         }
         class_title_div.insertBefore(selected_class_combo, class_title_div.childNodes[0]);
 
