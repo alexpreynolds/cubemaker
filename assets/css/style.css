@@ -514,7 +514,7 @@ a.close:hover {
 }
 
 .dropdown-toggle.active, .dropdown-toggle.active:hover {
-    /* 
+    /*
         background-color: #EEEEEE;
         border-color: #eee;
     */
@@ -539,6 +539,11 @@ a.close:hover {
     width: 0;
 }
 
+.js-modal-close {
+    padding-left: 0px !important;
+    padding-right: 0px !important;
+}
+
 .dropdown-menu.open {
     display: block;
 }
@@ -558,9 +563,8 @@ a.close:hover {
     padding: 0px;
     position: absolute;
     text-align: left;
-    bottom: 80%;
+    bottom: 80% !important;
     z-index: 1000;
-    max-height: 100px;
     overflow-y: auto;
 }
 
