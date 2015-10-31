@@ -54,7 +54,7 @@ $(function(){
         settings_panel.hide();
     });
 
-    $("#graph_settings_cog").on("click", function () {
+    $("#graph_settings_menu").on("click", function () {
         settings_panel.toggle_visibility();
     });
 

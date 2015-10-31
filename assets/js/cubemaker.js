@@ -793,7 +793,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
         var label_position_vector = new THREE.Vector3(position.x, position.y, position.z);
         label_sprite.position.set(label_position_vector.x, label_position_vector.y, label_position_vector.z);
-        console.log("label: " + label_text);
 
         return label_sprite;
     }
@@ -1348,23 +1347,17 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
         $(document).ready(function () {
 
-            console.log("ready");
+            console.log("Cubemaker - ready");
 
             $("#import-bgroup").clone().appendTo(document.getElementById('settings_panel_data'));
             $("#export-bgroup").clone().appendTo(document.getElementById('settings_panel_data'));
-            $("#axes-bgroup").clone().appendTo(document.getElementById('settings_panel_parameters'));
+            $("#axes-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
 
-            var axes_checkbox = $("[name='axes-checkbox']");
-            axes_checkbox.bootstrapSwitch();
-            axes_checkbox.bootstrapSwitch('onColor', 'primary');
-            axes_checkbox.bootstrapSwitch('size', 'small');
-            axes_checkbox.bootstrapSwitch('state', model.metadata.show_axes);
-            axes_checkbox.focus(function (event) {
-                $(event.target).blur();
-            });
-
-            axes_checkbox.bootstrapSwitch('onSwitchChange', function (event, state) {
-                model.metadata.show_axes = state;
+            
+            if (model.metadata.show_axes) { $("#axes_on").click(); } else { $("#axes_off").click(); }
+            $('.axes-options').on('click', function (e) {
+                var name = $(this).attr("name");
+                model.metadata.show_axes = (name == "axes_off") ? false : true;
                 render();
             });
 

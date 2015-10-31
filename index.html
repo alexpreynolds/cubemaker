@@ -4,7 +4,7 @@
 	    <meta charset="utf-8"/>
         <link rel="stylesheet" href="assets/css/jquery.minicolors.css" type="text/css" />
         <link rel="stylesheet" href="assets/css/style.css" type="text/css" />
-        <link rel="stylesheet" href="assets/css/bootstrap-switch.min.css" type="text/css" />
+        <link rel="stylesheet" href="assets/css/bootstrap.min.css" type="text/css" />
         <link rel="stylesheet" href="assets/fonts/typicons.min.css" type="text/css" />
         <title>Cubemaker</title>
         <link rel="shortcut icon" href="assets/img/favicon.ico">
@@ -16,11 +16,12 @@
             </div>
         </div>
         <div id="graph_settings_panel">
-	        <div id="graph_settings_cog" class="controller">
-    	        <span class="typcn typcn-cog" style="font-size: 2em; font-weight: 100;"></span>
+	        <div id="graph_settings_menu" class="controller">
+    	        <span class="typcn typcn-th-menu" style="font-size: 2em; font-weight: 100;"></span>
             </div>
 	        <div id="graph_settings_subpanel" class="settings">
     	        <div id="graph_settings_subpanel_content">
+        	        <h2>Cubemaker</h2>
         	        <h3>Data</h3>
                     <p id="settings_panel_data"></p>
                     <h3 class="settings_panel_subsequent_group">Settings</h3>
@@ -73,28 +74,34 @@
             <div id="import-bgroup">
                 <label for="import-buttons">Import</label>
                 <div class="btn-group" id="import-buttons">
-                    <button value="json" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="import-json-dialog" name="json">json</button>
-                    <button id="import-mtx-btn" value="link" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="import-mtx-dialog" name="mtx">matrix</button>
+                    <button id="import-json-btn" value="json" class="btn btn-custom" data-modal-id="import-json-dialog" name="json">JSON</button>
+                    <button id="import-mtx-btn" value="mtx" class="btn btn-custom" data-modal-id="import-mtx-dialog" name="mtx">Matrix</button>
                 </div>
             </div>
             <div id="export-bgroup">
                 <label for="export-buttons">Export</label>
                 <div class="btn-group"  id="export-buttons">
-                    <button id="export-json-btn" value="json" class="btn btn-primary btn-xs btn-action" name="json">json</button>
-                    <button id="export-png-btn" value="png" class="btn btn-primary btn-xs btn-action" name="png">png</button>
-                    <button id="export-link-btn" value="link" class="btn btn-primary btn-xs btn-action js-open-modal" data-modal-id="export-link-dialog" name="link" disabled="disabled">link</button>
+                    <button id="export-json-btn" value="json" class="btn btn-custom" name="json">JSON</button>
+                    <button id="export-png-btn" value="png" class="btn btn-custom" name="png">PNG</button>
+                    <button id="export-link-btn" value="link" class="btn btn-custom btn-disabled" data-modal-id="export-link-dialog" name="link" disabled="disabled">Link</button>
                 </div>
             </div>
             <div id="axes-bgroup">
-	            <label for="axes-buttons">Axes</label>
-                <div class="btn-group"  id="axes-buttons">
-	                <input type="checkbox" name="axes-checkbox" checked>
+                <label for="axes-buttons">Axes</label>
+                    <div id="type_kind_group" class="btn-group" data-toggle="buttons" role="group" aria-label="">
+                        <label class="btn axes-options btn-custom" name="axes_off" id="axes_off">
+                            <input type="radio" class="axes_btn" name="axes_options" autocomplete="off">Off
+                        </label>
+                        <label class="btn axes-options btn-custom" name="axes_on" id="axes_on">
+                            <input type="radio" class="axes_btn" name="axes_options" autocomplete="off">On
+                        </label>
+                    </div>
                 </div>
             </div>
         </div>
         <div id="cube-container"></div>
         <script type="text/javascript" src="assets/js/lib/jquery-2.1.4.min.js"></script>
-        <script type="text/javascript" src="assets/js/lib/bootstrap-switch.min.js"></script>
+        <script type="text/javascript" src="assets/js/lib/bootstrap.min.js"></script>
         <script type="text/javascript" src="assets/js/lib/three.min.js"></script>
         <script type="text/javascript" src="assets/js/lib/three.orbit-controls.js"></script>
         <script type="text/javascript" src="assets/js/lib/gabelerner.rgbcolor.js"></script>
