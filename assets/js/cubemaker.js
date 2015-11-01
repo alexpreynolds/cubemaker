@@ -15,7 +15,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         LINE_THICKNESS: 1,
         POINT_COLOR: [164,0,0],
         MAX_TICK_LABEL_LENGTH: 5,
-        EXPONENTIAL_PRECISION: 2
+        EXPONENTIAL_PRECISION: 2,
+        PARTICLE_SIZE: 0.16,
     };
 
     CUBE_MAKER.CubeMaker.get_defaults = get_defaults;
@@ -292,6 +293,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         $.each(model.data, function (point_index, point_data) {
 
             var particle_material;
+            var particle_size = model.metadata.particle_size || defaults.PARTICLE_SIZE;
 
             if(selected_class) {
                 var point_type_index = point_data["type"][selected_class];
@@ -309,7 +311,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                     particle_material = new THREE.PointsMaterial({
                         map: create_vertex_texture(point_type.rgb ),
                         transparent: true,
-                        size: 0.2,
+                        size: particle_size,
                         alphaTest: 0.15
                     });
                     vertex_materials[selected_class][class_name] = particle_material;
@@ -318,7 +320,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 particle_material = new THREE.PointsMaterial({
                     map: create_vertex_texture(defaults.POINT_COLOR),
                     transparent: true,
-                    size: 0.2,
+                    size: particle_size,
                     alphaTest: 0.15
                 });
             }
@@ -328,7 +330,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             // use with the raycaster to better mimic mouseover and mouseout events. For example, a mouseover might
             // append a text label to left of the sphere particle describing the point ID or parent class.
 
-            var bounding_box_geometry = new THREE.BoxGeometry(0.125, 0.125, 0.125);
+            var bounding_box_factor = particle_size / 1.6;
+            var bounding_box_geometry = new THREE.BoxGeometry(bounding_box_factor, 
+                                                              bounding_box_factor, 
+                                                              bounding_box_factor);
             var id = point_data.id;
             var rescaled_point_xyz = rescaled_xyz(point_data.x,
                 point_data.y,
@@ -358,13 +363,16 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
             var particles = new THREE.Geometry();
             var particle = new THREE.Vector3(bounding_box.position.x,
-                bounding_box.position.y,
-                bounding_box.position.z);
+                                             bounding_box.position.y,
+                                             bounding_box.position.z);
+
             particles.vertices.push(particle);
 
             var particle_system = new THREE.Points(particles, particle_material);
             scene.add(particle_system);
         });
+        
+        
 
         // ============== add axes
         function axis(start, end, name) {

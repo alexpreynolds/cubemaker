@@ -148,6 +148,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
                 "axis": {},
                 "selected_class": "",
                 "show_axes": true,
+                "particle_size": CUBE_MAKER.CubeMaker.get_defaults().PARTICLE_SIZE,
                 "classes": {},
                 "range": {},
                 "materials": {
