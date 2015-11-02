@@ -474,6 +474,7 @@ a.close:hover {
 .key_element {
     font-size: 13px;
     margin-bottom: 10px;
+    cursor: default;
 }
 
 
@@ -637,6 +638,11 @@ a.close:hover {
     min-width: 40px;
 }
 
+.btn-lg-custom {
+    padding: 7px 12px !important;
+    font-size: 100% !important;
+}
+
 .btn-disabled {
   background-color: hsl(217, 24%, 56%) !important;
   background-repeat: repeat-x;
@@ -653,4 +659,37 @@ a.close:hover {
   text-shadow: 0 1px 1px rgba(255, 255, 255, 0.00);
   -webkit-font-smoothing: antialiased;
   min-width: 40px;
+}
+
+@keyframes spinner {
+    to {transform: rotate(360deg);}
+}
+ 
+@-webkit-keyframes spinner {
+    to {-webkit-transform: rotate(360deg);}
+}
+ 
+.spinner {
+    min-width: 16px;
+    min-height: 16px;
+}
+ 
+.spinner:before {
+    content: 'Loading...';
+    position: absolute;
+    top: 50%;
+    /* left: 50%; */
+    width: 16px;
+    height: 16px;
+    margin-top: -10px;
+    /* margin-left: -10px; */
+}
+ 
+.spinner:not(:required):before {
+    content: '';
+    border-radius: 50%;
+    border: 2px solid rgba(0, 0, 0, .3);
+    border-top-color: rgba(0, 0, 0, .6);
+    animation: spinner .6s linear infinite;
+    -webkit-animation: spinner .6s linear infinite;
 }

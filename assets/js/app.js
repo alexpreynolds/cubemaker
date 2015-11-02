@@ -34,7 +34,7 @@ $(function () {
         });
 
         $(document).on("click", "#export-link-btn", function () {
-            $("#link").val(export_util.to_url());
+            export_util.to_url("#export-link-result");
         });
 
         $(document).on("click", "#json-import-btn", function () {

@@ -4,6 +4,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
     // ====== internal variables declaration section
     var defaults = {
+        AXIS_SHOW_FLAG: true,
         AXIS_LABEL_DISTANCE_KOEFF: 0.75,
         BOUNDING_BOX_SCALE_FUDGE: 0.9,
         TICK_LENGTH: 0.1,
@@ -17,6 +18,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         MAX_TICK_LABEL_LENGTH: 5,
         EXPONENTIAL_PRECISION: 2,
         PARTICLE_SIZE: 0.16,
+        OPAQUE_CUBE_LINE_MATERIAL_COLOR: "0xbbbbbb",
+        OPAQUE_CUBE_LINE_MATERIAL_THICKNESS: 3,
+        BACK_CUBE_MATERIAL_COLOR: "0xf7f7f7"
     };
 
     CUBE_MAKER.CubeMaker.get_defaults = get_defaults;
@@ -129,6 +133,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     function switch_category(category) {
+        model.metadata.selected_class = category;
         selected_class = category;
     }
 
@@ -589,6 +594,30 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         var control_center = get_xyz_url_parameter("center");
         var x_deg = get_url_parameter("xdeg");
         var y_deg = get_url_parameter("ydeg");
+        if (model.metadata.camera_position) {
+            var camera_position_els = model.metadata.camera_position.split(":");
+            position = {
+                "x" : camera_position_els[0],
+                "y" : camera_position_els[1],
+                "z" : camera_position_els[2]
+            };
+        }
+        if (model.metadata.camera_rotation) {
+            var camera_rotation_els = model.metadata.camera_rotation.split(":");
+            rotation = {
+                "x" : camera_rotation_els[0],
+                "y" : camera_rotation_els[1],
+                "z" : camera_rotation_els[2]
+            };
+        }
+        if (model.metadata.control_center) {
+            var control_center_els = model.metadata.control_center.split(":");
+            control_center = {
+                "x" : control_center_els[0],
+                "y" : control_center_els[1],
+                "z" : control_center_els[2]
+            };
+        }
         if (position || rotation || control_center) {
             if (position) {
                 camera.position.set(position.x, position.y, position.z);
@@ -599,7 +628,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             if (control_center) {
                 controls.center.set(control_center.x, control_center.y, control_center.z);
             }
-        } else {
+        } 
+        else {
             if (x_deg) {
                 x_rad = Math.PI / 180.0 * x_deg;
             }
@@ -783,12 +813,12 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
         var canvas = document.createElement('canvas');
         var context = canvas.getContext('2d');
-        var size = text_params.size || 512;
+        var size = text_params.size || 2048;
         canvas.width = size;
         canvas.height = size;
 
         context.textAlign = text_params.text_align || "center";
-        context.font = text_params.font || 'normal 32px helvetica, arial, sans-serif';
+        context.font = text_params.font || 'normal 128px helvetica, arial, sans-serif';
 
         context.fillText(label_text, size/2, size/2);
 
@@ -1401,12 +1431,16 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             });
 
             $(document).on("source-change", function () {
+                console.log("Changed data source!");
+                /*
                 if (model.source) {
                     $("#export-link-btn").removeAttr("disabled");
                 } else {
                     $("#export-link-btn").attr("disabled", "disabled");
                 }
+                */
             });
+
         });
     }
 
@@ -1431,7 +1465,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         return {
             position: camera.position,
             rotation: camera.rotation,
-            center: controls.center
+            center:   controls.center,
+            category: get_selected_class()
         }
     }
 

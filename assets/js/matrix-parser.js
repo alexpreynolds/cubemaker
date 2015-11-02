@@ -147,17 +147,17 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
                 "subtitle": "Use mouse or arrow keys to rotate, scrollwheel to zoom, and double-tap arrow keys to animate",
                 "axis": {},
                 "selected_class": "",
-                "show_axes": true,
+                "show_axes": CUBE_MAKER.CubeMaker.get_defaults().AXIS_SHOW_FLAG,
                 "particle_size": CUBE_MAKER.CubeMaker.get_defaults().PARTICLE_SIZE,
                 "classes": {},
                 "range": {},
                 "materials": {
                     "opaque_cube_line_material": {
-                        "color": "0xbbbbbb",
-                        "thickness": 3
+                        "color": CUBE_MAKER.CubeMaker.get_defaults().OPAQUE_CUBE_LINE_MATERIAL_COLOR,
+                        "thickness": CUBE_MAKER.CubeMaker.get_defaults().OPAQUE_CUBE_LINE_MATERIAL_THICKNESS
                     },
                     "back_cube_material": {
-                        "color": "0xf7f7f7"
+                        "color": CUBE_MAKER.CubeMaker.get_defaults().BACK_CUBE_MATERIAL_COLOR
                     }
                 }
             }
