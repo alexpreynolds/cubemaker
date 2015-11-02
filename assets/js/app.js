@@ -19,40 +19,26 @@ $(function () {
         var json_model_url = query_string["import-json"];
         var export_type = query_string["export-type"];
 
+        var url = matrix_url || json_model_url || "assets/js/sample.json";
 
-        if(matrix_url) {
-            $.get(matrix_url, function (matrix) {
-                var model = new MatrixParser(matrix).parse();
-                cube_maker = new CubeMaker("cube-container", model);
+        var model;
+        $.get(url, function (response) {
 
-                export_util = new ExportUtil(cube_maker);
+            if(matrix_url) {
+                model = new MatrixParser(response).parse();
+            } else if(json_model_url) {
+                model = JSON.parse(response);
+            } else {
+                model = response;
+            }
 
-                if(export_type) {
-                    export_util.export_to_format(export_type);
-                }
-            });
-        } else if(json_model_url) {
-            $.get(json_model_url, function (json) {
-                var model = JSON.parse(json);
-                cube_maker = new CubeMaker("cube-container", model);
+            cube_maker = new CubeMaker("cube-container", model);
+            export_util = new ExportUtil(cube_maker);
 
-                export_util = new ExportUtil(cube_maker);
-
-                if(export_type) {
-                    export_util.export_to_format(export_type);
-                }
-            });
-        } else {
-            $.getJSON("assets/js/sample.json", function (sample) {
-                cube_maker = new CubeMaker("cube-container", sample);
-                export_util = new ExportUtil(cube_maker);
-
-                if(export_type) {
-                    export_util.export_to_format(export_type);
-                }
-
-            });
-        }
+            if (export_type) {
+                export_util.export_to_format(export_type);
+            }
+        });
 
 
         // set settings panel action handlers

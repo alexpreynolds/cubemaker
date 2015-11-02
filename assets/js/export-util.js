@@ -27,7 +27,7 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
                 generate_link();
                 break;
             default :
-                throw "Unknown export format."
+                throw "Unknown export format: " + format
         }
     }
 
