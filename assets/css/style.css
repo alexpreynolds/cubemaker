@@ -34,11 +34,11 @@ h3 {
 }
 
 #graph_settings_panel {
-  	width: 300px;
+  	width: 270px;
   	/* border: 1px solid rgba(33, 33, 33, 0.0933); */
   	/* background-color: rgba(33, 33, 33, 0.0933); */
   	position: fixed;
-  	left: -285px;
+  	left: -255px;
   	transition: all 0.5s ease-in-out;
   	z-index: 100;  	
 }
@@ -53,7 +53,7 @@ h3 {
 
 #graph_settings_panel .controller {
   	position: absolute;
-  	right: -30px;
+  	right: -35px;
   	top: -1px;
   	text-decoration: none;
   	transition: all 0.5s ease-in-out;
@@ -61,13 +61,18 @@ h3 {
 }
 
 #graph_settings_panel.show .controller {
-  	right: -20px;    
+  	right: -23px;    
   	/* transform: rotate(360deg); */
   	/* transform-origin: 50% 58%; */
 }
 
 #graph_settings_menu {
     margin-top: 45px;
+    background-color: #c7c7c7;
+    padding-left: 5px;
+    padding-right: 5px;
+    padding-bottom: 2px;
+	border-radius: 5px;
 }
 
 #graph_settings_panel .settings {

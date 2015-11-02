@@ -148,6 +148,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
                 "axis": {},
                 "selected_class": "",
                 "show_axes": CUBE_MAKER.CubeMaker.get_defaults().AXIS_SHOW_FLAG,
+                "invert_y_axis": CUBE_MAKER.CubeMaker.get_defaults().AXIS_INVERT_Y,
                 "particle_size": CUBE_MAKER.CubeMaker.get_defaults().PARTICLE_SIZE,
                 "classes": {},
                 "range": {},

@@ -55,7 +55,7 @@
         
         <div id="export-link-dialog" class="modal-box">
             <header> <a href="#" class="js-modal-close close">&#x00D7;</a>
-                <h3>Cubemaker - Link</h3>
+                <h3>Cubemaker - Export Link</h3>
             </header>
             <div class="modal-body">
                 <div id="export-link-result" class="spinner"></div>
@@ -71,7 +71,7 @@
             </radialGradient></defs>
             <circle fill="url(#sphere_gradient)" cx="320" cy="320" r="320"/>
         </svg></div>
-        <div class="hidden">
+        <div class="hidden">            
             <div id="import-bgroup">
                 <label for="import-buttons">Import</label>
                 <div class="btn-group" id="import-buttons">
@@ -79,6 +79,7 @@
                     <button id="import-mtx-btn" value="mtx" class="btn btn-custom" data-modal-id="import-mtx-dialog" name="mtx">Matrix</button>
                 </div>
             </div>
+            
             <div id="export-bgroup">
                 <label for="export-buttons">Export</label>
                 <div class="btn-group"  id="export-buttons">
@@ -87,19 +88,32 @@
                     <button id="export-link-btn" value="link" class="btn btn-custom" data-modal-id="export-link-dialog" name="link">Link</button>
                 </div>
             </div>
+            
             <div id="axes-bgroup">
                 <label for="axes-buttons">Axes</label>
-                    <div id="type_kind_group" class="btn-group" data-toggle="buttons" role="group" aria-label="">
-                        <label class="btn axes-options btn-custom" name="axes_off" id="axes_off">
-                            <input type="radio" class="axes_btn" name="axes_options" autocomplete="off">Off
-                        </label>
-                        <label class="btn axes-options btn-custom" name="axes_on" id="axes_on">
-                            <input type="radio" class="axes_btn" name="axes_options" autocomplete="off">On
-                        </label>
-                    </div>
+                <div id="axes_group" class="btn-group" data-toggle="buttons" role="group" aria-label="">
+                    <label class="btn axes-options btn-custom" name="axes_off" id="axes_off">
+                        <input type="radio" class="axes_btn" name="axes_options" autocomplete="off">Off
+                    </label>
+                    <label class="btn axes-options btn-custom" name="axes_on" id="axes_on">
+                        <input type="radio" class="axes_btn" name="axes_options" autocomplete="off">On
+                    </label>
                 </div>
             </div>
+            
+            <div id="orientation-y-bgroup">
+                <label for="orientation-y-buttons">Flip Y</label>
+                <div id="orientation_y_group" class="btn-group" data-toggle="buttons" role="group" aria-label="">
+                    <label class="btn orientation-y-options btn-custom" name="orientation_y_unflipped" id="orientation_y_unflipped">
+                        <input type="radio" class="orientation_y_btn" name="orientation_y_options" autocomplete="off">Off
+                    </label>
+                    <label class="btn orientation-y-options btn-custom" name="orientation_y_flipped" id="orientation_y_flipped">
+                        <input type="radio" class="orientation_y_btn" name="orientation_y_options" autocomplete="off">On
+                    </label>
+                </div>
+            </div>    
         </div>
+        
         <div id="cube-container"></div>
         <script type="text/javascript" src="assets/js/lib/jquery-2.1.4.min.js"></script>
         <script type="text/javascript" src="assets/js/lib/bootstrap.min.js"></script>        
@@ -115,8 +129,8 @@
         <script type="text/javascript" src="assets/js/lib/jquery.minicolors.min.js"></script>
         <script type="text/javascript" src="assets/js/lib/helvetiker.js"></script>
         <script type="text/javascript" src="assets/js/lib/clipboard.min.js"></script>
+        <script type="text/javascript" src="assets/js/lib/canvg.min.js"></script>        
         <script type="text/javascript" src="assets/js/ui.js"></script>
-        <script type="text/javascript" src="assets/js/lib/canvg.js"></script>
         <script type="text/javascript" src="assets/js/cubemaker.js"></script>
         <script type="text/javascript" src="assets/js/export-util.js"></script>
         <script type="text/javascript" src="assets/js/color-generator.js"></script>

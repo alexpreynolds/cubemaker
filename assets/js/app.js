@@ -24,7 +24,6 @@ $(function () {
     }
 
     function set_action_handlers() {
-
         $(document).on("click", "#export-json-btn", function () {
             export_util.to_json();
         });

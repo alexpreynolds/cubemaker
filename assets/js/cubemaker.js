@@ -5,6 +5,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     // ====== internal variables declaration section
     var defaults = {
         AXIS_SHOW_FLAG: true,
+        AXIS_INVERT_Y: false,
         AXIS_LABEL_DISTANCE_KOEFF: 0.75,
         BOUNDING_BOX_SCALE_FUDGE: 0.9,
         TICK_LENGTH: 0.1,
@@ -300,7 +301,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var particle_material;
             var particle_size = model.metadata.particle_size || defaults.PARTICLE_SIZE;
 
-            if(selected_class) {
+            if (selected_class) {
                 var point_type_index = point_data["type"][selected_class];
                 var point_type = model.metadata.classes[selected_class][point_type_index];
                 var class_name = point_type.name;
@@ -314,7 +315,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 if (!particle_material) {
 
                     particle_material = new THREE.PointsMaterial({
-                        map: create_vertex_texture(point_type.rgb ),
+                        map: create_vertex_texture(point_type.rgb),
                         transparent: true,
                         size: particle_size,
                         alphaTest: 0.15
@@ -358,8 +359,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                     transparent: true,
                     alphaTest: 0.5
                 }));
+            var flip_y_factor = (model.metadata.invert_y_axis ? -1 : 1);
             bounding_box.position.x = defaults.BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[0];
-            bounding_box.position.y = defaults.BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[1];
+            bounding_box.position.y = defaults.BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[1] * flip_y_factor; /* flip upside down via -1 */
             bounding_box.position.z = defaults.BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[2];
             bounding_box.name = id || "";
             bounding_box.subname = class_name || "";
@@ -913,7 +915,11 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var tick_length = axis_metadata.tick_length || defaults.TICK_LENGTH;
 
             if (tick_position.x === undefined) {
-                tick_position = {x: tick_position[0], y: tick_position[1], z: tick_position[2]};
+                tick_position = {
+	                x: tick_position[0], 
+	                y: tick_position[1], 
+	                z: tick_position[2]
+	                };
             }
             var axis_letter = axis_name[0];
             var ticks = axes[axis_name].ticks;
@@ -927,37 +933,92 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
             // for Y axis we have labels aligned left, so we need to keep those labels closer to ticks
             var tick_label_shift_koeff = axis_letter == "y" ? 1.2 : 2.1;
+            
+			//if (axis_metadata.name == "PC2") { console.log(axis_name, tick_position, label); }
 
             if (["z1", "y2", "z2"].indexOf(axis_name) > -1) {
-                start = {x: tick_position.x - tick_length, y: tick_position.y, z: tick_position.z};
-                end = {x: tick_position.x, y: tick_position.y, z: tick_position.z};
-                label_position = {x: tick_position.x - tick_length * tick_label_shift_koeff, y: tick_position.y, z: tick_position.z};
+                start = {
+	                x: tick_position.x - tick_length, 
+	                y: tick_position.y, 
+	                z: tick_position.z
+	                };
+                end = {
+	                x: tick_position.x, 
+	                y: tick_position.y, 
+	                z: tick_position.z
+	                };
+                label_position = { 
+	                x: tick_position.x - tick_length * tick_label_shift_koeff, 
+	                y: tick_position.y, 
+	                z: tick_position.z
+	                };
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
             if (["z3", "y3", "z4"].indexOf(axis_name) > -1) {
-                start = {x: tick_position.x, y: tick_position.y, z: tick_position.z};
-                end = {x: tick_position.x + tick_length, y: tick_position.y, z: tick_position.z};
-                label_position = {x: tick_position.x + tick_length * tick_label_shift_koeff, y: tick_position.y, z: tick_position.z};
+                start = {
+	                x: tick_position.x, 
+	                y: tick_position.y, 
+	                z: tick_position.z
+	                };
+                end = {
+	                x: tick_position.x + tick_length, 
+	                y: tick_position.y, 
+	                z: tick_position.z
+	                };
+                label_position = {
+	                x: tick_position.x + tick_length * tick_label_shift_koeff, 
+	                y: tick_position.y, 
+	                z: tick_position.z
+	                };
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
-
+			
             if (["x1", "y1", "x3"].indexOf(axis_name) > -1) {
-                start = {x: tick_position.x, y: tick_position.y, z: tick_position.z - tick_length};
-                end = {x: tick_position.x, y: tick_position.y, z: tick_position.z};
-                label_position = {x: tick_position.x, y: tick_position.y, z: tick_position.z - tick_length * tick_label_shift_koeff};
+                start = {
+	                x: tick_position.x, 
+	                y: tick_position.y, 
+	                z: tick_position.z - tick_length
+	                };
+                end = {
+	                x: tick_position.x, 
+	                y: tick_position.y, 
+	                z: tick_position.z
+	                };
+                label_position = {
+	                x: tick_position.x, 
+	                y: tick_position.y,
+	                z: tick_position.z - tick_length * tick_label_shift_koeff
+	                };
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
             if (["x2", "y4", "x4"].indexOf(axis_name) > -1) {
-                start = {x: tick_position.x, y: tick_position.y, z: tick_position.z};
-                end = {x: tick_position.x, y: tick_position.y, z: tick_position.z + tick_length};
-                label_position = {x: tick_position.x, y: tick_position.y, z: tick_position.z + tick_length * tick_label_shift_koeff};
+                start = {
+	                x: tick_position.x, 
+	                y: tick_position.y, 
+	                z: tick_position.z
+	                };
+                end = {
+	                x: tick_position.x, 
+	                y: tick_position.y, 
+	                z: tick_position.z + tick_length};
+                label_position = {
+	                x: tick_position.x, 
+	                y: tick_position.y, 
+	                z: tick_position.z + tick_length * tick_label_shift_koeff
+	                };
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
-
             function create_axis_tick(start, end, name, label, label_position) {
+	            
+	            if (((label_position.x >= 1) || (label_position.x <= -1)) 
+	            	&&
+	            	((label_position.z >= 1) || (label_position.z <= -1))) {
+		            	label_position.y *= (model.metadata.invert_y_axis ? -1 : 1);
+	            	}
+	            
                 var rescaled_start = rescale_vector(start, axis_start_end_koeff);
                 var rescaled_end = rescale_vector(end, axis_start_end_koeff);
 
@@ -977,10 +1038,15 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 };
 
                 var actual_label_position = rescale_vector(label_position, axis_start_end_koeff);
-                var tick_label = add_mesh_label(to_scientific_notation(label, defaults.MAX_TICK_LABEL_LENGTH), actual_label_position, tick_text_params);
+                var tick_label = add_mesh_label(to_scientific_notation(label, defaults.MAX_TICK_LABEL_LENGTH), 
+                								actual_label_position, 
+			                					tick_text_params);
                 scene.add(tick_line_object);
 
-                return {line: tick_line_object, label: tick_label};
+                return {
+	                line: tick_line_object, 
+	                label: tick_label
+	                };
             }
 
             function to_scientific_notation(value, max_length) {
@@ -1005,7 +1071,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var tick_values = get_tick_values(axis, number_of_ticks);
 
             var ticks_info = tick_values.map(function (value, index) {
-                return {value: value, position: intermediate_points[index]};
+                return {
+	                value: value, 
+	                position: intermediate_points[index]
+	                };
             });
 
             return ticks_info;
@@ -1383,13 +1452,14 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             mousedown = false;
         });
 
-        $(document).ready(function () {
-
+        $(document).ready(function () 
+        {
             console.log("Cubemaker - ready");
 
             $("#import-bgroup").clone().appendTo(document.getElementById('settings_panel_data'));
             $("#export-bgroup").clone().appendTo(document.getElementById('settings_panel_data'));
             $("#axes-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
+            $("#orientation-y-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
 
             
             if (model.metadata.show_axes) { $("#axes_on").click(); } else { $("#axes_off").click(); }
@@ -1397,6 +1467,24 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 var name = $(this).attr("name");
                 model.metadata.show_axes = (name == "axes_off") ? false : true;
                 render();
+            });
+            
+            if (model.metadata.invert_y_axis) { $("#orientation_y_flipped").click(); } else { $("#orientation_y_unflipped").click(); }
+            $('.orientation-y-options').on('click', function (e) {
+                var name = $(this).attr("name");
+                model.metadata.invert_y_axis = (name == "orientation_y_unflipped") ? false : true;
+                clear();
+                var previous_position = camera.position;
+				var previous_rotation = camera.rotation;
+                init();
+                /* set the camera to where and how it was prior to the category switch event */
+                camera.position.set(previous_position.x, 
+                					previous_position.y, 
+                                    previous_position.z);
+                camera.rotation.set(previous_rotation.x, 
+                                    previous_rotation.y, 
+                                    previous_rotation.z);
+                animate();
             });
 
             $("#link").click(function () {

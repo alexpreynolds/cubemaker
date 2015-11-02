@@ -16,18 +16,11 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
         var prefix = "<p>Please copy the following web address to your clipboard:</p>";
         var suffix = "<p>&nbsp;</p><p>You can use this address to reload the cube and any modifications.</p>";
         
-        var url_result = window.location.protocol + "//" + window.location.hostname + (window.location.port != 80 ? ":" + window.location.port : "") + "/";
+        //var url_result = window.location.protocol + "//" + window.location.hostname + (window.location.port != 80 ? ":" + window.location.port : "") + "/";
+        var url_result = window.location.href.split('?')[0];
 
         var model = cube_maker.get_model();
         var scene_state = cube_maker.get_scene_state();
-
-        /*
-        result = result + "?source=" + encodeURI(model.source)
-                        + "&camPosition=" + xyz_to_str(scene_state.position)
-                        + "&camRotation=" + xyz_to_str(scene_state.rotation)
-                        + "&center=" + xyz_to_str(scene_state.center)
-                        + "&selectedCategory=" + encodeURI(scene_state.category);
-                        */
 
         /* update metadata, as needed */
         model.metadata.camera_position = xyz_to_str(scene_state.position);
