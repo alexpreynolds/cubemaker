@@ -14,10 +14,46 @@ $(function () {
             return
         }
 
-        $.getJSON("assets/js/sample.json", function (sample) {
-            cube_maker = new CubeMaker("cube-container", sample);
-            export_util = new ExportUtil(cube_maker);
-        });
+        var query_string = new CUBE_MAKER.QueryStringParser().parse();
+        var matrix_url = query_string["import-matrix"];
+        var json_model_url = query_string["import-json"];
+        var export_type = query_string["export-type"];
+
+
+        if(matrix_url) {
+            $.get(matrix_url, function (matrix) {
+                var model = new MatrixParser(matrix).parse();
+                cube_maker = new CubeMaker("cube-container", model);
+
+                export_util = new ExportUtil(cube_maker);
+
+                if(export_type) {
+                    export_util.export_to_format(export_type);
+                }
+            });
+        } else if(json_model_url) {
+            $.get(json_model_url, function (json) {
+                var model = JSON.parse(json);
+                cube_maker = new CubeMaker("cube-container", model);
+
+                export_util = new ExportUtil(cube_maker);
+
+                if(export_type) {
+                    export_util.export_to_format(export_type);
+                }
+            });
+        } else {
+            $.getJSON("assets/js/sample.json", function (sample) {
+                cube_maker = new CubeMaker("cube-container", sample);
+                export_util = new ExportUtil(cube_maker);
+
+                if(export_type) {
+                    export_util.export_to_format(export_type);
+                }
+
+            });
+        }
+
 
         // set settings panel action handlers
         set_action_handlers();

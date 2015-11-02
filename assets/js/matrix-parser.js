@@ -19,6 +19,8 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
      */
     var class_to_index_map = {};
 
+    var cube_maker_defaults = CUBE_MAKER.CubeMaker().get_defaults();
+
     return {
         parse: parse
     };
@@ -103,13 +105,12 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
         function parse_axes_metadata(first_line) {
 
             var arr = row_to_array(first_line);
-            var defaults = CUBE_MAKER.CubeMaker.get_defaults();
             var default_axis_metadata = {
-                "color": defaults.LINE_COLOR,
-                "thickness": defaults.LINE_THICKNESS,
-                "tick_color": defaults.TICK_COLOR,
-                "tick_thickness": defaults.TICK_THICKNESS,
-                "tick_length": defaults.TICK_LENGTH
+                "color": cube_maker_defaults.LINE_COLOR,
+                "thickness": cube_maker_defaults.LINE_THICKNESS,
+                "tick_color": cube_maker_defaults.TICK_COLOR,
+                "tick_thickness": cube_maker_defaults.TICK_THICKNESS,
+                "tick_length": cube_maker_defaults.TICK_LENGTH
             };
 
             return {
@@ -147,17 +148,17 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
                 "subtitle": "Use mouse or arrow keys to rotate, scrollwheel to zoom, and double-tap arrow keys to animate",
                 "axis": {},
                 "selected_class": "",
-                "show_axes": CUBE_MAKER.CubeMaker.get_defaults().AXIS_SHOW_FLAG,
-                "particle_size": CUBE_MAKER.CubeMaker.get_defaults().PARTICLE_SIZE,
+                "show_axes": cube_maker_defaults.AXIS_SHOW_FLAG,
+                "particle_size": cube_maker_defaults.PARTICLE_SIZE,
                 "classes": {},
                 "range": {},
                 "materials": {
                     "opaque_cube_line_material": {
-                        "color": CUBE_MAKER.CubeMaker.get_defaults().OPAQUE_CUBE_LINE_MATERIAL_COLOR,
-                        "thickness": CUBE_MAKER.CubeMaker.get_defaults().OPAQUE_CUBE_LINE_MATERIAL_THICKNESS
+                        "color": cube_maker_defaults.OPAQUE_CUBE_LINE_MATERIAL_COLOR,
+                        "thickness": cube_maker_defaults.OPAQUE_CUBE_LINE_MATERIAL_THICKNESS
                     },
                     "back_cube_material": {
-                        "color": CUBE_MAKER.CubeMaker.get_defaults().BACK_CUBE_MATERIAL_COLOR
+                        "color": cube_maker_defaults.BACK_CUBE_MATERIAL_COLOR
                     }
                 }
             }

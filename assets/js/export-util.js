@@ -2,32 +2,58 @@ var CUBE_MAKER = CUBE_MAKER || {};
 
 CUBE_MAKER.ExportUtil = function (cube_maker) {
 
+    var formats = {
+        PNG: "png",
+        JSON: "json",
+        LINK: "link"
+    };
+
     return {
         to_png: export_as_png,
         to_json: export_as_json,
-        to_url: generate_link
+        to_url: generate_link,
+        export_to_format: export_to_format
     };
 
-    function generate_link(el) 
-    {
+    function export_to_format(format) {
+        switch (format) {
+            case formats.JSON:
+                export_as_json();
+                break;
+            case formats.PNG:
+                export_as_png();
+                break;
+            case formats.LINK:
+                generate_link();
+                break;
+            default :
+                throw "Unknown export format."
+        }
+    }
+
+    //TODO[Alexander Serebriyan]: remove el argument and all DOM manipulations. It should just return a URL.
+    function generate_link(el) {
+        if (!el) {
+            el = "#export-link-result";
+        }
         $(el).html("");
         $(el).addClass("spinner");
-        
+
         var prefix = "<p>Please copy the following web address to your clipboard:</p>";
         var suffix = "<p>&nbsp;</p><p>You can use this address to reload the cube and any modifications.</p>";
-        
+
         var url_result = window.location.protocol + "//" + window.location.hostname + (window.location.port != 80 ? ":" + window.location.port : "") + "/";
 
         var model = cube_maker.get_model();
         var scene_state = cube_maker.get_scene_state();
 
         /*
-        result = result + "?source=" + encodeURI(model.source)
-                        + "&camPosition=" + xyz_to_str(scene_state.position)
-                        + "&camRotation=" + xyz_to_str(scene_state.rotation)
-                        + "&center=" + xyz_to_str(scene_state.center)
-                        + "&selectedCategory=" + encodeURI(scene_state.category);
-                        */
+         result = result + "?source=" + encodeURI(model.source)
+         + "&camPosition=" + xyz_to_str(scene_state.position)
+         + "&camRotation=" + xyz_to_str(scene_state.rotation)
+         + "&center=" + xyz_to_str(scene_state.center)
+         + "&selectedCategory=" + encodeURI(scene_state.category);
+         */
 
         /* update metadata, as needed */
         model.metadata.camera_position = xyz_to_str(scene_state.position);
@@ -39,12 +65,12 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
         $.ajax({
             url: root_URL + "/save_model.py",
             type: "post",
-            data : { 
-                model : JSON.stringify(model)
+            data: {
+                model: JSON.stringify(model)
             },
-            success : function(response) {
+            success: function (response) {
                 var clipboard = new Clipboard('.btn-clipboard');
-                clipboard.on('success', function(e) {
+                clipboard.on('success', function (e) {
                     console.info('Action:', e.action);
                     console.info('Text:', e.text);
                     console.info('Trigger:', e.trigger);

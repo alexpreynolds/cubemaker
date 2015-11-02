@@ -23,8 +23,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         BACK_CUBE_MATERIAL_COLOR: "0xf7f7f7"
     };
 
-    CUBE_MAKER.CubeMaker.get_defaults = get_defaults;
-
     var root_element = $("#" + rootElementId);
     var camera, scene, raycaster, renderer, controls, container, cube, vertex_materials;
     var mouse = new THREE.Vector2(), INTERSECTED;
@@ -62,7 +60,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         reload: reload,
         get_model: get_model,
         get_snapshot: get_snapshot,
-        get_scene_state: get_scene_state
+        get_scene_state: get_scene_state,
+        get_defaults: get_defaults
     };
 
     // private functions
@@ -1342,11 +1341,13 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     function activate() {
-        setup_action_handlers();
-        load().done(function () {
-            init();
-            animate();
-        });
+        if(root_element && model) {
+            setup_action_handlers();
+            load().done(function () {
+                init();
+                animate();
+            });
+        }
     }
 
     function setup_action_handlers() {
@@ -1471,7 +1472,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     function get_selected_class() {
-        return model.metadata.selected_class;
+        return model ? model.metadata.selected_class : "";
     }
 
     function get_defaults() {
