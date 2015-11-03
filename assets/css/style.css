@@ -14,8 +14,8 @@ body {
 
 label {
     font-size: 0.9em;
-    font-weight: 400 !important;
-    min-width: 50px;
+    font-weight: 500 !important;
+    min-width: 65px;
 }
 
 ul, li {
@@ -34,11 +34,11 @@ h3 {
 }
 
 #graph_settings_panel {
-  	width: 270px;
+  	width: 295px;
   	/* border: 1px solid rgba(33, 33, 33, 0.0933); */
   	/* background-color: rgba(33, 33, 33, 0.0933); */
   	position: fixed;
-  	left: -255px;
+  	left: -280px;
   	transition: all 0.5s ease-in-out;
   	z-index: 100;  	
 }
@@ -483,12 +483,8 @@ a.close:hover {
 }
 
 
-#export-bgroup {
-    margin-bottom: 10px;
-}
-
-#import-bgroup {
-    margin-bottom: 10px;
+.settings-bgroup {
+    margin-bottom: 5px;
 }
 
 .right {
@@ -500,6 +496,7 @@ a.close:hover {
 .class_combo {
     position: relative;
     display: inline-block;
+    
 }
 
 .dropdown-toggle {
@@ -510,7 +507,7 @@ a.close:hover {
     font-weight: 700;
     line-height: 31px;
     margin-bottom: 0;
-    padding: 6px 20px;
+    padding: 6px 20px 0px 20px;
     text-align: center;
     vertical-align: middle;
     white-space: nowrap;
@@ -622,7 +619,7 @@ a.close:hover {
     padding: 4px 8px !important;
     font-size: 85% !important;
     line-height: 1 !important;
-    min-width: 40px;
+    min-width: 20px;
 }
 
 .btn-custom.active {
@@ -697,4 +694,10 @@ a.close:hover {
     border-top-color: rgba(0, 0, 0, .6);
     animation: spinner .6s linear infinite;
     -webkit-animation: spinner .6s linear infinite;
+}
+
+.minicolors-swatch {
+    margin: 0 !important;
+    padding: 0 !important;
+    top: -2px !important;
 }

@@ -72,7 +72,7 @@
             <circle fill="url(#sphere_gradient)" cx="320" cy="320" r="320"/>
         </svg></div>
         <div class="hidden">            
-            <div id="import-bgroup">
+            <div id="import-bgroup" class="settings-bgroup">
                 <label for="import-buttons">Import</label>
                 <div class="btn-group" id="import-buttons">
                     <button id="import-json-btn" value="json" class="btn btn-custom" data-modal-id="import-json-dialog" name="json">JSON</button>
@@ -80,7 +80,7 @@
                 </div>
             </div>
             
-            <div id="export-bgroup">
+            <div id="export-bgroup" class="settings-bgroup">
                 <label for="export-buttons">Export</label>
                 <div class="btn-group"  id="export-buttons">
                     <button id="export-json-btn" value="json" class="btn btn-custom" name="json">JSON</button>
@@ -89,29 +89,90 @@
                 </div>
             </div>
             
-            <div id="axes-bgroup">
+            <div id="axes-bgroup" class="settings-bgroup">
                 <label for="axes-buttons">Axes</label>
                 <div id="axes_group" class="btn-group" data-toggle="buttons" role="group" aria-label="">
                     <label class="btn axes-options btn-custom" name="axes_off" id="axes_off">
-                        <input type="radio" class="axes_btn" name="axes_options" autocomplete="off">Off
+                        <input type="radio" class="axes_btn" name="axes_options" autocomplete="off">Hide
                     </label>
                     <label class="btn axes-options btn-custom" name="axes_on" id="axes_on">
-                        <input type="radio" class="axes_btn" name="axes_options" autocomplete="off">On
+                        <input type="radio" class="axes_btn" name="axes_options" autocomplete="off">Show
+                    </label>
+                </div>
+                <div id="axes_color_group">
+                    <label for="axes-color-buttons">&nbsp;</label>
+                    <div id="axes_group" class="btn-group">
+                        <table style="min-width: 100px;">
+                            <tr>
+                                <td>X</td>
+                                <td><input id="axis_color_x" axis="x" value="#ff0000" class="minicolors-input" size="7" style="width: 13px; height: 13px; border: 1px solid black; display: inline-block; margin: 0px;" type="hidden">&nbsp;</td>
+                                <td>Y</td>
+                                <td><input id="axis_color_y" axis="y" value="#00ff00" class="minicolors-input" size="7" style="width: 13px; height: 13px; border: 1px solid black; display: inline-block; margin: 0px;" type="hidden">&nbsp;</td>
+                                <td>Z</td>
+                                <td><input id="axis_color_z" axis="z" value="#0000ff" class="minicolors-input" size="7" style="width: 13px; height: 13px; border: 1px solid black; display: inline-block; margin: 3px;" type="hidden"></td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="orientation-y-bgroup" class="settings-bgroup">
+                <label for="orientation-y-buttons">Y-axis</label>
+                <div id="orientation_y_group" class="btn-group" data-toggle="buttons" role="group" aria-label="">
+                    <label class="btn orientation-y-options btn-custom" name="orientation_y_unflipped" id="orientation_y_unflipped">
+                        <input type="radio" class="orientation_y_btn" name="orientation_y_options" autocomplete="off">Normal
+                    </label>
+                    <label class="btn orientation-y-options btn-custom" name="orientation_y_flipped" id="orientation_y_flipped">
+                        <input type="radio" class="orientation_y_btn" name="orientation_y_options" autocomplete="off">Inverse
                     </label>
                 </div>
             </div>
             
-            <div id="orientation-y-bgroup">
-                <label for="orientation-y-buttons">Flip Y</label>
-                <div id="orientation_y_group" class="btn-group" data-toggle="buttons" role="group" aria-label="">
-                    <label class="btn orientation-y-options btn-custom" name="orientation_y_unflipped" id="orientation_y_unflipped">
-                        <input type="radio" class="orientation_y_btn" name="orientation_y_options" autocomplete="off">Off
+            <div id="legend-bgroup" class="settings-bgroup">
+                <label for="legend-buttons">Legend</label>
+                <div id="legend_group" class="btn-group" data-toggle="buttons" role="group" aria-label="">
+                    <label class="btn legend-options btn-custom" name="legend_off" id="legend_off">
+                        <input type="radio" class="legend_btn" name="legend_options" autocomplete="off">Hide
                     </label>
-                    <label class="btn orientation-y-options btn-custom" name="orientation_y_flipped" id="orientation_y_flipped">
-                        <input type="radio" class="orientation_y_btn" name="orientation_y_options" autocomplete="off">On
+                    <label class="btn legend-options btn-custom" name="legend_on" id="legend_on">
+                        <input type="radio" class="legend_btn" name="legend_options" autocomplete="off">Show
                     </label>
                 </div>
-            </div>    
+            </div>
+            
+            <div id="title-bgroup" class="settings-bgroup">
+                <label for="title-buttons">Title</label>
+                <div id="title_group" class="btn-group" data-toggle="buttons" role="group" aria-label="">
+                    <label class="btn title-options btn-custom" name="title_off" id="title_off">
+                        <input type="radio" class="title_btn" name="title_options" autocomplete="off">Hide
+                    </label>
+                    <label class="btn title-options btn-custom" name="title_on" id="title_on">
+                        <input type="radio" class="title_btn" name="title_options" autocomplete="off">Show
+                    </label>
+                </div>
+            </div>
+            
+            <div id="particle-size-bgroup" class="settings-bgroup">
+                <label for="particle-size-buttons">Point size</label>
+                <div id="particle_size_group" class="btn-group" data-toggle="buttons" role="group" aria-label="">
+                    <label class="btn particle-size-options btn-custom" name="particle_size_xs" id="particle_size_xs">
+                        <input type="radio" class="particle_size_btn" name="particle_size_options" autocomplete="off">XS
+                    </label>
+                    <label class="btn particle-size-options btn-custom" name="particle_size_s" id="particle_size_s">
+                        <input type="radio" class="particle_size_btn" name="particle_size_options" autocomplete="off">S
+                    </label>
+                    <label class="btn particle-size-options btn-custom" name="particle_size_m" id="particle_size_m">
+                        <input type="radio" class="particle_size_btn" name="particle_size_options" autocomplete="off">M
+                    </label>
+                    <label class="btn particle-size-options btn-custom" name="particle_size_l" id="particle_size_l">
+                        <input type="radio" class="particle_size_btn" name="particle_size_options" autocomplete="off">L
+                    </label>
+                    <label class="btn particle-size-options btn-custom" name="particle_size_xl" id="particle_size_xl">
+                        <input type="radio" class="particle_size_btn" name="particle_size_options" autocomplete="off">XL
+                    </label>
+                </div>
+            </div>
+                
         </div>
         
         <div id="cube-container"></div>

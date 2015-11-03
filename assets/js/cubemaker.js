@@ -5,6 +5,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     // ====== internal variables declaration section
     var defaults = {
         AXIS_SHOW_FLAG: true,
+        LEGEND_SHOW_FLAG: true,
+        TITLE_SHOW_FLAG: true,
         AXIS_INVERT_Y: false,
         AXIS_LABEL_DISTANCE_KOEFF: 0.75,
         BOUNDING_BOX_SCALE_FUDGE: 0.9,
@@ -282,14 +284,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var opaque_cube_line = new THREE.Line(cube_line_geometry, opaque_cube_line_material);
             opaque_cube_lines[cube_line_idx] = opaque_cube_line;
             scene.add(opaque_cube_line);
-            /*
-             line_bounding_boxes[cube_line_idx] = new THREE.Box3().setFromObject(opaque_cube_lines[cube_line_idx]);
-             line_bbox_cubes[cube_line_idx] = new THREE.Mesh(line_bbox_geometry, line_bbox_materials[cube_line_idx]);
-             line_bbox_cubes[cube_line_idx].position.x = (line_bounding_boxes[cube_line_idx] .max.x + line_bounding_boxes[cube_line_idx] .min.x) / 2;
-             line_bbox_cubes[cube_line_idx].position.y = (line_bounding_boxes[cube_line_idx] .max.y + line_bounding_boxes[cube_line_idx] .min.y) / 2;
-             line_bbox_cubes[cube_line_idx].position.z = (line_bounding_boxes[cube_line_idx] .max.z + line_bounding_boxes[cube_line_idx] .min.z) / 2;
-             scene.add(line_bbox_cubes[cube_line_idx]);
-             */
         }
 
         var offset_y;
@@ -435,7 +429,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     function update_title() {
-        if (!model.metadata.title)
+        if (!model.metadata.title || !model.metadata.show_title)
             return;
 
         $('#graph_title').remove();
@@ -467,7 +461,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     function update_key() {
 
         // if there is no classes then skip class switcher element creation
-        if (!model.metadata.classes || !selected_class)
+        if (!model.metadata.classes || !selected_class || !model.metadata.show_legend)
             return;
 
         var content = document.createElement('div');
@@ -506,8 +500,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             });
         });
 
-        if(Object.keys(model.metadata.classes).length > 1) {
-
+        if (Object.keys(model.metadata.classes).length > 1) {
             $(selected_class_combo).append(selected_class_dropdown);
             $('a', selected_class_combo).prepend('<span class="caret rotate_180"></span>');
         }
@@ -541,8 +534,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             class_name_div.style.display = "inline-block";
             class_name_div.style.margin = "3px";
             class_name_div.style.marginRight = "16px";
+            class_name_div.style.marginLeft = "6px";
             class_name_div.style.position = "relative";
-            class_name_div.style.top = "-3px";
+            class_name_div.style.top = "-1px";
 
             var class_parent = document.createElement('div');
             class_parent.id = "class_parent_" + class_name.replace(/\s/g, '');
@@ -1456,35 +1450,112 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         {
             console.log("Cubemaker - ready");
 
-            $("#import-bgroup").clone().appendTo(document.getElementById('settings_panel_data'));
-            $("#export-bgroup").clone().appendTo(document.getElementById('settings_panel_data'));
+            $("#import-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_data'));
+            $("#export-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_data'));
             $("#axes-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
+            $("#legend-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
+            $("#title-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             $("#orientation-y-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
-
+            $("#particle-size-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             
             if (model.metadata.show_axes) { $("#axes_on").click(); } else { $("#axes_off").click(); }
             $('.axes-options').on('click', function (e) {
                 var name = $(this).attr("name");
                 model.metadata.show_axes = (name == "axes_off") ? false : true;
+                if (model.metadata.show_axes) {
+                    $("#axes_color_group").removeClass("hidden");
+                }
+                else {
+                    $("#axes_color_group").addClass("hidden");
+                }
                 render();
             });
+            
+            var axis_names = ["x", "y", "z"]; // axis_color_z
+            for (idx in axis_names) {
+                var acii_suffix = axis_names[idx];
+                var acii = "#axis_color_" + acii_suffix;
+                $(acii).attr("value", model.metadata.axis[acii_suffix].color);
+                $(acii).minicolors({
+                    show: function() {
+                        $(acii).minicolors('value', model.metadata.axis[acii_suffix].color);
+                    },
+                    position: "bottom left",
+                    change: function (hex) {
+                        var axis = $(this).attr("axis");
+                        model.metadata.axis[axis].color = hex;
+                        model.metadata.axis[axis].tick_color = hex;
+                        refresh();
+                    }
+                });
+            }
             
             if (model.metadata.invert_y_axis) { $("#orientation_y_flipped").click(); } else { $("#orientation_y_unflipped").click(); }
             $('.orientation-y-options').on('click', function (e) {
                 var name = $(this).attr("name");
                 model.metadata.invert_y_axis = (name == "orientation_y_unflipped") ? false : true;
-                clear();
-                var previous_position = camera.position;
-				var previous_rotation = camera.rotation;
-                init();
-                /* set the camera to where and how it was prior to the category switch event */
-                camera.position.set(previous_position.x, 
-                					previous_position.y, 
-                                    previous_position.z);
-                camera.rotation.set(previous_rotation.x, 
-                                    previous_rotation.y, 
-                                    previous_rotation.z);
-                animate();
+                refresh();
+            });
+            
+            if (model.metadata.show_legend) { $("#legend_on").click(); } else { $("#legend_off").click(); }
+            $('.legend-options').on('click', function (e) {
+                var name = $(this).attr("name");
+                model.metadata.show_legend = (name == "legend_off") ? false : true;
+                if (model.metadata.show_legend) {
+                    $("#graph_key").removeClass("hidden");
+                }
+                else {
+                    $("#graph_key").addClass("hidden");
+                }
+                refresh();
+            });
+            
+            if (model.metadata.show_title) { $("#title_on").click(); } else { $("#title_off").click(); }
+            $('.title-options').on('click', function (e) {
+                var name = $(this).attr("name");
+                model.metadata.show_title = (name == "title_off") ? false : true;
+                if (model.metadata.show_title) {
+                    $("#graph_title").removeClass("hidden");
+                }
+                else {
+                    $("#graph_title").addClass("hidden");
+                }
+                refresh();
+            });
+            
+            if (model.metadata.particle_size == 0.08) {
+                $('#particle_size_xs').click();
+            }
+            else if (model.metadata.particle_size == 0.12) {
+                $('#particle_size_s').click();
+            }
+            else if (model.metadata.particle_size == 0.16) {
+                $('#particle_size_m').click();
+            }
+            else if (model.metadata.particle_size == 0.20) {
+                $('#particle_size_l').click();
+            }
+            else if (model.metadata.particle_size == 0.24) {
+                $('#particle_size_xl').click();
+            }
+            $('.particle-size-options').on('click', function(e) {
+                var name = $(this).attr("name"); 
+                if (name == "particle_size_xs") {
+                    model.metadata.particle_size = 0.08;
+                }
+                else if (name == "particle_size_s") {
+                    model.metadata.particle_size = 0.12;
+                }
+                else if (name == "particle_size_m") {
+                    model.metadata.particle_size = 0.16;
+                }
+                else if (name == "particle_size_l") {
+                    model.metadata.particle_size = 0.20;
+                }
+                else if (name == "particle_size_xl") {
+                    model.metadata.particle_size = 0.24;
+                }
+                refresh();
             });
 
             $("#link").click(function () {
@@ -1503,17 +1574,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             $(document).on("change-category", function (event, newValue) {
                 if (newValue != selected_class) {
                     switch_category(newValue);
-                    clear();
-                    var previous_position = camera.position;
-                    var previous_rotation = camera.rotation;
-                    init();
-                    /* set the camera to where and how it was prior to the category switch event */
-                    camera.position.set(previous_position.x, 
-                                        previous_position.y, 
-                                        previous_position.z);
-                    camera.rotation.set(previous_rotation.x, 
-                                        previous_rotation.y, 
-                                        previous_rotation.z);
+                    refresh();
                     animate();
                 }
             });
@@ -1530,6 +1591,21 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             });
 
         });
+    }
+    
+    function refresh() {
+        clear();
+        var previous_position = camera.position;
+        var previous_rotation = camera.rotation;
+        init();
+        /* set the camera to where and how it was prior to the category switch event */
+        camera.position.set(previous_position.x, 
+                            previous_position.y, 
+                            previous_position.z);
+        camera.rotation.set(previous_rotation.x, 
+                            previous_rotation.y, 
+                            previous_rotation.z);
+        render();
     }
 
     function reload(data) {
