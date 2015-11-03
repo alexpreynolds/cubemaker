@@ -5,29 +5,32 @@
     "axis": {
       "x": {
         "name": "PC1",
-        "color": "red",
+        "color": "#000000",
         "thickness": 1,
-        "tick_color": "red",
+        "tick_color": "#000000",
         "tick_thickness": 1,
         "tick_length": 0.1
       },
       "y": {
         "name": "PC2",
-        "color": "green",
+        "color": "#000000",
         "thickness": 1,
-        "tick_color": "green",
+        "tick_color": "#000000",
         "tick_thickness": 1
       },
       "z": {
         "name": "PC3",
-        "color": "blue",
+        "color": "#000000",
         "thickness": 1,
-        "tick_color": "blue",
+        "tick_color": "#000000",
         "tick_thickness": 1
       }
     },
     "selected_class": "Lineage",
     "show_axes": true,
+    "invert_y_axis": false,
+    "show_legend": true,
+    "show_title": true,
     "particle_size": 0.16,
     "classes": {
       "Lineage": [

@@ -148,8 +148,11 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
                 "subtitle": "Use mouse or arrow keys to rotate, scrollwheel to zoom, and double-tap arrow keys to animate",
                 "axis": {},
                 "selected_class": "",
-                "show_axes": cube_maker_defaults.AXIS_SHOW_FLAG,
-                "particle_size": cube_maker_defaults.PARTICLE_SIZE,
+                "show_axes": CUBE_MAKER.CubeMaker.get_defaults().AXIS_SHOW_FLAG,
+                "invert_y_axis": CUBE_MAKER.CubeMaker.get_defaults().AXIS_INVERT_Y,
+                "show_legend": CUBE_MAKER.CubeMaker.get_defaults().LEGEND_SHOW_FLAG,
+                "show_title": CUBE_MAKER.CubeMaker.get_defaults().TITLE_SHOW_FLAG,
+                "particle_size": CUBE_MAKER.CubeMaker.get_defaults().PARTICLE_SIZE,
                 "classes": {},
                 "range": {},
                 "materials": {

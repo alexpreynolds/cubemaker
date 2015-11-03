@@ -5,6 +5,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     // ====== internal variables declaration section
     var defaults = {
         AXIS_SHOW_FLAG: true,
+        LEGEND_SHOW_FLAG: true,
+        TITLE_SHOW_FLAG: true,
+        AXIS_INVERT_Y: false,
         AXIS_LABEL_DISTANCE_KOEFF: 0.75,
         BOUNDING_BOX_SCALE_FUDGE: 0.9,
         TICK_LENGTH: 0.1,
@@ -280,14 +283,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var opaque_cube_line = new THREE.Line(cube_line_geometry, opaque_cube_line_material);
             opaque_cube_lines[cube_line_idx] = opaque_cube_line;
             scene.add(opaque_cube_line);
-            /*
-             line_bounding_boxes[cube_line_idx] = new THREE.Box3().setFromObject(opaque_cube_lines[cube_line_idx]);
-             line_bbox_cubes[cube_line_idx] = new THREE.Mesh(line_bbox_geometry, line_bbox_materials[cube_line_idx]);
-             line_bbox_cubes[cube_line_idx].position.x = (line_bounding_boxes[cube_line_idx] .max.x + line_bounding_boxes[cube_line_idx] .min.x) / 2;
-             line_bbox_cubes[cube_line_idx].position.y = (line_bounding_boxes[cube_line_idx] .max.y + line_bounding_boxes[cube_line_idx] .min.y) / 2;
-             line_bbox_cubes[cube_line_idx].position.z = (line_bounding_boxes[cube_line_idx] .max.z + line_bounding_boxes[cube_line_idx] .min.z) / 2;
-             scene.add(line_bbox_cubes[cube_line_idx]);
-             */
         }
 
         var offset_y;
@@ -299,7 +294,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var particle_material;
             var particle_size = model.metadata.particle_size || defaults.PARTICLE_SIZE;
 
-            if(selected_class) {
+            if (selected_class) {
                 var point_type_index = point_data["type"][selected_class];
                 var point_type = model.metadata.classes[selected_class][point_type_index];
                 var class_name = point_type.name;
@@ -313,7 +308,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 if (!particle_material) {
 
                     particle_material = new THREE.PointsMaterial({
-                        map: create_vertex_texture(point_type.rgb ),
+                        map: create_vertex_texture(point_type.rgb),
                         transparent: true,
                         size: particle_size,
                         alphaTest: 0.15
@@ -357,8 +352,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                     transparent: true,
                     alphaTest: 0.5
                 }));
+            var flip_y_factor = (model.metadata.invert_y_axis ? -1 : 1);
             bounding_box.position.x = defaults.BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[0];
-            bounding_box.position.y = defaults.BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[1];
+            bounding_box.position.y = defaults.BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[1] * flip_y_factor; /* flip upside down via -1 */
             bounding_box.position.z = defaults.BOUNDING_BOX_SCALE_FUDGE * rescaled_point_xyz[2];
             bounding_box.name = id || "";
             bounding_box.subname = class_name || "";
@@ -432,7 +428,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     function update_title() {
-        if (!model.metadata.title)
+        if (!model.metadata.title || !model.metadata.show_title)
             return;
 
         $('#graph_title').remove();
@@ -464,7 +460,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     function update_key() {
 
         // if there is no classes then skip class switcher element creation
-        if (!model.metadata.classes || !selected_class)
+        if (!model.metadata.classes || !selected_class || !model.metadata.show_legend)
             return;
 
         var content = document.createElement('div');
@@ -503,8 +499,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             });
         });
 
-        if(Object.keys(model.metadata.classes).length > 1) {
-
+        if (Object.keys(model.metadata.classes).length > 1) {
             $(selected_class_combo).append(selected_class_dropdown);
             $('a', selected_class_combo).prepend('<span class="caret rotate_180"></span>');
         }
@@ -538,8 +533,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             class_name_div.style.display = "inline-block";
             class_name_div.style.margin = "3px";
             class_name_div.style.marginRight = "16px";
+            class_name_div.style.marginLeft = "6px";
             class_name_div.style.position = "relative";
-            class_name_div.style.top = "-3px";
+            class_name_div.style.top = "-1px";
 
             var class_parent = document.createElement('div');
             class_parent.id = "class_parent_" + class_name.replace(/\s/g, '');
@@ -912,7 +908,11 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var tick_length = axis_metadata.tick_length || defaults.TICK_LENGTH;
 
             if (tick_position.x === undefined) {
-                tick_position = {x: tick_position[0], y: tick_position[1], z: tick_position[2]};
+                tick_position = {
+	                x: tick_position[0], 
+	                y: tick_position[1], 
+	                z: tick_position[2]
+	                };
             }
             var axis_letter = axis_name[0];
             var ticks = axes[axis_name].ticks;
@@ -926,37 +926,92 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
             // for Y axis we have labels aligned left, so we need to keep those labels closer to ticks
             var tick_label_shift_koeff = axis_letter == "y" ? 1.2 : 2.1;
+            
+			//if (axis_metadata.name == "PC2") { console.log(axis_name, tick_position, label); }
 
             if (["z1", "y2", "z2"].indexOf(axis_name) > -1) {
-                start = {x: tick_position.x - tick_length, y: tick_position.y, z: tick_position.z};
-                end = {x: tick_position.x, y: tick_position.y, z: tick_position.z};
-                label_position = {x: tick_position.x - tick_length * tick_label_shift_koeff, y: tick_position.y, z: tick_position.z};
+                start = {
+	                x: tick_position.x - tick_length, 
+	                y: tick_position.y, 
+	                z: tick_position.z
+	                };
+                end = {
+	                x: tick_position.x, 
+	                y: tick_position.y, 
+	                z: tick_position.z
+	                };
+                label_position = { 
+	                x: tick_position.x - tick_length * tick_label_shift_koeff, 
+	                y: tick_position.y, 
+	                z: tick_position.z
+	                };
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
             if (["z3", "y3", "z4"].indexOf(axis_name) > -1) {
-                start = {x: tick_position.x, y: tick_position.y, z: tick_position.z};
-                end = {x: tick_position.x + tick_length, y: tick_position.y, z: tick_position.z};
-                label_position = {x: tick_position.x + tick_length * tick_label_shift_koeff, y: tick_position.y, z: tick_position.z};
+                start = {
+	                x: tick_position.x, 
+	                y: tick_position.y, 
+	                z: tick_position.z
+	                };
+                end = {
+	                x: tick_position.x + tick_length, 
+	                y: tick_position.y, 
+	                z: tick_position.z
+	                };
+                label_position = {
+	                x: tick_position.x + tick_length * tick_label_shift_koeff, 
+	                y: tick_position.y, 
+	                z: tick_position.z
+	                };
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
-
+			
             if (["x1", "y1", "x3"].indexOf(axis_name) > -1) {
-                start = {x: tick_position.x, y: tick_position.y, z: tick_position.z - tick_length};
-                end = {x: tick_position.x, y: tick_position.y, z: tick_position.z};
-                label_position = {x: tick_position.x, y: tick_position.y, z: tick_position.z - tick_length * tick_label_shift_koeff};
+                start = {
+	                x: tick_position.x, 
+	                y: tick_position.y, 
+	                z: tick_position.z - tick_length
+	                };
+                end = {
+	                x: tick_position.x, 
+	                y: tick_position.y, 
+	                z: tick_position.z
+	                };
+                label_position = {
+	                x: tick_position.x, 
+	                y: tick_position.y,
+	                z: tick_position.z - tick_length * tick_label_shift_koeff
+	                };
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
             if (["x2", "y4", "x4"].indexOf(axis_name) > -1) {
-                start = {x: tick_position.x, y: tick_position.y, z: tick_position.z};
-                end = {x: tick_position.x, y: tick_position.y, z: tick_position.z + tick_length};
-                label_position = {x: tick_position.x, y: tick_position.y, z: tick_position.z + tick_length * tick_label_shift_koeff};
+                start = {
+	                x: tick_position.x, 
+	                y: tick_position.y, 
+	                z: tick_position.z
+	                };
+                end = {
+	                x: tick_position.x, 
+	                y: tick_position.y, 
+	                z: tick_position.z + tick_length};
+                label_position = {
+	                x: tick_position.x, 
+	                y: tick_position.y, 
+	                z: tick_position.z + tick_length * tick_label_shift_koeff
+	                };
                 ticks.push(create_axis_tick(start, end, tick_name, label, label_position));
             }
 
-
             function create_axis_tick(start, end, name, label, label_position) {
+	            
+	            if (((label_position.x >= 1) || (label_position.x <= -1)) 
+	            	&&
+	            	((label_position.z >= 1) || (label_position.z <= -1))) {
+		            	label_position.y *= (model.metadata.invert_y_axis ? -1 : 1);
+	            	}
+	            
                 var rescaled_start = rescale_vector(start, axis_start_end_koeff);
                 var rescaled_end = rescale_vector(end, axis_start_end_koeff);
 
@@ -976,10 +1031,15 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 };
 
                 var actual_label_position = rescale_vector(label_position, axis_start_end_koeff);
-                var tick_label = add_mesh_label(to_scientific_notation(label, defaults.MAX_TICK_LABEL_LENGTH), actual_label_position, tick_text_params);
+                var tick_label = add_mesh_label(to_scientific_notation(label, defaults.MAX_TICK_LABEL_LENGTH), 
+                								actual_label_position, 
+			                					tick_text_params);
                 scene.add(tick_line_object);
 
-                return {line: tick_line_object, label: tick_label};
+                return {
+	                line: tick_line_object, 
+	                label: tick_label
+	                };
             }
 
             function to_scientific_notation(value, max_length) {
@@ -1004,7 +1064,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var tick_values = get_tick_values(axis, number_of_ticks);
 
             var ticks_info = tick_values.map(function (value, index) {
-                return {value: value, position: intermediate_points[index]};
+                return {
+	                value: value, 
+	                position: intermediate_points[index]
+	                };
             });
 
             return ticks_info;
@@ -1384,20 +1447,116 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             mousedown = false;
         });
 
-        $(document).ready(function () {
-
+        $(document).ready(function () 
+        {
             console.log("Cubemaker - ready");
 
-            $("#import-bgroup").clone().appendTo(document.getElementById('settings_panel_data'));
-            $("#export-bgroup").clone().appendTo(document.getElementById('settings_panel_data'));
+            $("#import-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_data'));
+            $("#export-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_data'));
             $("#axes-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
-
+            $("#legend-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
+            $("#title-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
+            $("#orientation-y-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
+            $("#particle-size-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             
             if (model.metadata.show_axes) { $("#axes_on").click(); } else { $("#axes_off").click(); }
             $('.axes-options').on('click', function (e) {
                 var name = $(this).attr("name");
                 model.metadata.show_axes = (name == "axes_off") ? false : true;
+                if (model.metadata.show_axes) {
+                    $("#axes_color_group").removeClass("hidden");
+                }
+                else {
+                    $("#axes_color_group").addClass("hidden");
+                }
                 render();
+            });
+            
+            var axis_names = ["x", "y", "z"]; // axis_color_z
+            for (idx in axis_names) {
+                var acii_suffix = axis_names[idx];
+                var acii = "#axis_color_" + acii_suffix;
+                $(acii).attr("value", model.metadata.axis[acii_suffix].color);
+                $(acii).minicolors({
+                    show: function() {
+                        $(acii).minicolors('value', model.metadata.axis[acii_suffix].color);
+                    },
+                    position: "bottom left",
+                    change: function (hex) {
+                        var axis = $(this).attr("axis");
+                        model.metadata.axis[axis].color = hex;
+                        model.metadata.axis[axis].tick_color = hex;
+                        refresh();
+                    }
+                });
+            }
+            
+            if (model.metadata.invert_y_axis) { $("#orientation_y_flipped").click(); } else { $("#orientation_y_unflipped").click(); }
+            $('.orientation-y-options').on('click', function (e) {
+                var name = $(this).attr("name");
+                model.metadata.invert_y_axis = (name == "orientation_y_unflipped") ? false : true;
+                refresh();
+            });
+            
+            if (model.metadata.show_legend) { $("#legend_on").click(); } else { $("#legend_off").click(); }
+            $('.legend-options').on('click', function (e) {
+                var name = $(this).attr("name");
+                model.metadata.show_legend = (name == "legend_off") ? false : true;
+                if (model.metadata.show_legend) {
+                    $("#graph_key").removeClass("hidden");
+                }
+                else {
+                    $("#graph_key").addClass("hidden");
+                }
+                refresh();
+            });
+            
+            if (model.metadata.show_title) { $("#title_on").click(); } else { $("#title_off").click(); }
+            $('.title-options').on('click', function (e) {
+                var name = $(this).attr("name");
+                model.metadata.show_title = (name == "title_off") ? false : true;
+                if (model.metadata.show_title) {
+                    $("#graph_title").removeClass("hidden");
+                }
+                else {
+                    $("#graph_title").addClass("hidden");
+                }
+                refresh();
+            });
+            
+            if (model.metadata.particle_size == 0.08) {
+                $('#particle_size_xs').click();
+            }
+            else if (model.metadata.particle_size == 0.12) {
+                $('#particle_size_s').click();
+            }
+            else if (model.metadata.particle_size == 0.16) {
+                $('#particle_size_m').click();
+            }
+            else if (model.metadata.particle_size == 0.20) {
+                $('#particle_size_l').click();
+            }
+            else if (model.metadata.particle_size == 0.24) {
+                $('#particle_size_xl').click();
+            }
+            $('.particle-size-options').on('click', function(e) {
+                var name = $(this).attr("name"); 
+                if (name == "particle_size_xs") {
+                    model.metadata.particle_size = 0.08;
+                }
+                else if (name == "particle_size_s") {
+                    model.metadata.particle_size = 0.12;
+                }
+                else if (name == "particle_size_m") {
+                    model.metadata.particle_size = 0.16;
+                }
+                else if (name == "particle_size_l") {
+                    model.metadata.particle_size = 0.20;
+                }
+                else if (name == "particle_size_xl") {
+                    model.metadata.particle_size = 0.24;
+                }
+                refresh();
             });
 
             $("#link").click(function () {
@@ -1416,17 +1575,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             $(document).on("change-category", function (event, newValue) {
                 if (newValue != selected_class) {
                     switch_category(newValue);
-                    clear();
-                    var previous_position = camera.position;
-                    var previous_rotation = camera.rotation;
-                    init();
-                    /* set the camera to where and how it was prior to the category switch event */
-                    camera.position.set(previous_position.x, 
-                                        previous_position.y, 
-                                        previous_position.z);
-                    camera.rotation.set(previous_rotation.x, 
-                                        previous_rotation.y, 
-                                        previous_rotation.z);
+                    refresh();
                     animate();
                 }
             });
@@ -1443,6 +1592,21 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             });
 
         });
+    }
+    
+    function refresh() {
+        clear();
+        var previous_position = camera.position;
+        var previous_rotation = camera.rotation;
+        init();
+        /* set the camera to where and how it was prior to the category switch event */
+        camera.position.set(previous_position.x, 
+                            previous_position.y, 
+                            previous_position.z);
+        camera.rotation.set(previous_rotation.x, 
+                            previous_rotation.y, 
+                            previous_rotation.z);
+        render();
     }
 
     function reload(data) {
