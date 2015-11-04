@@ -11,11 +11,11 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         AXIS_LABEL_DISTANCE_KOEFF: 0.75,
         BOUNDING_BOX_SCALE_FUDGE: 0.9,
         TICK_LENGTH: 0.1,
-        TICK_COLOR: "black",
+        TICK_COLOR: "#000000",
         TICK_THICKNESS: 1,
         TICKS_VALUES_PRECISION: 2,
         TICKS_PER_AXIS: 4,
-        LINE_COLOR: "black",
+        LINE_COLOR: "#000000",
         LINE_THICKNESS: 1,
         POINT_COLOR: [164,0,0],
         MAX_TICK_LABEL_LENGTH: 5,
@@ -23,7 +23,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         PARTICLE_SIZE: 0.16,
         OPAQUE_CUBE_LINE_MATERIAL_COLOR: "0xbbbbbb",
         OPAQUE_CUBE_LINE_MATERIAL_THICKNESS: 3,
-        BACK_CUBE_MATERIAL_COLOR: "0xf7f7f7"
+        BACK_CUBE_MATERIAL_COLOR: "0xf7f7f7",
+        ROTATION_SPEED: 0.01
     };
 
     var root_element = $("#" + rootElementId);
@@ -46,7 +47,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     var rotate = false;
     var Directions = {UP: "up", DOWN: "down", RIGHT: "right", LEFT: "left"};
     var rotation_direction;
-    var rotation_speed = 0.005;
     var mousedown = false;
     var Keys = {LEFT: '37', UP: '38', RIGHT: '39', DOWN: '40', ESC: '27'};
     var last_key = null;
@@ -687,13 +687,13 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         if (rotate) {
 
             if (rotation_direction == Directions.LEFT) {
-                controls.rotateLeft(-rotation_speed);
+                controls.rotateLeft(-model.metadata.rotation_speed);
             } else if (rotation_direction == Directions.RIGHT) {
-                controls.rotateLeft(rotation_speed);
+                controls.rotateLeft(model.metadata.rotation_speed);
             } else if (rotation_direction == Directions.UP) {
-                controls.rotateUp(-rotation_speed);
+                controls.rotateUp(-model.metadata.rotation_speed);
             } else if (rotation_direction == Directions.DOWN) {
-                controls.rotateUp(rotation_speed);
+                controls.rotateUp(model.metadata.rotation_speed);
             }
         }
     }
@@ -1458,6 +1458,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             $("#title-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             $("#orientation-y-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             $("#particle-size-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
+            $("#rotation-speed-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             
             if (model.metadata.show_axes) { $("#axes_on").click(); } else { $("#axes_off").click(); }
             $('.axes-options').on('click', function (e) {
@@ -1524,38 +1525,29 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 refresh();
             });
             
-            if (model.metadata.particle_size == 0.08) {
-                $('#particle_size_xs').click();
-            }
-            else if (model.metadata.particle_size == 0.12) {
-                $('#particle_size_s').click();
-            }
-            else if (model.metadata.particle_size == 0.16) {
-                $('#particle_size_m').click();
-            }
-            else if (model.metadata.particle_size == 0.20) {
-                $('#particle_size_l').click();
-            }
-            else if (model.metadata.particle_size == 0.24) {
-                $('#particle_size_xl').click();
-            }
+            if (model.metadata.particle_size == 0.08) { $('#particle_size_xs').click(); }
+            else if (model.metadata.particle_size == 0.12) { $('#particle_size_s').click(); }
+            else if (model.metadata.particle_size == 0.16) { $('#particle_size_m').click(); }
+            else if (model.metadata.particle_size == 0.20) { $('#particle_size_l').click(); }
+            else if (model.metadata.particle_size == 0.24) { $('#particle_size_xl').click(); }
             $('.particle-size-options').on('click', function(e) {
                 var name = $(this).attr("name"); 
-                if (name == "particle_size_xs") {
-                    model.metadata.particle_size = 0.08;
-                }
-                else if (name == "particle_size_s") {
-                    model.metadata.particle_size = 0.12;
-                }
-                else if (name == "particle_size_m") {
-                    model.metadata.particle_size = 0.16;
-                }
-                else if (name == "particle_size_l") {
-                    model.metadata.particle_size = 0.20;
-                }
-                else if (name == "particle_size_xl") {
-                    model.metadata.particle_size = 0.24;
-                }
+                if (name == "particle_size_xs") { model.metadata.particle_size = 0.08; }
+                else if (name == "particle_size_s") { model.metadata.particle_size = 0.12; }
+                else if (name == "particle_size_m") { model.metadata.particle_size = 0.16; }
+                else if (name == "particle_size_l") { model.metadata.particle_size = 0.20; }
+                else if (name == "particle_size_xl") { model.metadata.particle_size = 0.24; }
+                refresh();
+            });
+            
+            if (model.metadata.rotation_speed == 0.0025) { $('#rotation_speed_1').click(); }
+            else if (model.metadata.rotation_speed == 0.006) { $('#rotation_speed_2').click(); }
+            else if (model.metadata.rotation_speed == 0.0145) { $('#rotation_speed_3').click(); }
+            $('.rotation-speed-options').on('click', function(e) {
+                var name = $(this).attr("name"); 
+                if (name == "rotation_speed_1") { model.metadata.rotation_speed = 0.0025; }
+                else if (name == "rotation_speed_2") { model.metadata.rotation_speed = 0.006; }
+                else if (name == "rotation_speed_3") { model.metadata.rotation_speed = 0.0145; }
                 refresh();
             });
 
