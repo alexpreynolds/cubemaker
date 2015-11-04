@@ -32,6 +32,7 @@
     "show_legend": true,
     "show_title": true,
     "particle_size": 0.16,
+    "rotation_speed": 0.006,
     "classes": {
       "Lineage": [
         {

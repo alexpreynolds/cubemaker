@@ -152,6 +152,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
                 "show_legend": CUBE_MAKER.CubeMaker.get_defaults().LEGEND_SHOW_FLAG,
                 "show_title": CUBE_MAKER.CubeMaker.get_defaults().TITLE_SHOW_FLAG,
                 "particle_size": CUBE_MAKER.CubeMaker.get_defaults().PARTICLE_SIZE,
+                "rotation_speed": CUBE_MAKER.CubeMaker.get_defaults().ROTATION_SPEED,
                 "classes": {},
                 "range": {},
                 "materials": {
