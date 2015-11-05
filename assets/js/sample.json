@@ -128,7 +128,7 @@
     "materials": {
       "opaque_cube_line_material": {
         "color": "0xbbbbbb",
-        "thickness": 3
+        "thickness": 1
       },
       "back_cube_material": {
         "color": "0xf7f7f7"
