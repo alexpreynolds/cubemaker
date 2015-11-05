@@ -592,25 +592,25 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         if (model.metadata.camera_position) {
             var camera_position_els = model.metadata.camera_position.split(":");
             position = {
-                "x" : camera_position_els[0],
-                "y" : camera_position_els[1],
-                "z" : camera_position_els[2]
+                "x" : parseFloat(camera_position_els[0]),
+                "y" : parseFloat(camera_position_els[1]),
+                "z" : parseFloat(camera_position_els[2])
             };
         }
         if (model.metadata.camera_rotation) {
             var camera_rotation_els = model.metadata.camera_rotation.split(":");
             rotation = {
-                "x" : camera_rotation_els[0],
-                "y" : camera_rotation_els[1],
-                "z" : camera_rotation_els[2]
+                "x" : parseFloat(camera_rotation_els[0]),
+                "y" : parseFloat(camera_rotation_els[1]),
+                "z" : parseFloat(camera_rotation_els[2])
             };
         }
         if (model.metadata.control_center) {
             var control_center_els = model.metadata.control_center.split(":");
             control_center = {
-                "x" : control_center_els[0],
-                "y" : control_center_els[1],
-                "z" : control_center_els[2]
+                "x" : parseFloat(control_center_els[0]),
+                "y" : parseFloat(control_center_els[1]),
+                "z" : parseFloat(control_center_els[2])
             };
         }
         if (position || rotation || control_center) {

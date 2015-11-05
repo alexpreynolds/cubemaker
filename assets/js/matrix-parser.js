@@ -203,6 +203,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
     }
 
     function text_to_array_of_rows(text) {
+        console.log(text);
         return but_last(text.split(EOL_PATTERN));
     }
 

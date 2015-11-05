@@ -75,10 +75,6 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
                 $(el).html(html_result);
             }
         });
-
-        function xyz_to_str(coords) {
-            return coords.x + ":" + coords.y + ":" + coords.z;
-        }
     }
 
     function download_URI(uri, name) {
@@ -93,9 +89,21 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
 
     function export_as_json() {
         var cube_model = cube_maker.get_model();
+        var scene_state = cube_maker.get_scene_state();
+
+        /* update metadata, as needed */
+        cube_model.metadata.camera_position = xyz_to_str(scene_state.position);
+        cube_model.metadata.camera_rotation = xyz_to_str(scene_state.rotation);
+        cube_model.metadata.control_center = xyz_to_str(scene_state.center);
+        cube_model.metadata.selected_class = scene_state.category;
+        
         var data = 'data:text/json;charset=utf-8,';
         data += escape(JSON.stringify(cube_model, null, 2));
         download_URI(data, "data.json");
+    }
+    
+    function xyz_to_str(coords) {
+        return coords.x + ":" + coords.y + ":" + coords.z;
     }
 
     function export_as_png() {

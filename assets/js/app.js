@@ -1,5 +1,5 @@
 $(function () {
-
+    
     var CubeMaker = CUBE_MAKER.CubeMaker;
     var ExportUtil = CUBE_MAKER.ExportUtil;
     var MatrixParser = CUBE_MAKER.MatrixParser;
@@ -15,23 +15,31 @@ $(function () {
         }
 
         var query_string = new CUBE_MAKER.QueryStringParser().parse();
+        var id = query_string["id"];
         var matrix_url = query_string["import-matrix"];
         var json_model_url = query_string["import-json"];
         var export_type = query_string["export-type"];
 
-        var url = matrix_url || json_model_url || "assets/js/sample.json";
-
+        var url = "";
+        if (typeof(id) !== "undefined") {
+            json_model_url = "https://tools.stamlab.org/cubemaker/services/retrieve_model.py?id=" + id;
+        }
+        
+        url = matrix_url || json_model_url || "assets/js/sample.json";
+        
         var model;
         $.get(url, function (response) {
 
-            if(matrix_url) {
+            if (matrix_url) {
                 model = new MatrixParser(response).parse();
-            } else if(json_model_url) {
+            } 
+            else if (json_model_url) {
                 model = JSON.parse(response);
-            } else {
+            } 
+            else {
                 model = response;
             }
-
+            
             cube_maker = new CubeMaker("cube-container", model);
             export_util = new ExportUtil(cube_maker);
 
@@ -39,7 +47,6 @@ $(function () {
                 export_util.export_to_format(export_type);
             }
         });
-
 
         // set settings panel action handlers
         set_action_handlers();
