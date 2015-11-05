@@ -13,6 +13,8 @@ $(function () {
         if (!check_WebGL()) {
             return
         }
+        
+        $('#graph_settings_menu').removeClass("hidden");
 
         var query_string = new CUBE_MAKER.QueryStringParser().parse();
         var id = query_string["id"];
