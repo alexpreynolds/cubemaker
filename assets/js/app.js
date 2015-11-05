@@ -15,6 +15,7 @@ $(function () {
         }
         
         $('#graph_settings_menu').removeClass("hidden");
+        $('#graph_download_button').removeClass("hidden");
 
         var query_string = new CUBE_MAKER.QueryStringParser().parse();
         var id = query_string["id"];
@@ -78,6 +79,10 @@ $(function () {
                 var data = new MatrixParser(file_content).parse();
                 cube_maker.reload(data);
             });
+        });
+        
+        $(document).on("click", "#graph_download_button", function () {
+	        $('#export-link-btn').click();
         });
     }
 
