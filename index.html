@@ -67,8 +67,27 @@
                 <h3>Cubemaker - Import Matrix</h3>
             </header>
             <div class="modal-body">
-                <p style="margin-bottom: 10px;">Specify file that contains tab-delimited data matrix</p>
+                <p style="margin-bottom: 10px;">Select a matrix file that contains tab-delimited data and optional metadata:</p>
                 <input id="matrix-file-input" type="file"/>
+                <p style="margin-top: 10px;">Matrix data may be in 3-, 4-, 5- or more columns:</p>
+                <div id="import-matrix-rules">
+                    <p><strong>3-column</strong></p>
+                    <ul>
+                        <li>First row contains names of x-, y-, and z-axes.</li>
+                        <li>Subsequent rows contain numerical coordinates of data points.</li>
+                    </ul>
+                    <p><strong>4-column</strong></p>
+                    <ul>
+                        <li>The same rules apply as in 3-column input, except that the fourth column of the first row contains the keyword <em>"Name"</em>.</li>
+                        <li>The <em>"Name"</em> column contains the names of data points. Names do not need to be unique.</li>
+                    </ul>
+                    <p><strong>5- or more columns</strong></p>
+                    <ul>
+                        <li>Same rules as with 4-column input. The first row of the fifth and subsequent columns assign the category name to that column.</li>
+                        <li>The category column contains subcategory names; ideally, a subcategory should be uniquely named, though there is no limit on the number of subcategories (other than the number of data points).</li>
+                    </ul>
+                </div>
+                <p>Names of axes, points, categories and subcategories can include Unicode characters, such as mathematical symbols or glyphs containing non-Roman characters.</p>
             </div>
             <footer><a id="matrix-import-btn" href="#" class="btn btn-custom btn-lg-custom js-modal-close">Import</a></footer>
         </div>

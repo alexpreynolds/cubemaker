@@ -24,7 +24,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         OPAQUE_CUBE_LINE_MATERIAL_COLOR: "0xbbbbbb",
         OPAQUE_CUBE_LINE_MATERIAL_THICKNESS: 1,
         BACK_CUBE_MATERIAL_COLOR: "0xf7f7f7",
-        ROTATION_SPEED: 0.01
+        ROTATION_SPEED: 0.006
     };
 
     var root_element = $("#" + rootElementId);
