@@ -14,10 +14,11 @@ $(function () {
             return
         }
         
-        $('#graph_settings_menu').removeClass("hidden");
-        $('#graph_download_button').removeClass("hidden");
+        $('#loading_cube_warning').removeClass("hidden");
+        $(".notification .warning").show();
 
         var query_string = new CUBE_MAKER.QueryStringParser().parse();
+        
         var id = query_string["id"];
         var matrix_url = query_string["import-matrix"];
         var json_model_url = query_string["import-json"];
@@ -43,6 +44,10 @@ $(function () {
                 model = response;
             }
             
+            $(".notification .warning").hide();
+            $('#graph_settings_menu').removeClass("hidden");
+            $('#graph_download_button').removeClass("hidden");
+
             cube_maker = new CubeMaker("cube-container", model);
             export_util = new ExportUtil(cube_maker);
 
@@ -108,7 +113,7 @@ $(function () {
             return true;
         }
 
-        $(".notification .warning.webgl").show();
+        $(".notification .warning.warning-webgl").show();
 
         return false;
     }

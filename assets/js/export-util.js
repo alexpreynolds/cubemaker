@@ -11,7 +11,7 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
     return {
         to_png: export_as_png,
         to_json: export_as_json,
-        to_url: generate_link,
+        to_url: generate_link_dialog,
         export_to_format: export_to_format
     };
 
@@ -24,7 +24,7 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
                 export_as_png();
                 break;
             case formats.LINK:
-                generate_link();
+                generate_link_dialog();
                 break;
             default :
                 throw "Unknown export format: " + format
@@ -32,7 +32,7 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
     }
 
     //TODO[Alexander Serebriyan]: remove el argument and all DOM manipulations. It should just return a URL.
-    function generate_link(el) {
+    function generate_link_dialog(el) {
         if (!el) {
             el = "#export-link-result";
         }
@@ -40,10 +40,10 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
         $(el).addClass("spinner");
 
         var prefix = "<p>Please copy the following web address to your clipboard:</p>";
-        var suffix = "<p>&nbsp;</p><p>You can use this address to reload the cube and any modifications.</p>";
+        var suffix = "<p>&nbsp;</p><p>You can use this address at any time to reload the cube, along with any modifications you have applied. <strong>Note:</strong> If you apply further modifications, please remember to export a new link!</p>";
         
         //var url_result = window.location.protocol + "//" + window.location.hostname + (window.location.port != 80 ? ":" + window.location.port : "") + "/";
-        var url_result = window.location.href.split('?')[0];
+        var url_result = window.location.href.replace('#','').split('?')[0];
 
         var model = cube_maker.get_model();
         var scene_state = cube_maker.get_scene_state();
@@ -73,6 +73,7 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
                 var html_result = prefix + "<a href='" + url_result + "'>" + url_result + "</a> <button class='btn btn-custom btn-clipboard' data-clipboard-demo data-clipboard-action='copy' data-clipboard-text='" + url_result + "'>Copy to clipboard</button>" + suffix;
                 $(el).removeClass("spinner");
                 $(el).html(html_result);
+                window.history.pushState(null, null, url_result);
             }
         });
     }

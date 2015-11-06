@@ -168,6 +168,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     function clear() {
         if (container) {
             container.remove();
+            $('#loading_cube_warning').removeClass("hidden");
         }
     }
 
@@ -405,6 +406,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         renderer.setClearColor(0xffffff, 1);
         renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.sortObjects = false;
+        
+        $('#loading_cube_warning').addClass("hidden");
+        
         container.appendChild(renderer.domElement);
 
         document.addEventListener('mousemove', on_document_mouse_move, false);
