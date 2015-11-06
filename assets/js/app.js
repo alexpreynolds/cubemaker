@@ -38,7 +38,9 @@ $(function () {
                 model = new MatrixParser(response).parse();
             } 
             else if (json_model_url) {
-                model = JSON.parse(response);
+	            model = response;
+	            if (typeof response !== "object")
+	                model = JSON.parse(response);
             } 
             else {
                 model = response;

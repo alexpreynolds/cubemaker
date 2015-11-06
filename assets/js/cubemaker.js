@@ -53,7 +53,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     var play = false;
     var axes = {};
     var axis_length = 1;
-
+    var editing = false;
 
     // executes on start
     activate();
@@ -445,15 +445,31 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         title_label.style.width = parseInt(window.innerWidth) + 'px';
         title_label.style.padding = '0px';
         title_label.style.margin = '0px';
-        title_label.innerHTML = '<center><span class="title_label">' + model.metadata.title + '</span><br><span class="title_sublabel">' + model.metadata.subtitle + '</span></center>';
+        title_label.innerHTML = '<center><span class="title_label" id="graph_title_label">' + model.metadata.title + '</span><br><span class="title_sublabel" id="graph_title_sublabel">' + model.metadata.subtitle + '</span></center>';
         container.appendChild(title_label);
         $(title_label).find(".title_label").editInPlace({
+	        preinit: function() {
+		        editing = true;
+		        controls.enabled = false;
+	        },
+	        postclose: function() {
+		        editing = false;
+		        controls.enabled = true;
+	        },
             callback: function (unused, value) {
                 model.metadata.title = value;
                 return value;
             }
         });
         $(title_label).find(".title_sublabel").editInPlace({
+	        preinit: function() {
+		        editing = true;
+		        controls.enabled = false;
+	        },
+	        postclose: function() {
+		        editing = false;
+		        controls.enabled = true;
+	        },
             callback: function (unused, value) {
                 model.metadata.subtitle = value;
                 return value;
@@ -689,7 +705,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             z = camera.position.z;
 
         if (rotate) {
-
             if (rotation_direction == Directions.LEFT) {
                 controls.rotateLeft(-model.metadata.rotation_speed);
             } else if (rotation_direction == Directions.RIGHT) {
@@ -1419,27 +1434,32 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
     function setup_action_handlers() {
         $(document).keydown(function (event) {
-            var key = (event.keyCode ? event.keyCode : event.which);
-            if (rotate && (key == Keys.LEFT || key == Keys.RIGHT || key == Keys.UP || key == Keys.DOWN || key == Keys.ESC)) {
-                stop_rotation();
-                event.stopPropagation();
-            }
-            if (last_key && last_key == key) {
-                if (key == Keys.LEFT) {
-                    start_rotation(Directions.LEFT);
-                } else if (key == Keys.RIGHT) {
-                    start_rotation(Directions.RIGHT);
-                } else if (key == Keys.UP) {
-                    start_rotation(Directions.UP);
-                } else if (key == Keys.DOWN) {
-                    start_rotation(Directions.DOWN);
-                }
-            }
-            last_key = key;
-            setTimeout(function () {
-                last_key = null;
-            }, 1000);
-        });
+	        if (editing) {
+		        return;
+	        }
+	        else if (!editing) {
+		        var key = (event.keyCode ? event.keyCode : event.which);
+				if (rotate && (key == Keys.LEFT || key == Keys.RIGHT || key == Keys.UP || key == Keys.DOWN || key == Keys.ESC)) {
+                	stop_rotation();
+					event.stopPropagation();
+				}
+				if (last_key && last_key == key) {
+                	if (key == Keys.LEFT) {
+                    	start_rotation(Directions.LEFT);
+					} else if (key == Keys.RIGHT) {
+	                    start_rotation(Directions.RIGHT);
+					} else if (key == Keys.UP) {
+	                    start_rotation(Directions.UP);
+					} else if (key == Keys.DOWN) {
+	                    start_rotation(Directions.DOWN);
+					}
+				}
+				last_key = key;
+				setTimeout(function () {
+                	last_key = null;
+				}, 1000);
+			}
+		});
 
         $(document).mousedown(function () {
             mousedown = true;
@@ -1586,7 +1606,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 }
                 */
             });
-
         });
     }
     

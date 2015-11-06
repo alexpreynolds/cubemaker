@@ -69,11 +69,13 @@
             <div class="modal-body">
                 <p style="margin-bottom: 10px;">Select a matrix file that contains tab-delimited data and optional metadata:</p>
                 <input id="matrix-file-input" type="file"/>
+                <hr>
+                <h3>Guidelines</h3>
                 <p style="margin-top: 10px;">Matrix data may be in 3-, 4-, 5- or more columns:</p>
                 <div id="import-matrix-rules">
                     <p><strong>3-column</strong></p>
                     <ul>
-                        <li>First row contains names of x-, y-, and z-axes.</li>
+                        <li>First row contains names of x-, y-, and z-axes (<em>e.g.</em>, "PC1", "PC2", "PC3" etc.).</li>
                         <li>Subsequent rows contain numerical coordinates of data points.</li>
                     </ul>
                     <p><strong>4-column</strong></p>
@@ -83,7 +85,7 @@
                     </ul>
                     <p><strong>5- or more columns</strong></p>
                     <ul>
-                        <li>Same rules as with 4-column input. The first row of the fifth and subsequent columns assign the category name to that column.</li>
+                        <li>Same rules as with 4-column input. The first row of the fifth and subsequent columns assign the category name to that column (<em>e.g.</em>, "Lineage", "Tissue", or any other classifications).</li>
                         <li>The category column contains subcategory names; ideally, a subcategory should be uniquely named, though there is no limit on the number of subcategories (other than the number of data points).</li>
                     </ul>
                 </div>

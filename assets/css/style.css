@@ -53,7 +53,7 @@ h3 {
   	position: fixed;
   	right: 12px;
   	top: -1px;
-  	z-index: 1000;
+  	z-index: 100;
   	transition: all 0.25s ease-in-out;
 }
 
@@ -426,10 +426,9 @@ a.close {
     line-height: 1;
     font-size: 1.5em;
     position: absolute;
-    top: 5%;
     right: 2%;
     text-decoration: none;
-    color: #bbb;
+    color: #666 !important;
 }
 
 a.close:hover {
