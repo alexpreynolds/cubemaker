@@ -41,6 +41,10 @@ h3 {
     font-size: 1.2em !important;
 }
 
+#import-mtx-dialog {
+	top: 10px !important;
+}
+
 .modal-box h3 {
     font-weight: bolder;
 }
