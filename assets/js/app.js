@@ -52,7 +52,7 @@ $(function () {
             export_util = new ExportUtil(cube_maker);
 
             if (export_type) {
-                export_util.export_to_format(export_type);
+                invoke_export_to(export_type);
             }
         });
 
@@ -87,9 +87,26 @@ $(function () {
         });
         
         $(document).on("click", "#graph_download_button", function () {
-	        $('#export-link-btn').click();
+	        invoke_export_to("link")
         });
     }
+
+    function invoke_export_to(export_type) {
+        var exports = {
+            PNG: function () {
+                $('#export-png-btn').click();
+            },
+            JSON: function () {
+                $('#export-json-btn').click();
+            },
+            LINK: function () {
+                $('#export-link-btn').click();
+            }
+        };
+
+        exports[export_type.toUpperCase()]();
+    }
+
 
     function check_WebGL() {
         var canvas = document.createElement("canvas");

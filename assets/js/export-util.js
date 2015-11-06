@@ -3,9 +3,9 @@ var CUBE_MAKER = CUBE_MAKER || {};
 CUBE_MAKER.ExportUtil = function (cube_maker) {
 
     var formats = {
-        PNG: "png",
-        JSON: "json",
-        LINK: "link"
+        PNG: "PNG",
+        JSON: "JSON",
+        LINK: "LINK"
     };
 
     return {
@@ -16,7 +16,7 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
     };
 
     function export_to_format(format) {
-        switch (format) {
+        switch (format.toUpperCase()) {
             case formats.JSON:
                 export_as_json();
                 break;
