@@ -27,6 +27,10 @@ ul, li {
     font-weight: bold;
 }
 
+#import-mtx-dialog, #import-json-dialog {
+    top: 10px !important;
+}
+
 .modal-body ul {
     margin-left: 15px;
 }
@@ -39,10 +43,6 @@ h2 {
 
 h3 {
     font-size: 1.2em !important;
-}
-
-#import-mtx-dialog {
-	top: 10px !important;
 }
 
 .modal-box h3 {
@@ -668,6 +668,10 @@ a.close:hover {
     font-size: 85% !important;
     line-height: 1 !important;
     min-width: 20px;
+}
+
+.btn-custom:hover {
+	background-color: #0033b0 !important;
 }
 
 .btn-custom.active {
