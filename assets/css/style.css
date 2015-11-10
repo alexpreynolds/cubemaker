@@ -178,7 +178,7 @@ h3 {
     font-weight: 500;
 }
 
-.stamlab_label, .title_label, .title_label input, .title_sublabel {
+.stamlab_label, .title_label, .title_label input, .title_sublabel, .title_sublabel input {
     color: black;
     text-align: center;
     line-height: 0.33em;
