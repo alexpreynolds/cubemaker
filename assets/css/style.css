@@ -29,6 +29,7 @@ ul, li {
 
 #import-mtx-dialog, #import-json-dialog {
     top: 10px !important;
+    font-family: system, -apple-system, ".SFNSDisplay-Regular", "Helvetica Neue", "Helvetica", sans-serif !important;
 }
 
 .modal-body ul {
