@@ -85,7 +85,7 @@ sample = {
     ]
 }
 
-samples = 100
+samples = 500
 
 for i in xrange(samples):
     x_rand = random.uniform(sample['metadata']['range']['x'][0], sample['metadata']['range']['x'][1])

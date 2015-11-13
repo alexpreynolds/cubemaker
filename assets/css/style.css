@@ -76,6 +76,7 @@ h3 {
 
 #graph_settings_panel {
   	width: 295px;
+  	font-family: system, -apple-system, ".SFNSDisplay-Regular", "Helvetica Neue", "Helvetica", sans-serif !important;
   	/* border: 1px solid rgba(33, 33, 33, 0.0933); */
   	/* background-color: rgba(33, 33, 33, 0.0933); */
   	position: fixed;
