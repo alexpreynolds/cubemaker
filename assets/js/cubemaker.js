@@ -24,6 +24,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         OPAQUE_CUBE_LINE_MATERIAL_COLOR: "0xbbbbbb",
         OPAQUE_CUBE_LINE_MATERIAL_THICKNESS: 1,
         BACK_CUBE_MATERIAL_COLOR: "0xf7f7f7",
+        ROTATION_AUTOMATION: "Off",
         ROTATION_SPEED: 0.006
     };
 
@@ -1482,6 +1483,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             $("#title-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             $("#orientation-y-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             $("#particle-size-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
+            $("#rotation-automation-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             $("#rotation-speed-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             
             if (model.metadata.show_axes) { $("#axes_on").click(); } else { $("#axes_off").click(); }
@@ -1562,6 +1564,16 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 else if (name == "particle_size_l") { model.metadata.particle_size = 0.20; }
                 else if (name == "particle_size_xl") { model.metadata.particle_size = 0.24; }
                 refresh();
+            });
+            
+            if (model.metadata.rotation_automation == "Off") { $('#rotation_automation_off').click(); }
+            else if (model.metadata.rotation_automation == "CW") { $('#rotation_automation_cw').click(); }
+            else if (model.metadata.rotation_automation == "ACW") { $('#rotation_automation_acw').click(); }
+            $('.rotation-automation-options').on('click', function(e) {
+                var name = $(this).attr("name"); 
+                if (name == "rotation_automation_off") { model.metadata.rotation_automation = "Off"; stop_rotation(); }
+                else if (name == "rotation_automation_cw") { model.metadata.rotation_automation = "CW"; start_rotation(Directions.LEFT); }
+                else if (name == "rotation_automation_acw") { model.metadata.rotation_automation = "ACW"; start_rotation(Directions.RIGHT); }
             });
             
             if (model.metadata.rotation_speed == 0.0025) { $('#rotation_speed_1').click(); }

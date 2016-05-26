@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "title": "Cubemaker",
+    "title": "Example Cube",
     "subtitle": "Use mouse or arrow keys to rotate, scrollwheel to zoom, and double-tap arrow keys to animate",
     "axis": {
       "x": {
@@ -32,6 +32,7 @@
     "show_legend": true,
     "show_title": true,
     "particle_size": 0.16,
+    "rotation_automation": "Off",
     "rotation_speed": 0.006,
     "classes": {
       "Lineage": [
