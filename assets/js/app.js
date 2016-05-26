@@ -49,6 +49,14 @@ $(function () {
             $(".notification .warning").hide();
             $('#graph_settings_menu').removeClass("hidden");
             $('#graph_download_button').removeClass("hidden");
+            
+            // to deal with "older" cubes that might be imported, we populate new fields with decent defaults
+            if (typeof model.metadata.rotation_automation === "undefined") {
+                model.metadata.rotation_automation = CUBE_MAKER.Directions.OFF;
+            }
+            if (typeof model.metadata.label_visibility === "undefined") {
+                model.metadata.label_visibility = CUBE_MAKER.LabelVisibilities.MOUSEOVER;
+            }
 
             cube_maker = new CubeMaker("cube-container", model);
             export_util = new ExportUtil(cube_maker);

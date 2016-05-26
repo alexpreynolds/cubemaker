@@ -148,6 +148,7 @@ CUBE_MAKER.MatrixParser = function (matrix_text) {
                 "subtitle": "Use mouse or arrow keys to rotate, scrollwheel to zoom, and double-tap arrow keys to animate",
                 "axis": {},
                 "selected_class": "",
+                "label_visibility": cube_maker_defaults.LABEL_VISIBILITY,
                 "show_axes": cube_maker_defaults.AXIS_SHOW_FLAG,
                 "invert_y_axis": cube_maker_defaults.AXIS_INVERT_Y,
                 "show_legend": cube_maker_defaults.LEGEND_SHOW_FLAG,

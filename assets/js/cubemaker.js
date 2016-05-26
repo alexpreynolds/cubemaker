@@ -1,9 +1,13 @@
 var CUBE_MAKER = CUBE_MAKER || {};
 
+CUBE_MAKER.Directions        = { UP: "up", DOWN: "down", RIGHT: "right", LEFT: "left", OFF: "off", CW: "CW", ACW: "ACW" };
+CUBE_MAKER.LabelVisibilities = { MOUSEOVER: "mouseover", ALL: "all" };
+
 CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
     // ====== internal variables declaration section
     var defaults = {
+        LABEL_VISIBILITY: "mouseover",
         AXIS_SHOW_FLAG: true,
         LEGEND_SHOW_FLAG: true,
         TITLE_SHOW_FLAG: true,
@@ -24,7 +28,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         OPAQUE_CUBE_LINE_MATERIAL_COLOR: "0xbbbbbb",
         OPAQUE_CUBE_LINE_MATERIAL_THICKNESS: 1,
         BACK_CUBE_MATERIAL_COLOR: "0xf7f7f7",
-        ROTATION_AUTOMATION: "Off",
+        ROTATION_AUTOMATION: "off",
         ROTATION_SPEED: 0.006
     };
 
@@ -46,8 +50,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     var dp_line_names = new Array(6);
     var selected_class = get_selected_class();
     var rotate = false;
-    var Directions = {UP: "up", DOWN: "down", RIGHT: "right", LEFT: "left", OFF: "off"};
-    var rotation_direction = Directions.OFF;
+    var rotation_direction = CUBE_MAKER.Directions.OFF;
     var mousedown = false;
     var Keys = {LEFT: '37', UP: '38', RIGHT: '39', DOWN: '40', ESC: '27'};
     var last_key = null;
@@ -55,6 +58,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     var axes = {};
     var axis_length = 1;
     var editing = false;
+    var label_visibility = CUBE_MAKER.LabelVisibilities.MOUSEOVER;
 
     // executes on start
     activate();
@@ -706,13 +710,13 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             z = camera.position.z;
 
         if (rotate) {
-            if (rotation_direction == Directions.LEFT) {
+            if (rotation_direction == CUBE_MAKER.Directions.LEFT) {
                 controls.rotateLeft(-model.metadata.rotation_speed);
-            } else if (rotation_direction == Directions.RIGHT) {
+            } else if (rotation_direction == CUBE_MAKER.Directions.RIGHT) {
                 controls.rotateLeft(model.metadata.rotation_speed);
-            } else if (rotation_direction == Directions.UP) {
+            } else if (rotation_direction == CUBE_MAKER.Directions.UP) {
                 controls.rotateUp(-model.metadata.rotation_speed);
-            } else if (rotation_direction == Directions.DOWN) {
+            } else if (rotation_direction == CUBE_MAKER.Directions.DOWN) {
                 controls.rotateUp(model.metadata.rotation_speed);
             }
         }
@@ -1429,7 +1433,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             load().done(function () {
                 init();
                 animate();
-                if (rotation_direction != Directions.OFF) start_rotation(rotation_direction);
+                if (rotation_direction != CUBE_MAKER.Directions.OFF) start_rotation(rotation_direction);
             });
         }
     }
@@ -1447,13 +1451,13 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 				}
 				if (last_key && last_key == key) {
                 	if (key == Keys.LEFT) {
-                    	start_rotation(Directions.LEFT);
+                    	start_rotation(CUBE_MAKER.Directions.LEFT);
 					} else if (key == Keys.RIGHT) {
-	                    start_rotation(Directions.RIGHT);
+	                    start_rotation(CUBE_MAKER.Directions.RIGHT);
 					} else if (key == Keys.UP) {
-	                    start_rotation(Directions.UP);
+	                    start_rotation(CUBE_MAKER.Directions.UP);
 					} else if (key == Keys.DOWN) {
-	                    start_rotation(Directions.DOWN);
+	                    start_rotation(CUBE_MAKER.Directions.DOWN);
 					}
 				}
 				last_key = key;
@@ -1479,6 +1483,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
             $("#import-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_data'));
             $("#export-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_data'));
+            
+            //$("#labels-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             $("#axes-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             $("#legend-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             $("#title-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
@@ -1486,6 +1492,21 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             $("#particle-size-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             $("#rotation-automation-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             $("#rotation-speed-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
+
+            if (model.metadata.label_visibility == CUBE_MAKER.LabelVisibilities.MOUSEOVER) { label_visibility = CUBE_MAKER.LabelVisibilities.MOUSEOVER; $('#labels_mouseover').click(); }
+            else if (model.metadata.label_visibility == CUBE_MAKER.LabelVisibilities.ALL) { label_visibility = CUBE_MAKER.LabelVisibilities.ALL; $('#labels_all').click(); }
+            $('.labels-options').on('click', function(e) {
+                var name = $(this).attr("name"); 
+                if (name == "labels_mouseover") { 
+                    model.metadata.label_visibility = CUBE_MAKER.LabelVisibilities.MOUSEOVER; 
+                    label_visibility = CUBE_MAKER.LabelVisibilities.MOUSEOVER; 
+                }
+                else if (name == "labels_all") { 
+                    model.metadata.label_visibility = CUBE_MAKER.LabelVisibilities.ALL; 
+                    label_visibility = CUBE_MAKER.LabelVisibilities.ALL; 
+                }
+                refresh();
+            });
             
             if (model.metadata.show_axes) { $("#axes_on").click(); } else { $("#axes_off").click(); }
             $('.axes-options').on('click', function (e) {
@@ -1567,14 +1588,26 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 refresh();
             });
             
-            if (model.metadata.rotation_automation == "Off") { rotation_direction = Directions.OFF; $('#rotation_automation_off').click(); }
-            else if (model.metadata.rotation_automation == "CW") { rotation_direction = Directions.LEFT; $('#rotation_automation_cw').click(); }
-            else if (model.metadata.rotation_automation == "ACW") { rotation_direction = Directions.RIGHT; $('#rotation_automation_acw').click(); }
+            if (model.metadata.rotation_automation == CUBE_MAKER.Directions.OFF) { rotation_direction = CUBE_MAKER.Directions.OFF; $('#rotation_automation_off').click(); }
+            else if (model.metadata.rotation_automation == CUBE_MAKER.Directions.CW) { rotation_direction = CUBE_MAKER.Directions.LEFT; $('#rotation_automation_cw').click(); }
+            else if (model.metadata.rotation_automation == CUBE_MAKER.Directions.ACW) { rotation_direction = CUBE_MAKER.Directions.RIGHT; $('#rotation_automation_acw').click(); }
             $('.rotation-automation-options').on('click', function(e) {
                 var name = $(this).attr("name"); 
-                if (name == "rotation_automation_off") { model.metadata.rotation_automation = "Off"; rotation_direction = Directions.OFF; stop_rotation(); }
-                else if (name == "rotation_automation_cw") { model.metadata.rotation_automation = "CW"; rotation_direction = Directions.LEFT; start_rotation(rotation_direction); }
-                else if (name == "rotation_automation_acw") { model.metadata.rotation_automation = "ACW"; rotation_direction = Directions.RIGHT; start_rotation(rotation_direction); }
+                if (name == "rotation_automation_off") { 
+                    model.metadata.rotation_automation = CUBE_MAKER.Directions.OFF; 
+                    rotation_direction = CUBE_MAKER.Directions.OFF;
+                    stop_rotation(); 
+                }
+                else if (name == "rotation_automation_cw") { 
+                    model.metadata.rotation_automation = CUBE_MAKER.Directions.CW; 
+                    rotation_direction = CUBE_MAKER.Directions.LEFT;
+                    start_rotation(rotation_direction); 
+                }
+                else if (name == "rotation_automation_acw") { 
+                    model.metadata.rotation_automation = CUBE_MAKER.Directions.ACW; 
+                    rotation_direction = CUBE_MAKER.Directions.RIGHT;
+                    start_rotation(rotation_direction); 
+                }
             });
             
             if (model.metadata.rotation_speed == 0.0025) { $('#rotation_speed_1').click(); }
