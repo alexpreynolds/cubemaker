@@ -46,8 +46,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     var dp_line_names = new Array(6);
     var selected_class = get_selected_class();
     var rotate = false;
-    var Directions = {UP: "up", DOWN: "down", RIGHT: "right", LEFT: "left"};
-    var rotation_direction;
+    var Directions = {UP: "up", DOWN: "down", RIGHT: "right", LEFT: "left", OFF: "off"};
+    var rotation_direction = Directions.OFF;
     var mousedown = false;
     var Keys = {LEFT: '37', UP: '38', RIGHT: '39', DOWN: '40', ESC: '27'};
     var last_key = null;
@@ -1429,6 +1429,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             load().done(function () {
                 init();
                 animate();
+                if (rotation_direction != Directions.OFF) start_rotation(rotation_direction);
             });
         }
     }
@@ -1566,14 +1567,14 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 refresh();
             });
             
-            if (model.metadata.rotation_automation == "Off") { $('#rotation_automation_off').click(); }
-            else if (model.metadata.rotation_automation == "CW") { $('#rotation_automation_cw').click(); }
-            else if (model.metadata.rotation_automation == "ACW") { $('#rotation_automation_acw').click(); }
+            if (model.metadata.rotation_automation == "Off") { rotation_direction = Directions.OFF; $('#rotation_automation_off').click(); }
+            else if (model.metadata.rotation_automation == "CW") { rotation_direction = Directions.LEFT; $('#rotation_automation_cw').click(); }
+            else if (model.metadata.rotation_automation == "ACW") { rotation_direction = Directions.RIGHT; $('#rotation_automation_acw').click(); }
             $('.rotation-automation-options').on('click', function(e) {
                 var name = $(this).attr("name"); 
-                if (name == "rotation_automation_off") { model.metadata.rotation_automation = "Off"; stop_rotation(); }
-                else if (name == "rotation_automation_cw") { model.metadata.rotation_automation = "CW"; start_rotation(Directions.LEFT); }
-                else if (name == "rotation_automation_acw") { model.metadata.rotation_automation = "ACW"; start_rotation(Directions.RIGHT); }
+                if (name == "rotation_automation_off") { model.metadata.rotation_automation = "Off"; rotation_direction = Directions.OFF; stop_rotation(); }
+                else if (name == "rotation_automation_cw") { model.metadata.rotation_automation = "CW"; rotation_direction = Directions.LEFT; start_rotation(rotation_direction); }
+                else if (name == "rotation_automation_acw") { model.metadata.rotation_automation = "ACW"; rotation_direction = Directions.RIGHT; start_rotation(rotation_direction); }
             });
             
             if (model.metadata.rotation_speed == 0.0025) { $('#rotation_speed_1').click(); }
