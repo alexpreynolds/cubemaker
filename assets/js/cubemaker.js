@@ -1,7 +1,10 @@
 var CUBE_MAKER = CUBE_MAKER || {};
 
+jQuery.fn.exists = function(){ return this.length>0; }
+
 CUBE_MAKER.Directions        = { UP: "up", DOWN: "down", RIGHT: "right", LEFT: "left", OFF: "off", CW: "CW", ACW: "ACW" };
 CUBE_MAKER.LabelVisibilities = { MOUSEOVER: "mouseover", ALL: "all" };
+CUBE_MAKER.ParticleSizes =     { XS: 0.08, S: 0.12, M: 0.16, L: 0.20, XL: 0.24 };
 
 CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
@@ -24,7 +27,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         POINT_COLOR: [164,0,0],
         MAX_TICK_LABEL_LENGTH: 5,
         EXPONENTIAL_PRECISION: 2,
-        PARTICLE_SIZE: 0.16,
+        PARTICLE_SIZE: CUBE_MAKER.ParticleSizes.S,
         OPAQUE_CUBE_LINE_MATERIAL_COLOR: "0xbbbbbb",
         OPAQUE_CUBE_LINE_MATERIAL_THICKNESS: 1,
         BACK_CUBE_MATERIAL_COLOR: "0xf7f7f7",
@@ -59,6 +62,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     var axis_length = 1;
     var editing = false;
     var label_visibility = CUBE_MAKER.LabelVisibilities.MOUSEOVER;
+    var particle_meshes = null;
+    var moving = false;
 
     // executes on start
     activate();
@@ -294,6 +299,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         var offset_y;
         var offset_z;
         var offset_x = offset_y = offset_z = -0.5;
+        
+        particle_meshes = [];
 
         $.each(model.data, function (point_index, point_data) {
 
@@ -371,7 +378,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             var particle = new THREE.Vector3(bounding_box.position.x,
                                              bounding_box.position.y,
                                              bounding_box.position.z);
-
+                                             
+            particle_meshes.push(bounding_box);
+            
             particles.vertices.push(particle);
 
             var particle_system = new THREE.Points(particles, particle_material);
@@ -679,7 +688,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         event.preventDefault();
         mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
         mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-        if (!INTERSECTED) {
+        if ((model.metadata.label_visibility == CUBE_MAKER.LabelVisibilities.MOUSEOVER) && !INTERSECTED) {
             $(".particle_label").remove();
         }
         render();
@@ -792,16 +801,15 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
 
         return text_mesh;
 
-
         function align_text(geometry, alignment) {
             switch (alignment) {
-                case "right" :
+                case "right":
                     align_right(geometry);
                     break;
                 case "left":
                     align_left(geometry);
                     break;
-                default :
+                default:
                     align_center(geometry);
             }
 
@@ -1218,7 +1226,6 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         render_axes();
         adjust_labels();
 
-
         for (var cube_face_idx = 0; cube_face_idx < cube.geometry.faces.length; cube_face_idx++) {
             var face = cube.geometry.faces[cube_face_idx];
             var face_to_camera = new THREE.Vector3();
@@ -1304,60 +1311,111 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         // cf. http://stackoverflow.com/a/27796523/19410
         var scene_right = new THREE.Vector3().crossVectors(raycaster.ray.origin, camera.up).setLength(0.0375);
         var bounding_box_intersections = raycaster.intersectObjects(bounding_boxes);
-        if (bounding_box_intersections.length > 0) {
-            if (INTERSECTED != bounding_box_intersections[0].object) {
-                INTERSECTED = bounding_box_intersections[0].object;
-                $(".particle_label").remove();
-                id_label = null;
-
+        
+        if (model.metadata.label_visibility == CUBE_MAKER.LabelVisibilities.MOUSEOVER) {
+            if (bounding_box_intersections.length > 0) {
+                if (INTERSECTED != bounding_box_intersections[0].object) {
+                    INTERSECTED = bounding_box_intersections[0].object;
+                    $(".particle_label").remove();
+                    id_label = null;
+    
+                    var width = window.innerWidth, height = window.innerHeight;
+                    var widthHalf = width / 2, heightHalf = height / 2;
+                    var screen_object_center = new THREE.Vector3();
+                    screen_object_center.setFromMatrixPosition(INTERSECTED.matrixWorld);
+                    screen_object_center.project(camera);
+                    screen_object_center.x = (screen_object_center.x * widthHalf) + widthHalf;
+                    screen_object_center.y = -(screen_object_center.y * heightHalf) + heightHalf;
+    
+                    // The screen_object_center instance shows the screen coordinates of the intersected object, while the
+                    // z position of the intersected object shows how relatively far away the object is in world coordinates.
+                    // We can use these two pieces of information to draw the point ID (or other label) and perhaps scale the
+                    // label font size by world object depth.
+    
+                    var INTERSECTED_matrix_copy = new THREE.Matrix4().copy(INTERSECTED.matrixWorld);
+                    INTERSECTED_matrix_copy.setPosition(new THREE.Vector3(INTERSECTED.position.x + scene_right.x, INTERSECTED.position.y + scene_right.y, INTERSECTED.position.z + scene_right.z));
+                    var screen_object_edge = new THREE.Vector3();
+                    screen_object_edge.setFromMatrixPosition(INTERSECTED_matrix_copy);
+                    screen_object_edge.project(camera);
+                    screen_object_edge.x = (screen_object_edge.x * widthHalf) + widthHalf;
+                    screen_object_edge.y = -(screen_object_edge.y * heightHalf) + heightHalf;
+    
+                    if (!id_label) {
+                        id_label = document.createElement('div');
+                        id_label.id = INTERSECTED.name;
+                        id_label.style.position = 'absolute';
+                        id_label.style.top = '-10000px';
+                        id_label.style.left = '-10000px';
+                        id_label.innerHTML = '<span class="particle_label">' + INTERSECTED.name + '<br><span class="particle_sublabel">' + INTERSECTED.subname + '</span></span>';
+                        container.appendChild(id_label);
+                        var id_label_rect = id_label.getBoundingClientRect();
+                        id_label.style.top = (screen_object_center.y - 0.85 * (id_label_rect.height / 2)) + 'px';
+                        if (mouse.x < 0) {
+                            id_label.style.left = (screen_object_center.x - horizontal_fudge * (screen_object_edge.x - screen_object_center.x)) + 'px';
+                        }
+                        else {
+                            id_label.style.left = (screen_object_center.x + horizontal_fudge * (screen_object_edge.x - screen_object_center.x) - id_label_rect.width) + 'px';
+                            id_label.style.textAlign = 'right';
+                        }
+                    }
+                }
+            } else {
+                // mouseout
+                if (INTERSECTED) {
+                    //console.log(INTERSECTED);
+                    $(".particle_label").remove();
+                    id_label = null;
+                }
+                INTERSECTED = null;
+            }
+        }
+        else if (model.metadata.label_visibility == CUBE_MAKER.LabelVisibilities.ALL) {
+            $.each(particle_meshes, function(particle_mesh_index, particle_mesh_data) {
+                // convert particle mesh object "world" position to on-screen position
                 var width = window.innerWidth, height = window.innerHeight;
                 var widthHalf = width / 2, heightHalf = height / 2;
                 var screen_object_center = new THREE.Vector3();
-                screen_object_center.setFromMatrixPosition(INTERSECTED.matrixWorld);
+                screen_object_center.setFromMatrixPosition(particle_mesh_data.matrixWorld);
                 screen_object_center.project(camera);
                 screen_object_center.x = (screen_object_center.x * widthHalf) + widthHalf;
                 screen_object_center.y = -(screen_object_center.y * heightHalf) + heightHalf;
-
-                // The screen_object_center instance shows the screen coordinates of the intersected object, while the
-                // z position of the intersected object shows how relatively far away the object is in world coordinates.
-                // We can use these two pieces of information to draw the point ID (or other label) and perhaps scale the
-                // label font size by world object depth.
-
-                var INTERSECTED_matrix_copy = new THREE.Matrix4().copy(INTERSECTED.matrixWorld);
-                INTERSECTED_matrix_copy.setPosition(new THREE.Vector3(INTERSECTED.position.x + scene_right.x, INTERSECTED.position.y + scene_right.y, INTERSECTED.position.z + scene_right.z));
+                var obj_matrix_copy = new THREE.Matrix4().copy(particle_mesh_data.matrixWorld);
+                obj_matrix_copy.setPosition(new THREE.Vector3(particle_mesh_data.position.x + scene_right.x, particle_mesh_data.position.y + scene_right.y, particle_mesh_data.position.z + scene_right.z));
                 var screen_object_edge = new THREE.Vector3();
-                screen_object_edge.setFromMatrixPosition(INTERSECTED_matrix_copy);
+                screen_object_edge.setFromMatrixPosition(obj_matrix_copy);
                 screen_object_edge.project(camera);
                 screen_object_edge.x = (screen_object_edge.x * widthHalf) + widthHalf;
                 screen_object_edge.y = -(screen_object_edge.y * heightHalf) + heightHalf;
-
-                if (!id_label) {
-                    id_label = document.createElement('div');
-                    id_label.id = INTERSECTED.name;
-                    id_label.style.position = 'absolute';
-                    id_label.style.top = '-10000px';
-                    id_label.style.left = '-10000px';
-                    id_label.innerHTML = '<span class="particle_label">' + INTERSECTED.name + '<br><span class="particle_sublabel">' + INTERSECTED.subname + '</span></span>';
-                    container.appendChild(id_label);
-                    var id_label_rect = id_label.getBoundingClientRect();
-                    id_label.style.top = (screen_object_center.y - 0.85 * (id_label_rect.height / 2)) + 'px';
-                    if (mouse.x < 0) {
-                        id_label.style.left = (screen_object_center.x - horizontal_fudge * (screen_object_edge.x - screen_object_center.x)) + 'px';
+                    
+                // if label is not yet present, add it to the DOM -- otherwise, just adjust its position
+                if (screen_object_center.x && screen_object_center.y) {
+                    var id_label = $("#" + particle_mesh_data.uuid).exists();
+                    if (!id_label) {
+                        id_label = document.createElement('div');
+                        id_label.id = particle_mesh_data.uuid;
+                        id_label.style.position = 'absolute';
+                        id_label.style.top = '-10000px';
+                        id_label.style.left = '-10000px';
+                        id_label.style.lineHeight = "0.8em";
+                        id_label.innerHTML = '<span class="particle_label particle_all">' + particle_mesh_data.name + '<br class="particle_all_br" /><span class="particle_sublabel particle_all particle_sublabel_all">' + particle_mesh_data.subname + '</span></span>';
+                        container.appendChild(id_label);
+                        var id_label_rect = id_label.getBoundingClientRect();
+                        id_label.style.top = (screen_object_center.y - 0.99 * (id_label_rect.height / 2)) + 'px';
+                        id_label.style.left = (screen_object_center.x - (horizontal_fudge / 1.5) * (screen_object_edge.x - screen_object_center.x)) + 'px';
                     }
                     else {
-                        id_label.style.left = (screen_object_center.x + horizontal_fudge * (screen_object_edge.x - screen_object_center.x) - id_label_rect.width) + 'px';
-                        id_label.style.textAlign = 'right';
+                        if (!mousedown) {
+                            var id_label_rect = document.getElementById(particle_mesh_data.uuid).getBoundingClientRect();
+                            $("#" + particle_mesh_data.uuid).css(
+                                {
+                                    top : screen_object_center.y - 0.99 * (id_label_rect.height / 2),
+                                    left : screen_object_center.x - (horizontal_fudge / 1.5) * (screen_object_edge.x - screen_object_center.x)
+                                }
+                            );
+                        }
                     }
                 }
-            }
-        } else {
-            // mouseout
-            if (INTERSECTED) {
-                //console.log(INTERSECTED);
-                $(".particle_label").remove();
-                id_label = null;
-            }
-            INTERSECTED = null;
+            });
         }
         renderer.render(scene, camera);
 
@@ -1475,6 +1533,9 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             }
         }).mouseup(function () {
             mousedown = false;
+            if (model.metadata.label_visibility == CUBE_MAKER.LabelVisibilities.ALL) {
+                render();
+            }
         });
 
         $(document).ready(function () 
@@ -1484,7 +1545,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             $("#import-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_data'));
             $("#export-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_data'));
             
-            //$("#labels-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
+            $("#labels-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             $("#axes-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             $("#legend-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             $("#title-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
@@ -1493,8 +1554,14 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             $("#rotation-automation-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
             $("#rotation-speed-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_parameters'));
 
-            if (model.metadata.label_visibility == CUBE_MAKER.LabelVisibilities.MOUSEOVER) { label_visibility = CUBE_MAKER.LabelVisibilities.MOUSEOVER; $('#labels_mouseover').click(); }
-            else if (model.metadata.label_visibility == CUBE_MAKER.LabelVisibilities.ALL) { label_visibility = CUBE_MAKER.LabelVisibilities.ALL; $('#labels_all').click(); }
+            if (model.metadata.label_visibility == CUBE_MAKER.LabelVisibilities.MOUSEOVER) { 
+                label_visibility = CUBE_MAKER.LabelVisibilities.MOUSEOVER; 
+                $('#labels_mouseover').click(); 
+            }
+            else if (model.metadata.label_visibility == CUBE_MAKER.LabelVisibilities.ALL) { 
+                label_visibility = CUBE_MAKER.LabelVisibilities.ALL; 
+                $('#labels_all').click(); 
+            }
             $('.labels-options').on('click', function(e) {
                 var name = $(this).attr("name"); 
                 if (name == "labels_mouseover") { 
@@ -1573,18 +1640,18 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 refresh();
             });
             
-            if (model.metadata.particle_size == 0.08) { $('#particle_size_xs').click(); }
-            else if (model.metadata.particle_size == 0.12) { $('#particle_size_s').click(); }
-            else if (model.metadata.particle_size == 0.16) { $('#particle_size_m').click(); }
-            else if (model.metadata.particle_size == 0.20) { $('#particle_size_l').click(); }
-            else if (model.metadata.particle_size == 0.24) { $('#particle_size_xl').click(); }
+            if (model.metadata.particle_size == CUBE_MAKER.ParticleSizes.XS) { $('#particle_size_xs').click(); }
+            else if (model.metadata.particle_size == CUBE_MAKER.ParticleSizes.S) { $('#particle_size_s').click(); }
+            else if (model.metadata.particle_size == CUBE_MAKER.ParticleSizes.M) { $('#particle_size_m').click(); }
+            else if (model.metadata.particle_size == CUBE_MAKER.ParticleSizes.L) { $('#particle_size_l').click(); }
+            else if (model.metadata.particle_size == CUBE_MAKER.ParticleSizes.XL) { $('#particle_size_xl').click(); }
             $('.particle-size-options').on('click', function(e) {
                 var name = $(this).attr("name"); 
-                if (name == "particle_size_xs") { model.metadata.particle_size = 0.08; }
-                else if (name == "particle_size_s") { model.metadata.particle_size = 0.12; }
-                else if (name == "particle_size_m") { model.metadata.particle_size = 0.16; }
-                else if (name == "particle_size_l") { model.metadata.particle_size = 0.20; }
-                else if (name == "particle_size_xl") { model.metadata.particle_size = 0.24; }
+                if (name == "particle_size_xs") { model.metadata.particle_size = CUBE_MAKER.ParticleSizes.XS; }
+                else if (name == "particle_size_s") { model.metadata.particle_size = CUBE_MAKER.ParticleSizes.S; }
+                else if (name == "particle_size_m") { model.metadata.particle_size = CUBE_MAKER.ParticleSizes.M; }
+                else if (name == "particle_size_l") { model.metadata.particle_size = CUBE_MAKER.ParticleSizes.L; }
+                else if (name == "particle_size_xl") { model.metadata.particle_size = CUBE_MAKER.ParticleSizes.XL; }
                 refresh();
             });
             

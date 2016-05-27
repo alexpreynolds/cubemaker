@@ -160,11 +160,28 @@ h3 {
     -webkit-text-stroke: 0.25px white;
     text-shadow: 0px 0px 2px white;
     line-height: 0.33em;
+    -webkit-user-select: none; 
+    -khtml-user-select: none; 
+    -moz-user-select: none; 
+    -o-user-select: none; 
+    user-select: none; 
 }
 
 .particle_sublabel {
     font-size: 14px;
     font-weight: 500;
+}
+
+/* should come after .particle_label and .particle_sublabel */
+.particle_all {
+    font-size: 0.825em;
+    margin: 0;
+    padding: 0;
+    line-height: 0.1em;
+}
+
+.particle_sublabel_all {
+    font-size: 1em;
 }
 
 #graph_title, #graph_key {

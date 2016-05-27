@@ -27,12 +27,12 @@
       }
     },
     "selected_class": "Lineage",
-    "label_visibility": "mouseover",
+    "label_visibility": "all",
     "show_axes": true,
     "invert_y_axis": false,
     "show_legend": true,
     "show_title": true,
-    "particle_size": 0.16,
+    "particle_size": 0.12,
     "rotation_automation": "off",
     "rotation_speed": 0.006,
     "classes": {
