@@ -2,7 +2,7 @@ var CUBE_MAKER = CUBE_MAKER || {};
 
 CUBE_MAKER.ExportUtil = function (cube_maker) {
 
-    var root_URL = "https://tools.stamlab.org/cubemaker.dev/services";
+    var root_URL = "https://tools.stamlab.org/cubemaker/services";
     var formats = {
         PNG:  "png",
         JSON: "json",
