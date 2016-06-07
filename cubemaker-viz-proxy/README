@@ -1,5 +1,7 @@
-Start up the proxy server on the same host as the client (front-end):
+Start up the proxy server on a host that can render PDFs via R/rgl:
 
   $ sudo PORT=443 /usr/local/bin/node ./app.js
 
 The proxy will run an https service on TCP port 443, which is blocked from the outside.
+
+On OS X, if necessary, open X11 and run `echo $DISPLAY` in xterm in order to get the required `DISPLAY` to export in Terminal. This makes the X11 frame buffer available to R within Terminal.
