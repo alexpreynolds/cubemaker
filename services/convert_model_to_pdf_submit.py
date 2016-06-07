@@ -72,7 +72,7 @@ def main(argv):
     modified_phi = ijsono['metadata']['modified_phi']
     
     # scp file to fiddlehead
-    scp_command_components = ['/usr/bin/scp', omtx, 'alexpreynolds@fiddlehead.stamlab.org:/Users/alexpreynolds/Developer/Node/cubemaker-services/mtxs/' + os.path.basename(omtx)]
+    scp_command_components = ['/usr/bin/scp', omtx, 'alexpreynolds@fiddlehead.stamlab.org:/Users/alexpreynolds/Developer/Node/cubemaker/cubemaker-viz-proxy/mtxs/' + os.path.basename(omtx)]
     scp_command = ' '.join(scp_command_components)
     try:
         subprocess.check_call(scp_command_components)
