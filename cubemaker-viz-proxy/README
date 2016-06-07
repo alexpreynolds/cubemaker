@@ -1,0 +1,5 @@
+Start up the proxy server on the same host as the client (front-end):
+
+  $ sudo PORT=443 /usr/local/bin/node ./app.js
+
+The proxy will run an https service on TCP port 443, which is blocked from the outside.

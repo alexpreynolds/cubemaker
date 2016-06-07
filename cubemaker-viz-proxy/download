@@ -1,0 +1,941 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="https://www.w3.org/1999/xhtml" xml:lang="en" lang="en" dir="ltr">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="google-site-verification" content="8yTeuJJwIf5YVPRQJucHgBUV8OUI_aY5EA36xNxtOds" />
+ 
+   <title>NoMachine - Free Remote Access For Everybody</title>
+   <meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+   <meta name="description" content="Free remote access and desktop sharing software. Access your computer to work on files and transfer documents, watch videos remotely and listen to your favourite music from another device. NoMachine makes control of a remote PC quick and simple.">
+
+    
+   <meta property="og:site_name" content="NoMachine" />
+<meta property="og:url" content="https://www.nomachine.com" />
+<meta property="og:image" content="https://www.nomachine.com/NMLogo.png" />
+<meta name="referrer" content="origin">
+<meta name="msvalidate.01" content="04BFC601A083F96034F95020032121C9" />
+<meta name="keywords" content="Terminal Server, Thin-Client, Thin Client, Remote Access, Secure Remote Access, Remote Desktop, Linux Terminal Server, Linux Terminal Service, Network Computing, Server Consolidation, VNC, RDP, X11, NX, FreeNX, X-Window, X-Window System, X Protocol, X11 Protocol, X protocol Compression, nxclient, nxserver, nxproxy, VDI, Linux virtual desktop, desktop virtualization, application delivery, hosted desktop deployment, virtual desktop delivery, software as a service, remote management">
+<link type="text/css" rel="stylesheet" media="print" href="/sites/all/themes/frontend/print.css?v" />    
+<!--link href="/sites/all/themes/frontend/styles/gudea.css" rel="stylesheet" type="text/css"/>
+<link type="text/css" rel="stylesheet" media="print" href="/sites/all/themes/frontend/print.css?l" /> -->   
+
+<style type="text/css">
+@font-face { font-family: 'Gudea'; font-style: normal; font-weight: 400; src: local('Gudea'), url(/sites/all/themes/frontend/styles/WTDyO8MdshuMhAnoLO0WMw.woff2) format('woff2'); }
+img{border:none;}
+.graphic, #prevBtn, #nextBtn{margin:0; padding:0; display:block; overflow:hidden; text-indent:-8000px; }
+#container{	margin:0 auto; position:relative; text-align:left; width: 745px; margin-bottom:2em; padding-top:0px; }	
+#content{ position:relative; }			
+#slider1{ background:url("/sites/all/themes/frontend/images/interface/web-bg.png") top left repeat-x; }
+#slider{ border-top:1px solid #CBCBCB; border-bottom:1px solid #CBCBCB; }	
+#slider ul, #slider li{ margin:0; padding:0; list-style:none; }
+#slider li{ overflow:hidden; }	   
+#prevBtn, #nextBtn{ display:block; width:30px; height:56px; position:absolute; left:0px; top:110px; }	   
+#nextBtn{ left:870px; }
+#prevBtn a, #nextBtn a{ display:block; width:30px; height:56px; background:url("/sites/all/themes/frontend/images/btn_prev.png") no-repeat 0 0;	}   
+#nextBtn a{ background:url("/sites/all/themes/frontend/images/btn_next.png") no-repeat 0 0;	}
+.iconrss{width: 29px; height: 30px; margin:0px; background: transparent url("/sites/all/themes/frontend/images/shared/rss_fb_twt.png") top left no-repeat; cursor: pointer;}
+.iconfacebook{width: 29px; height: 30px; margin:0px; background: transparent url("/sites/all/themes/frontend/images/shared/rss_fb_twt.png") left -30px  no-repeat; cursor: pointer;}
+.icontwitter{width: 29px; height: 30px; margin:0px; background: transparent url("/sites/all/themes/frontend/images/shared/rss_fb_twt.png") left -60px  no-repeat; cursor: pointer;}
+</style>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<link rel="shortcut icon" href="/favicon.ico" type="image/x-icon" />
+<link type="text/css" rel="stylesheet" media="all" href="/modules/cck/theme/content-module.css?A" />
+<link type="text/css" rel="stylesheet" media="all" href="/modules/lightbox2/css/lightbox_alt.css?A" />
+<link type="text/css" rel="stylesheet" media="all" href="/modules/node/node.css?A" />
+<link type="text/css" rel="stylesheet" media="all" href="/modules/system/defaults.css?A" />
+<link type="text/css" rel="stylesheet" media="all" href="/modules/system/system.css?A" />
+<link type="text/css" rel="stylesheet" media="all" href="/modules/system/system-menus.css?A" />
+<link type="text/css" rel="stylesheet" media="all" href="/modules/user/user.css?A" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/date/date.css?A" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/date/date_popup/themes/datepicker.css?A" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/date/date_popup/themes/jquery.timeentry.css?A" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/filefield/filefield.css?A" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/search_autocomplete/css/jquery.autocomplete.css?A" />
+<link type="text/css" rel="stylesheet" media="all" href="/modules/cck/modules/fieldgroup/fieldgroup.css?A" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/modules/views/css/views.css?A" />
+<link type="text/css" rel="stylesheet" media="all" href="/sites/all/themes/frontend/style.css?A" />
+<link type="text/css" rel="stylesheet" media="print" href="/sites/all/themes/frontend/print.css?A" />
+<script type="text/javascript" src="/misc/jquery.js?A"></script>
+<script type="text/javascript" src="/misc/drupal.js?A"></script>
+<script type="text/javascript" src="/modules/lightbox2/js/lightbox_modal.js?A"></script>
+<script type="text/javascript" src="/modules/lightbox2/js/lightbox.js?A"></script>
+<script type="text/javascript" src="/sites/all/modules/search_autocomplete/js/jquery.autocomplete.js?A"></script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+jQuery.extend(Drupal.settings, { "basePath": "/", "lightbox2": { "rtl": 0, "file_path": "/(\\w\\w/)sites/default/files", "default_image": "/modules/lightbox2/images/brokenimage.jpg", "border_size": 10, "font_color": "000", "box_color": "fff", "top_position": "", "overlay_opacity": "0.8", "overlay_color": "000", "disable_close_click": 1, "resize_sequence": 0, "resize_speed": 400, "fade_in_speed": 400, "slide_down_speed": 600, "use_alt_layout": 1, "disable_resize": 0, "disable_zoom": 0, "force_show_nav": 0, "show_caption": 1, "loop_items": 0, "node_link_text": "View Image Details", "node_link_target": 0, "image_count": "Image !current of !total", "video_count": "Video !current of !total", "page_count": "Page !current of !total", "lite_press_x_close": "press \x3ca href=\"#\" onclick=\"hideLightbox(); return FALSE;\"\x3e\x3ckbd\x3ex\x3c/kbd\x3e\x3c/a\x3e to close", "download_link_text": "", "enable_login": true, "enable_contact": false, "keys_close": "c x 27", "keys_previous": "p 37", "keys_next": "n 39", "keys_zoom": "z", "keys_play_pause": "32", "display_image_size": "original", "image_node_sizes": "()", "trigger_lightbox_classes": "", "trigger_lightbox_group_classes": "", "trigger_slideshow_classes": "", "trigger_lightframe_classes": "", "trigger_lightframe_group_classes": "", "custom_class_handler": 0, "custom_trigger_classes": "", "disable_for_gallery_lists": true, "disable_for_acidfree_gallery_lists": true, "enable_acidfree_videos": true, "slideshow_interval": 5000, "slideshow_automatic_start": true, "slideshow_automatic_exit": true, "show_play_pause": true, "pause_on_next_click": false, "pause_on_previous_click": true, "loop_slides": false, "iframe_width": 600, "iframe_height": 400, "iframe_border": 0, "enable_video": 0 }, "search_autocomplete": { "form1": { "selector": "#search-form", "minChars": "1", "max_sug": "8", "url": "https://www.nomachine.com/search_autocomplete/1/autocomplete", "fid": "1" }, "form3": { "selector": "#search-block-form", "minChars": "1", "max_sug": "8", "url": "https://www.nomachine.com/search_autocomplete/3/autocomplete", "fid": "3" }, "form5": { "selector": "#views-exposed-form-features-page-1", "minChars": "1", "max_sug": "8", "url": "https://www.nomachine.com/search_autocomplete/5/autocomplete", "fid": "5" }, "form6": { "selector": "#views-exposed-form-features-page-2", "minChars": "1", "max_sug": "8", "url": "https://www.nomachine.com/search_autocomplete/6/autocomplete", "fid": "6" }, "form7": { "selector": "#views-exposed-form-articles-page-2", "minChars": "1", "max_sug": "8", "url": "https://www.nomachine.com/search_autocomplete/7/autocomplete", "fid": "7" }, "form8": { "selector": "#views-exposed-form-articles-page-1", "minChars": "1", "max_sug": "8", "url": "https://www.nomachine.com/search_autocomplete/8/autocomplete", "fid": "8" }, "form9": { "selector": "#views-exposed-form-software-updates-page-1", "minChars": "1", "max_sug": "8", "url": "https://www.nomachine.com/search_autocomplete/9/autocomplete", "fid": "9" }, "form10": { "selector": "#views-exposed-form-trouble-page-1", "minChars": "1", "max_sug": "8", "url": "https://www.nomachine.com/search_autocomplete/10/autocomplete", "fid": "10" }, "form11": { "selector": "#views-exposed-form-trouble-page-2", "minChars": "1", "max_sug": "8", "url": "https://www.nomachine.com/search_autocomplete/11/autocomplete", "fid": "11" }, "form12": { "selector": "#views-exposed-form-documents-page-1", "minChars": "1", "max_sug": "8", "url": "https://www.nomachine.com/search_autocomplete/12/autocomplete", "fid": "12" } } });
+//--><!]]>
+</script>
+<script type="text/javascript">
+<!--//--><![CDATA[//><!--
+
+var nomachine_base_path = '/';
+var nomachine_theme_path = '/sites/all/themes/frontend';
+var nomachine_ajax_path = '/sites/all/themes/frontend/ajaxProcess';
+
+//--><!]]>
+</script>
+<!--[if IE 9]><link rel="stylesheet" type="text/css" href="/sites/all/themes/frontend/styles/IE9.css" media="all" /><![endif]-->
+<!--[if IE 8]><link rel="stylesheet" type="text/css" href="/sites/all/themes/frontend/styles/IE8.css" media="all" /><![endif]-->
+<!--[if IE 7]><link rel="stylesheet" type="text/css" href="/sites/all/themes/frontend/styles/IE7.css" media="all" /><![endif]-->
+	
+  <link type="text/css" rel="stylesheet" media="all" href="/sites/all/themes/frontend/fontStyle.css?l" />
+  <!--[if lt IE 7]>
+   <link type="text/css" rel="stylesheet" media="all" href="/sites/all/themes/frontend/fix-ie.css" />  <![endif]-->
+<script type="text/javascript" src="/sites/all/themes/frontend/nx.js"></script>  
+<script type="text/javascript" src="/sites/all/themes/frontend/nx_func.js"></script>  
+<script type="text/javascript" src="/sites/all/themes/frontend/md5.js"></script>   
+<style type="text/css">
+ img, input { behavior: url("/sites/all/themes/frontend/iepngfix.htc") }
+</style>
+<!--<script type="text/javascript" src="/sites/all/themes/frontend/js/swiffy/runtime.js"></script>-->
+<style>
+ html, body { width: 100%; height: 100% }
+</style>
+<script type="text/javascript" src="/sites/all/themes/frontend/js/jquery.tools.min.js"></script>
+<script type="text/javascript" src="/sites/all/themes/frontend/js/easySlider.js"></script>
+<script type="text/javascript" src="/sites/all/themes/frontend/js/jquery.hrzAccordion.min.js"></script>
+ 
+<script> 
+function submitForm(){
+ document.forms["downloadBanner"].submit();
+}
+</script> 
+</head>
+<body id="bodyId" bgcolor="#ffffff"  >
+<div class="backOverlay"></div>
+<div id="inrWrpr">
+<!--<body >-->
+<!--[if lt IE 7]> <body   onload="calcWidth();" > <![endif]--> 
+<!-- Layout -->
+<div id="dyn_layout">
+<!-- Top -->
+<div id="top" style="margin:0 auto; border:0px solid red;">
+ <div id="top-content" style="border:0px solid green;">
+  <div id="top-content-left" style="border:0px solid blue;">
+   <a href="/"><img width="263" height="23" src="/sites/all/themes/frontend/logo.png" alt="" id="logo" /></a>  </div> 
+    <div id="menu_header">
+  
+     <ul id="nomachine_primary" style="border:0px solid orange; margin-right:0px;">
+            <li style="background-image:none;"><a id='overPeople' href="/people"><span>People</span></a></li>
+<li ><a id='overEnterprise' href="/enterprise"><span>Enterprise</span></a></li>
+<li  class="active" ><a href="/download"><span style='color:#e00000'>Download</span></a></li>
+<li style="background-image:none;"><a id='overSupport' href="/support"><span>Support</span></a></li>
+<li ><a id='overPartners' href="/partners"><span>Partners</span></a></li>
+<li ><a id='overStore' href="/buyonline"><span>Store</span></a></li>
+           </ul>
+     <!-- MyNoMachine + My BAG  -->
+  <div id="second-top" style="margin:0 auto; border:0px solid red;">
+  <div id="second-top-content">
+  <div id="second-top-content-left" style="border:0px solid green;">
+ <style type="text/css">
+.backOverlay { position:absolute; top:0px; left:0px; width:100%; height:100%; background:#000; opacity: .0; filter:alpha(opacity=0); z-index:10052; display:none; }
+.title_h1 { color:#000000; font-family:Verdana; font-size:14px; margin:0px; padding-left:3px; }
+</style>
+<!--<table width="100%" cellspacing="0" cellpadding="0" border="0" class="submenu-internal-command" style="letter-spacing:1px; padding-right: 16px;font-family: Arial; font-size: 10px;">-->
+<table width="100%" cellspacing="0" cellpadding="0" border="0" class="submenu-internal-command" style="letter-spacing:1px; padding-right: 6px;font-family: Arial; font-size: 10px;">
+
+ 
+ <tr>
+    <td style="padding-right:5px"><img width="8" height="7"  src="/sites/all/themes/frontend/images/shared/user-login-small.png" /></td>
+  <td class="login_new">
+   <!--<a class="lightboxLogin" href="javascript: openBox()"><strong>LOGIN</strong></a>-->
+   <a class="lightboxLogin" rel="NOFOLLOW" href="/support#login"><strong>LOGIN</strong></a>
+  </td>
+ </tr>
+</table>
+  </div> 
+ </div><!--class="submenu-internal-content" -->
+</div> <!--class="submenu-internal" commented MyNoMachine+MyBag+myArea ...-->
+</div>
+</div>
+</div>
+<!-- / Top -->
+<!-- / Banner and Submenu for HomePage --> 
+<!-- Banner and Submenu for InternalPage --> 
+ <!-- Submenu -->
+<!-- / Banner and Submenu for InternalPage -->
+<!-- Body HomePage -->
+<!-- / Body HomePage -->
+<!-- Body InternalPage -->     
+<div id="subHeader" style="border:0px solid red;  text-align:left;">
+ <div style="height: 208px; background-color:#131313;">      
+  <div style="margin: 0 auto; padding-left:0px; padding-right:0px; max-width:1000px; min-width:800px;">
+   <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-left: 0px;">    
+  <tr>
+    <td colspan="2" id="descriptionProduct">
+      <table width="100%" cellspacing="0" cellpadding="0" border="0" style="margin-left:0px;">
+        <tr>
+          <td valign="top">
+            <table width="100%" cellspacing="0" cellpadding="0" border="0" style="padding-top:40px;">
+              <tr>
+                <td width="80%" valign="top">
+                  <table cellspacing="0" cellpadding="0" border="0" style="margin-left: 10px;">
+                    <tr>                                                                                                             <!-- nomachine4-1 -->
+                      <td width="" valign="top" align="left">
+                        <!--div style="margin-right: 10px; float: left; width: 12%;"-boxYellowImg----  -->
+                        <div class="boxTransparentImg" style="margin-left: 0px; border-left-width: 0px; border-right-width: 0px; margin-right: 10px;">
+                          <!-- class="img-home" --><img border="0" src="/sites/all/themes/frontend/images/download/DownloadIntro.png">
+                        </div>
+                      </td>
+                      <td width="86%" style="vertical-align:top;">
+                        <table width="100%" cellspacing="0" cellpadding="0" border="0">
+                          <tr>
+                            <td style="padding-top: 17px; padding-bottom: 5px;">
+                              <h1 class="titleIntro">NoMachine Download</h1>
+                            </td>
+                          </tr>
+                          <tr>
+                            <td>
+                              <h3 class="subTitleIntro">Free remote desktop for everybody</h3> 
+                              <!--p><span style="color:#fff;">Keep your content in your own cloud, and not in someone else's. Get instant access to your computer, share files with exactly who you want, collaborate on projects, provide remote assistance, or manage multiple desktops. Download and try!</span></p-->
+                            </td>
+                          </tr>
+                        </table>
+                      </td>
+                    </tr>
+                  </table>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>  
+    </td>
+  </tr>
+</table>
+      </div>
+     </div>
+  </div>
+
+  <div id="subHeader" style="border:0px solid red;  text-align:left;">
+   <div style="height: 48px; background-color:#343434;">   
+    <div style="margin: 0 auto; padding-left:0px; padding-right:0px; max-width:1000px; min-width:800px; line-height:48px;">
+     <div style="border:0px solid blue;">
+                <div style="float:left;height:40px; width:80%;">
+       <div class="breadcrumb" style="margin-left:20px; margin-top:0px; color:#ffffff;"><span class="linkBreadcrumb"><a href="/">Home</a> / Download</span></div> 
+    </div>
+   </div>
+     </div>
+ </div>
+   </div>
+<div id="page-internal1" style="border:0px solid red; margin: 0 auto;" width="100%" class="mmwmax">
+    
+  <div id="bodycenter" style="position: relative; top: 0px; left: 0px; z-index: 100; border: 0px solid red; padding-bottom:0px;">
+   <div id="page-internal" style="border:0px solid green; text-align:left;">
+    <div id="container-internal" class="clear-block" style="border:0px solid yellow; ">
+     <div id="header" style="border:0px solid red;">
+      <div id="logo-floater">
+             </div>
+     </div>   
+               
+     <div id="centerx">
+      <div id="squeeze">
+       <div class="right-corner">
+        <div class="left-corner" >
+          
+                                                                        <div class="clear-block" >
+                    <script>
+var image_arr=new Array()
+function preload()
+{
+     for (cont=0;cont<preload.arguments.length;cont++)
+     {
+          image_arr[cont]=new Image()
+          image_arr[cont].src=preload.arguments[cont]
+     }
+}
+var urla = '/sites/all/themes/frontend/';
+preload(""+urla+"images/download/bullet-download.png",""+urla+"images/download/bullet-download-over.png",
+""+urla+"images/shared/learn-link-icon.png",""+urla+"images/shared/learn-link-icon-over.png");
+</script>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">    
+ <tr>
+  <td valign="top">    
+   <table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding:10px;">
+    <tr>
+     <td valign="top">
+      <table border="0" cellpadding="0" cellspacing="0" width="100%">
+       <tr>
+        <td>
+        
+
+     
+     <!--
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding-bottom: 25px;"> 
+       <tr>
+        <td style="padding-top: 40px; ">
+         <h1 id="titleH2">Let your trip begin</h1>
+        </td>
+       </tr>   
+       <tr>
+        <td valign="top" align="left" class="style_descr"   valign="top">
+        Getting remote access to your desktop using NoMachine is as easy as 1, 2, 3. 
+        Download and install NoMachine on two computers you use and point the one you are sitting at to the other. 
+        </td>
+       </tr>    
+      </table>
+      -->
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding-top:0px;padding-bottom: 25px;"> 
+       <tr>
+        <td style="padding-top: 40px; ">
+         <h1 id="titleH2">Get started with NoMachine</h1>
+        </td>
+       </tr> 
+       <tr>
+        <td valign="top" align="left" class="style_descr"   valign="top">
+         Download and install the software for your OS on the computer or 
+         device you are connecting from and on the Windows/Linux/Mac computer you want to connect to.
+        You can easily share a remote desktop or control a server over any network. 
+        No matter where you are, NoMachine makes it safe and easy to quickly access a remote desktop within a few seconds.
+        If you are looking for the additional downloads of the Enterprise product line, click 
+        <font class="linkGeneralGreen"><a href="download-enterprise">here</a></font>.
+
+        
+
+
+
+
+        </td>
+       </tr>    
+      </table>
+     
+
+ 
+   <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        
+   <!-- <tr id="heightOther" height="20px">
+      <td>
+        &nbsp;
+      </td>
+    </tr>-->
+    
+    <tr>
+     <td width="100%">       
+        
+<table id="NoMachine-Block-Download" style="margin-left:0px;padding-bottom:0px; padding-top:40px;" border="0" cellpadding="0" cellspacing="0" width="100%">
+ <tr>
+  <td valign="top">
+   <table border="0" cellpadding="0" cellspacing="0" width="100%">
+   
+    <tr>
+     <td valign="top">
+      <table  border="0" cellpadding="0" cellspacing="0" width="100%">
+       <tr>
+         <td width="50px"   style="background-color: #0072c6;" valign="top">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0">
+           <tr>
+            <td valign="top" >
+             <img  width="50px" height="50px" src="/sites/all/themes/frontend/images/download/side-win-icon.png">
+            </td>
+           </tr>
+          </table>
+         </td>
+         <td width="11px"  valign="top" align="left">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0">
+           <tr>
+            <td valign="top" style="background-color: #0072c6;">
+             <img  width="11px" height="50px" src="/sites/all/themes/frontend/images/support-page/side-mask-icon-left.png">
+            </td>
+           </tr>
+          </table>
+         </td>
+         <td valign="top">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0" style="padding-left:10px; padding-right:10px;">
+           <tr>
+            <td style=" padding-bottom: 10px;">
+             <h1 class="titleIntro" style="color:#000000;">NoMachine for Windows</h1>
+            </td>
+           </tr>
+           <tr>
+            <td valign="top" align="left" class="style_descr" style="padding-top:0px; padding-bottom:20px; padding-right:10px;">
+              Windows i386/AMD64 XP/Vista/7/8/8.1/10
+            </td>
+           </tr>
+           <tr>
+              <td  id="" width="100px">
+           <div  style="float: left; margin-left:0px; height: 23px; border: 0px solid blue; background-color: #ffffff;" width="100px" id="DW">
+            <div 
+             onclick="location.href='/download/download&id=14'"
+             onmouseover="$('#labelDW').css('color','#ffffff'); $('#DW').css('background-color','#0072c6'); $('#imgDW').attr('src', '/sites/all/themes/frontend/images/download/bullet-download-over.png');"
+             onmouseout="$('#labelDW').css('color','#555555'); $('#DW').css('background-color','#ffffff'); $('#imgDW').attr('src', '/sites/all/themes/frontend/images/download/bullet-download.png');"
+             style="cursor:pointer; text-align: center; vertical-align: middle; margin-right:5px; width:100px; padding-top:3px; height:23px;">
+             <div style="float:left; border:0px solid red;">
+              <img style="padding-left:5px;" id="imgDW" src="/sites/all/themes/frontend/images/download/bullet-download.png">
+             </div>
+             <div id="labelDW" style="padding-right:5px; color:#555555; border:0px solid green;">Download</div>
+            </div>
+            </div>
+           </td>        
+            </tr>
+          </table>
+         </td>
+         
+        </tr>
+       <tr height="50px"><td></td></tr>
+        <tr>
+         <td width="50px"   style="background-color: #989898;" valign="top">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0">
+           <tr>
+            <td valign="top" >
+             <img  width="50px" height="50px" src="/sites/all/themes/frontend/images/download/side-mac-icon.png">
+            </td>
+           </tr>
+          
+          </table>
+         </td>
+         <td width="11px"  valign="top" align="left">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0">
+           <tr>
+            <td valign="top" style="background-color: #989898;">
+             <img  width="11px" height="50px" src="/sites/all/themes/frontend/images/support-page/side-mask-icon-left.png">
+            </td>
+           </tr>
+          </table>
+         </td>
+         <td valign="top">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0" style="padding-left:10px; padding-right:10px;">
+           <tr>
+            <td style=" padding-bottom: 10px;">
+             <h1 class="titleIntro" style="color:#000000;">NoMachine for Mac OS X</h1>
+            </td>
+           </tr>
+           <tr>
+            <td valign="top" align="left" class="style_descr" style="padding-top:0px; padding-bottom:20px; padding-right:10px;">
+               Mac OS X Intel 64-bit 10.5 or later
+            </td>
+           </tr>
+           <tr>
+             <td  id="" width="100px">
+           <div  style="float: left; margin-left:0px; height: 23px; border: 0px solid blue; background-color: #ffffff;" width="100px" id="DM">
+            <div width="100px"
+             onclick="location.href='/download/download&id=13'"
+             onmouseover="$('#labelDM').css('color','#ffffff'); $('#DM').css('background-color','#989898'); $('#imgDM').attr('src', '/sites/all/themes/frontend/images/download/bullet-download-over.png');"
+             onmouseout="$('#labelDM').css('color','#555555'); $('#DM').css('background-color','#ffffff'); $('#imgDM').attr('src', '/sites/all/themes/frontend/images/download/bullet-download.png');"
+             style="cursor:pointer; text-align: center; vertical-align: middle; margin-right:5px; width:100px; padding-top:3px; height:23px;">
+             <div style="float:left; border:0px solid red;">
+              <img style="padding-left:5px;" id="imgDM" src="/sites/all/themes/frontend/images/download/bullet-download.png">
+             </div>
+             <div id="labelDM" style="padding-right:5px; color:#555555; border:0px solid green;">Download</div>
+            </div>
+            </div>
+           </td>        
+            </tr>
+          </table>
+         </td>
+         
+        </tr>
+       <tr height="50px"><td></td></tr>
+        <tr>
+         <td width="50px"   style="background-color: #ffba00;" valign="top">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0">
+           <tr>
+            <td valign="top" >
+             <img  width="50px" height="50px" src="/sites/all/themes/frontend/images/download/side-linux-icon.png">
+            </td>
+           </tr>          
+          </table>
+         </td>
+         <td width="11px"  valign="top" align="left">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0">
+           <tr>
+            <td valign="top" style="background-color: #ffba00;">
+             <img  width="11px" height="50px" src="/sites/all/themes/frontend/images/support-page/side-mask-icon-left.png">
+            </td>
+           </tr>
+          </table>
+         </td>
+         <td valign="top">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0" style="padding-left:10px; padding-right:10px;">
+           <tr>
+            <td style=" padding-bottom: 10px;">
+             <h1 class="titleIntro" style="color:#000000;">NoMachine for Linux</h1>
+            </td>
+           </tr>
+           <tr>
+            <td valign="top" align="left" class="style_descr" style="padding-top:0px; padding-bottom:20px; padding-right:10px;">
+              <!--Linux i386/AMD64, RHEL 4.4 or later, SUSE 10/11/12, Mandriva 2009/2011, Fedora 10 or later, Debian 4 or later, Ubuntu 8.04 or later-->
+             Linux i386/AMD64/ARMv6/ARMv7, RHEL 4.4 or later, SUSE 10 or later, Fedora 10 or later, Debian 4 or later, Ubuntu 8.04 or later
+            </td>
+           </tr>
+           <tr>
+              <td colspan="3" id="" width="100px">
+           <div  style="float: left; margin-left:0px; height: 23px; border: 0px solid blue; background-color: #ffffff;" width="100px" id="DL">
+            <div width="100px"
+             onclick="location.href='/download/linux&id=1'"
+             onmouseover="$('#labelDL').css('color','#ffffff'); $('#DL').css('background-color','#ffba00'); $('#imgDL').attr('src', '/sites/all/themes/frontend/images/download/bullet-download-over.png');"
+             onmouseout="$('#labelDL').css('color','#555555'); $('#DL').css('background-color','#ffffff'); $('#imgDL').attr('src', '/sites/all/themes/frontend/images/download/bullet-download.png');"
+             style="cursor:pointer; text-align: center; vertical-align: middle; margin-right:5px; width:100px; padding-top:3px; height:23px;">
+             <div style="float:left; border:0px solid red;">
+              <img style="padding-left:5px;" id="imgDL" src="/sites/all/themes/frontend/images/download/bullet-download.png">
+             </div>
+             <div id="labelDL" style="padding-right:5px; color:#555555; border:0px solid green;">Download</div>
+            </div>
+            </div>
+           </td>        
+            </tr>
+          </table>
+         </td>
+         
+        </tr>
+        </table>
+       </td>
+ 
+     <td width="254px">
+      <img width="254px" height="490px" src="/sites/all/themes/frontend/images/download/download-os-computer.jpg">
+     </td>
+    </tr>
+   
+   
+   </table>
+  </td>
+ </tr>
+   
+ <tr>
+  <td valign="top">
+   <table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding-top:40px;">
+    <tr>
+     <td width="280px" align="left">
+      <img width="225px" height="345px" src="/sites/all/themes/frontend/images/download/download-os-mobile.png">
+     </td>
+     <td>
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding-top:0px;">
+      
+       <tr height="125px;">
+       
+         <td valign="top">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0" style="padding-left:10px; padding-right:10px;">
+           <tr>
+            <td colspan="2" style=" padding-bottom: 10px;">
+             <h1 class="titleIntro" style="color:#000000;">NoMachine for Android</h1>
+            </td>
+           </tr>
+           <!--<tr>
+            <td valign="top" align="left" class="style_descr" style="padding-top:0px; padding-bottom:20px; padding-right:10px;">
+             Currently in <font class="linkGeneralGreen"><a href="http://en.wikipedia.org/wiki/Alpha_software#Alpha">Alpha</a></font>, coming first quarter 2014
+            </td>
+           </tr>-->
+           <tr>
+           <td colspan="2" valign="top" align="left" class="style_descr" style="padding-top:0px; padding-bottom:20px; padding-right:10px;">
+            Tablets running Android 3.2/4.x/5.x/6.0.
+           </td>
+           </tr>
+           <tr>
+           <td  width="90%">
+            <a href="https://play.google.com/store/apps/details?id=com.nomachine.nxplayer"><img width="113px" height="39px" src="/sites/all/themes/frontend/images/download/download_android_play.png"></a>
+           </td> 
+            <td nowrap align="right" width="10%">
+           <div  style="float: left; margin-left:0px; height: 23px; border: 0px solid blue; background-color: #ffffff;" width="100px" id="DAndr">
+            <div width="100px"
+             onclick="location.href='/download/download&id=74'"
+             onmouseover="$('#labelDAndr').css('color','#ffffff'); $('#DAndr').css('background-color','#97C03E'); 
+             $('#imgDAndr').attr('src', '/sites/all/themes/frontend/images/download/bullet-download-over.png');"
+             onmouseout="$('#labelDAndr').css('color','#555555'); $('#DAndr').css('background-color','#ffffff'); 
+             $('#imgDAndr').attr('src', '/sites/all/themes/frontend/images/download/bullet-download.png');"
+             style="cursor:pointer; text-align: center; vertical-align: middle; margin-right:5px; width:100px; padding-top:3px; height:23px;">
+             <div style="float:left; border:0px solid red;">
+              <img style="padding-left:5px;" id="imgDAndr" src="/sites/all/themes/frontend/images/download/bullet-download.png">
+             </div>
+             <div id="labelDAndr" style="padding-right:5px; color:#555555; border:0px solid green;">Download</div>
+            </div>
+            </div>
+           </td>       
+          </tr>         
+         </table>
+         </td>
+         <td width="11px"  valign="top" align="left">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0">
+           <tr>
+            <td valign="top" style="background-color: #97C03E;">
+             <img  width="11px" height="50px" src="/sites/all/themes/frontend/images/support-page/side-mask-icon-right.png">
+            </td>
+           </tr>
+          </table>
+         </td>
+         <td width="50px"   style="background-color: #97C03E;" valign="top">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0">
+           <tr>
+            <td valign="top" >
+             <img  width="50px" height="50px" src="/sites/all/themes/frontend/images/download/side-android-icon.png">
+            </td>
+           </tr>          
+          </table>
+         </td>
+         
+       </tr>
+          
+       
+       <tr height="35px"><td></td></tr>
+       
+       <tr height="125px;">
+        <td valign="top">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0" style="padding-left:10px; padding-right:10px;">
+           <tr>
+            <td colspan="2" style=" padding-bottom: 10px;">
+             <h1 class="titleIntro" style="color:#000000;">NoMachine for iOS</h1>
+            </td>
+           </tr>
+           <tr>
+            <td colspan="2" valign="top" align="left" class="style_descr" style="padding-top:0px; padding-bottom:20px; padding-right:10px;">
+             <!--Currently in <font class="linkGeneralGreen"><a href="http://en.wikipedia.org/wiki/Alpha_software#Alpha">Alpha</a></font>, coming first quarter 2014-->
+             <!--11 06 2014
+             This software is currently in testing. We can't provide a download yet since Apple forbids installing software on iOS devices outside the Apple AppStore. 
+             Production release is planned for second quarter 2014.-->
+             Compatible with iPad running iOS 5/6/7/8/9.
+            </td>
+           </tr>
+           <tr>
+            <td  width="90%">
+             <a href="https://itunes.apple.com/us/app/nomachine/id874286563?mt=8">
+             <img width="113px" height="40px" src="/sites/all/themes/frontend/images/download/download_ios_store.png"></a>
+            </td> 
+           <td nowrap align="right" width="10%">
+            <div  style="float: left; margin-left:0px; height: 23px; border: 0px solid blue; background-color: #ffffff;" width="100px" id="DiOS">
+             <div width="100px"
+              style="text-align: center; vertical-align: middle; margin-right:5px; width:100px; padding-top:3px; height:23px;">
+              <div style="float:left; border:0px solid red;">
+              </div>
+              <div id="labelDAndr" style="padding-right:5px; color:#555555; border:0px solid green;"> &nbsp;</div>
+             </div>            
+            </div>
+           </td>  
+           </tr>
+          </table>
+         </td>
+         <td width="11px"  valign="top" align="left">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0">
+           <tr>
+            <td valign="top" style="background-color: #6b92bb;">
+             <img  width="11px" height="50px" src="/sites/all/themes/frontend/images/support-page/side-mask-icon-right.png">
+            </td>
+           </tr>
+          </table>
+         </td>
+         <td width="50px"   style="background-color: #6b92bb;" valign="top">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0">
+           <tr>
+            <td valign="top" >
+             <img  width="50px" height="50px" src="/sites/all/themes/frontend/images/download/side-ios-icon.png">
+            </td>
+           </tr>          
+          </table>
+         </td>
+       </tr>
+      </table>
+     </td>
+    </tr>
+   </table>
+  </td>
+ </tr>
+  
+  
+   
+  
+   
+   
+   
+  
+</table>
+      </td>
+    </tr>
+    
+    <tr height="70px" style="display:block">
+    	<td>
+    	 &nbsp;
+    	</td>
+    </tr>
+    
+        
+    <tr>
+     <td>
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding-top:0px; padding-bottom:60px;">
+       
+      <tr>
+      <td>
+       <table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding-top:0px; padding-bottom:0px;">
+        <tr>
+         <td width="50px"   style="background-color: #E00000;" valign="top">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0">
+           <tr>
+            <td valign="top" >
+             <img  width="50px" height="50px" src="/sites/all/themes/frontend/images/download/side-for_enterprise-icon.png">
+            </td>
+           </tr>          
+          </table>
+         </td>
+         <td width="11px"  valign="top" align="left">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0">
+           <tr>
+            <td valign="top" style="background-color: #E00000;">
+             <img  width="11px" height="50px" src="/sites/all/themes/frontend/images/support-page/side-mask-icon-left.png">
+            </td>
+           </tr>
+          </table>
+         </td>
+         <td valign="top">
+          <table width="100%" border="0" cellpadding="0" cellspacing="0" style="padding-left:10px; padding-right:10px;">
+           <tr>
+            <td style=" padding-bottom: 10px;">
+             <h1 class="titleIntro" style="color:#000000;">Enterprise Products Evaluation</h1>
+            </td>
+           </tr>
+           <tr>
+            <td valign="top" align="left" class="style_descr" style="padding-top:0px; padding-bottom:20px; padding-right:10px;">
+              <table>
+<tbody>
+<tr>
+<td>All products of the NoMachine for the Enterprise range are available as evaluation software without registration for 30 days, and install with all corresponding features available with the exception of H.264 support. This will be activated upon purchasing the relevant product. Simply click the download button for the product you wish to evaluate.</td>
+</tr>
+</tbody>
+</table>            </td>
+           </tr>
+           <tr>
+              <td  id="" width="100px" colspan="2">
+           <div  style="float: left; margin-left:0px; height: 23px; border: 0px solid blue; background-color: #ffffff;" width="100px" id="DEPE">
+            <div width="100px"
+             onclick="location.href='download-enterprise'"
+             onmouseover="$('#labelDEPE').css('color','#ffffff'); $('#DEPE').css('background-color','#e00000'); $('#imgDEPE').attr('src', '/sites/all/themes/frontend/images/download/bullet-download-over.png');"
+             onmouseout="$('#labelDEPE').css('color','#555555'); $('#DEPE').css('background-color','#ffffff'); $('#imgDEPE').attr('src', '/sites/all/themes/frontend/images/download/bullet-download.png');"
+             style="cursor:pointer; text-align: center; vertical-align: middle; margin-right:5px; width:100px; padding-top:3px; height:23px;">
+             <div style="float:left; border:0px solid red;">
+              <img style="padding-left:5px;" id="imgDEPE" src="/sites/all/themes/frontend/images/download/bullet-download.png">
+             </div>
+             <div id="labelDEPE" style="padding-right:5px; color:#555555; border:0px solid green;">Download</div>
+            </div>
+            </div>
+           </td>        
+            </tr>
+          </table>
+         </td>
+        </tr>
+       </table>
+      </td>
+      </tr>
+      <!--
+      
+       <tr><td style="display:block; padding-bottom:20px; "><h1><span id="titleH2" style="padding-top:60px;">Enterprise Products Evaluation</span></h1></td></tr>
+       <tr style="display:block">
+        <td valign="top">
+          <div id="boxHomePeople">
+           <div style=" display: block; text-align: center; vertical-align: middle;">
+                 <img style="max-width:100px; max-heigth:100px;" src="/sites/all/themes/frontend/images/home-for-enterprise-icon.png?>">
+                </div>
+          </div>
+        </td>
+        <td valign="top">
+         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding-left:10px;">
+          <tr>
+           <td colspan="2" valign="top" align="left" style="padding-top:0px; padding-right:10px;">
+            <span id="description"><table>
+<tbody>
+<tr>
+<td>All products of the NoMachine for the Enterprise range are available as evaluation software without registration for 30 days, and install with all corresponding features available with the exception of H.264 support. This will be activated upon purchasing the relevant product. Simply click the download button for the product you wish to evaluate.</td>
+</tr>
+</tbody>
+</table></span>
+           </td>
+          </tr>
+          <tr height="20">
+           <td  colspan="2" width="100%" style="border-bottom:0px solid #e9e9e9">&nbsp;</td>
+          </tr>
+         
+           <tr height="30px">
+           <td  id="" width="100px" colspan="2">
+           <div  style="float: left; margin-left:6px; height: 23px; border: 0px solid blue; background-color: #fff;" width="100px" id="DEPE">
+            <div width="100px"
+             onclick="location.href='download-enterprise'"
+             onmouseover="$('#labelDEPE').css('color','#ffffff'); $('#DEPE').css('background-color','#e00000'); $('#imgDEPE').attr('src', '/sites/all/themes/frontend/images/shared/bullet-download-over.png');"
+             onmouseout="$('#labelDEPE').css('color','#878787'); $('#DEPE').css('background-color','#ffffff'); $('#imgDEPE').attr('src', '/sites/all/themes/frontend/images/shared/bullet-download.png');"
+             style="cursor:pointer; text-align: center; vertical-align: middle; margin-right:5px; width:100px; padding-top:3px; height:23px;">
+             <div style="float:left; border:0px solid red;">
+              <img style="padding-left:5px;" id="imgDEPE" src="/sites/all/themes/frontend/images/shared/bullet-download.png">
+             </div>
+             <div id="labelDEPE" style="padding-right:5px; color:#878787; border:0px solid green;">Download</div>
+            </div>
+            </div>
+           </td>            
+          </tr>
+          
+    -->      
+          
+          
+         </table>
+        </td>
+       </tr>
+      </table>
+     </td>
+    </tr>
+    
+    
+    <tr>
+     <td>
+      <table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding-top:0px; padding-bottom:30px;">
+       
+       <tr><td style="display:block; padding-bottom:5px; "><h1><span id="titleH2" style="padding-top:60px; font-size:30px;">Version 3 Products</span></h1></td></tr>
+       
+       
+       <tr style="display:block">
+        <!--<td valign="top">
+          <div id="boxHomePeople" style="background-color:#555555; width:100px; heigth:100px;">
+           <div style=" display: block; text-align: center; vertical-align: middle; width:100px; heigth:100px;">
+                 <img style="width:100px; heigth:100px;" src="/sites/all/themes/frontend/images/3-products-archive.png?>">
+                </div>
+          </div>
+          
+        </td>-->
+        <td valign="top">
+         <table border="0" cellpadding="0" cellspacing="0" width="100%" style="padding-left:0px;">
+          <tr>
+           <td colspan="2" valign="top" align="left" style="padding-top:0px; padding-right:10px;">
+            <span id="description">
+            <!--Whilst users migrate their NX installations to the latest version, we will continue to make NX 3.5.0 
+            packages available for the most recent versions of Linux distributions. -->
+            <!--Please click <font class="linkGeneral"><a href="download-3">here</a></font> if you are looking for the NX 3 packages.-->
+            Please click <font class="linkGeneralGreen"><a href="version-3">here</a></font> if you are looking for NoMachine NX 3.
+
+            <br><br>
+            </span>
+           </td>
+          </tr>
+          <!--
+          <tr height="20">
+           <td colspan="2" width="100%" style="border-bottom:0px solid #e9e9e9">&nbsp;</td>
+          </tr>
+          
+          <tr height="30px">
+           <td style="cursor:pointer;" id="" width="250px">
+           <div  
+           onMouseOver="this.style.background='#dedede'" onMouseOut="this.style.background='#ffffff'"
+           onclick="location.href='download-3'" style="border:0px solid red; background:#ffffff; width:250px; height:30px;" >
+                  <img style="padding-left:6px; " src="sites/all/themes/frontend/images/shared/bullet-over.png">
+                   <font style="color:#878787;">&nbsp;&nbsp;Download</font>
+                    <img style="padding-left:130px; padding-top:6px;" src="sites/all/themes/frontend/images/shared/bullet-download.png">
+            </div>
+           </td>
+           <td width="550px"></td>
+          
+          </tr>-->
+         </table>
+        </td>
+       </tr>
+      </table>
+     </td>
+    </tr>
+          
+          
+      </table>
+     </td>
+    </tr>
+    
+    </table>
+
+</td>
+</tr>   
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+  
+     
+   
+                       </div>
+                 </div>
+       </div>
+      </div>
+     </div>
+         </div>
+   </div>
+  </div>
+</div>
+<!-- / Body InternalPage -->
+  <div style="border:0px solid red; padding-top:60px;">
+ <div id="HomeFooter" style="border:0px solid green; ">
+  <div id="sub_subFooter" style="border:0px solid red; padding-top:40px;">
+  <table border="0" cellspacing="0" cellpadding="0" width="100%" >
+   <tr>
+    <td width="149px" valign="top">
+     <table border="0" cellspacing="0" cellpadding="0" width="100%" style="margin-left:20px;">
+      <tr height="20px"><td colspan="3" class="latotext" align="left" valign="top" style="color:#ffffff;">Follow Us</td></tr>
+      <tr>
+       <td width="33px">
+        <a href="/?q=all-press-releases/rss.xml">
+         <!--<img  border="0" alt="" src="/sites/all/themes/frontend/images/shared/rss-icon.png" width="29" height="30">-->
+         <div class="iconrss"></div>
+        </a>
+       </td>
+       <td width="33px">
+        <a href="https://www.facebook.com/pages/NoMachine-NX/303229286367289">
+         <!--<img  border="0" alt="" src="/sites/all/themes/frontend/images/shared/facebook-icon.png" width="29" height="30">-->
+         <div class="iconfacebook"></div>
+        </a>
+       </td>
+       <td align="left">
+        <a href="https://twitter.com/#!/NXFollowers">
+         <!--<img  border="0" alt="" src="/sites/all/themes/frontend/images/shared/twitter-icon.png" width="29" height="30">-->
+         <div class="icontwitter"></div>
+        </a>
+       </td>
+      </tr>
+      <tr><td>&nbsp;</td></tr>
+     </table>
+    </td>
+    <td width="119px" valign="top">
+     <table border="0" cellspacing="0" cellpadding="0" width="100%" >
+      <tr height="20px"><td class="latotext" valign="top" style="color:#ffffff;">Home</td></tr>
+      <tr><td class="latosubtext"><a href="/download" class="link5">Download</a></td></tr>
+      <tr><td class="latosubtext"><a href="/enterprise" class="link5">Enterprise</a></td></tr>
+      <tr><td class="latosubtext"><a href="/support" class="link5">Support</a></td></tr>
+      <tr><td class="latosubtext"><a href="/partners" class="link5">Partners</a></td></tr>
+     </table>
+    </td>
+    <td width="179px" valign="top">
+     <table border="0" cellspacing="0" cellpadding="0" width="100%" >
+      <tr height="20px"><td class="latotext" valign="top" style="color:#ffffff;">Learn more</td></tr>
+      <tr><td class="latosubtext"><a href="/feature_comparison" class="link5">Feature comparison</a></td></tr>
+      <tr><td class="latosubtext"><a href="/buyonline" class="link5">Price & availability</a></td></tr>
+      <tr><td class="latosubtext"><a href="/articles" class="link5">Article & FAQs</a></td></tr>
+      <!--<tr><td class="latosubtext"><a href="/all-news-from-the-web" class="link5">News from the Web</a></td></tr>-->
+      <tr><td class="latosubtext"><a href="/softwareupdates" class="link5">Software updates</a></td></tr>
+     </table>
+    </td>
+    <td width="149px" valign="top">
+     <table border="0" cellspacing="0" cellpadding="0" width="100%" >
+      <tr height="20px"><td class="latotext" valign="top" style="color:#ffffff;">Resources</td></tr>
+      <tr><td class="latosubtext"><a href="/forums" class="link5">Forums</a></td></tr>      
+      <tr><td class="latosubtext"><a href="/documents" class="link5">Installation guides</a></td></tr>
+      <tr><td class="latosubtext"><a href="/featurerequests" class="link5">Feature requests</a></td></tr>
+      <tr><td class="latosubtext"><a href="/troublereports" class="link5">Trouble reports</a></td></tr>
+     </table>
+    </td>
+    <td width="149px" valign="top">
+     <table border="0" cellspacing="0" cellpadding="0" width="100%" style="border:0px solid red;">
+     <tr height="20px"><td class="latotext" valign="top" style="color:#ffffff;">Company</td></tr>
+     <tr><td class="latosubtext"><a href="/about-us" class="link5">About us</a></td></tr>
+     <tr><td class="latosubtext"><a href="/contact-request" class="link5">Contact us</a></td></tr>
+      <tr><td class="latosubtext"><a href="/contact-request&p=1" class="link5">Become a partner</a></td></tr>
+      <tr><td class="latosubtext"><a href="/news" class="link5">News</a></td></tr>      
+     </table>
+    </td>
+   </tr>
+  </table>
+ </div>
+ <div id="sub_Footer" style="border:0px solid red;">
+  <table border="0" cellspacing="0" cellpadding="0" width="100%" style="padding-top:35px;" >
+   <tr>
+    <td width="149px" valign="middle" align="center">Copyright 2002-2016, NoMachine S.&agrave; r.l. - VAT LU25935711
+    </td>
+   </tr>
+  </table>
+ </div>
+ 
+ </div>
+</div>
+</div>
+<!-- / Layout -->
+ </div>
+</body>
+</html>
