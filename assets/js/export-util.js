@@ -2,7 +2,7 @@ var CUBE_MAKER = CUBE_MAKER || {};
 
 CUBE_MAKER.ExportUtil = function (cube_maker) {
 
-    var root_URL = "https://tools.stamlab.org/cubemaker/services";
+    var root_URL = "https://tools.stamlab.org/cubemaker.dev/services";
     var formats = {
         PNG:  "png",
         JSON: "json",
@@ -138,12 +138,10 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
                     model: JSON.stringify(model)
                 },
                 success: function (response) {
-                    /*
                     if (history.pushState) {
                         var new_URL = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + response;
                         window.history.pushState({ path : new_URL }, '', new_URL);
                     }
-                    */
                     console.log(response);
                     $("#export-pdf-cancel").trigger("click");
                 }
