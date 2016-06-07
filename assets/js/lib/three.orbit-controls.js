@@ -79,6 +79,11 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	// Mouse buttons
 	this.mouseButtons = { ORBIT: THREE.MOUSE.LEFT, ZOOM: THREE.MOUSE.MIDDLE, PAN: THREE.MOUSE.RIGHT };
+	
+	this.thetaCurrent = -1.4197177798660074;
+	this.phiCurrent = 1.1919572126855367;
+	this.radiusCurrent = 2.8;
+	this.modifiedPhiCurrent = 30;
 
 	////////////
 	// internals
@@ -104,6 +109,7 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 	var phiDelta = 0;
 	var thetaDelta = 0;
+	
 	var scale = 1;
 	var pan = new THREE.Vector3();
 
@@ -273,6 +279,9 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		// restrict phi to be betwee EPS and PI-EPS
 		phi = Math.max( EPS, Math.min( Math.PI - EPS, phi ) );
+		
+		//this.thetaCurrent = theta;
+		//this.phiCurrent = phi;
 
 		var radius = offset.length() * scale;
 
@@ -295,8 +304,23 @@ THREE.OrbitControls = function ( object, domElement ) {
 
 		thetaDelta = 0;
 		phiDelta = 0;
+		
 		scale = 1;
 		pan.set( 0, 0, 0 );
+		
+		this.thetaCurrent = Math.atan2( offset.x, offset.z );
+		this.phiCurrent = Math.acos( offset.y / radius );
+		this.radiusCurrent = radius;
+		this.modifiedPhiCurrent = this.phiCurrent * (180/Math.PI) / this.radiusCurrent;
+		
+		/*
+		console.log(offset.y, 
+		            this.radiusCurrent, 
+		            offset.y / this.radiusCurrent, 
+		            this.phiCurrent, 
+		            this.phiCurrent * (180/Math.PI), 
+		            this.phiCurrent * (180/Math.PI) / this.radiusCurrent);
+		            */
 
 		// update condition is:
 		// min(camera displacement, camera rotation in radians)^2 > EPS

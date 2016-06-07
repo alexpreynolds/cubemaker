@@ -1,42 +1,42 @@
-{
+#!/usr/bin/env python
+
+import cgi, cgitb, json, hashlib, os, io, sys
+
+form = cgi.FieldStorage()
+model = form.getvalue('model')
+if not model:
+    model = json.dumps("""
+    {
   "metadata": {
-    "title": "Example Cube",
+    "title": "Cubemaker",
     "subtitle": "Use mouse or arrow keys to rotate, scrollwheel to zoom, and double-tap arrow keys to animate",
     "axis": {
       "x": {
         "name": "PC1",
-        "color": "#000000",
+        "color": "red",
         "thickness": 1,
-        "tick_color": "#000000",
+        "tick_color": "red",
         "tick_thickness": 1,
         "tick_length": 0.1
       },
       "y": {
         "name": "PC2",
-        "color": "#000000",
+        "color": "green",
         "thickness": 1,
-        "tick_color": "#000000",
+        "tick_color": "green",
         "tick_thickness": 1
       },
       "z": {
         "name": "PC3",
-        "color": "#000000",
+        "color": "blue",
         "thickness": 1,
-        "tick_color": "#000000",
+        "tick_color": "blue",
         "tick_thickness": 1
       }
     },
     "selected_class": "Lineage",
-    "label_visibility": "all",
     "show_axes": true,
-    "invert_y_axis": false,
-    "show_legend": true,
-    "show_title": true,
-    "particle_size": 0.12,
-    "rotation_automation": "off",
-    "rotation_speed": 0.006,
-    "theta": -1.4197177798660074,
-    "phi": 1.1919572126855367,
+    "particle_size": 0.16,
     "classes": {
       "Lineage": [
         {
@@ -132,12 +132,14 @@
     "materials": {
       "opaque_cube_line_material": {
         "color": "0xbbbbbb",
-        "thickness": 1
+        "thickness": 3
       },
       "back_cube_material": {
         "color": "0xf7f7f7"
       }
-    }
+    },
+    "cameraPosition": "-1.8604964682882887:1.9798989873223334:0.6771653354143308",
+    "cameraRotation": "-1.241248123020747:-0.726775079508622:-1.0954330148342262"
   },
   "data": [
     {
@@ -292,3 +294,20 @@
     }
   ]
 }
+    """)
+
+# allow JSON object to contain UTF-8 bytes
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
+hash_str = model
+hash_object = hashlib.sha1(hash_str.encode('utf-8'))
+hash_id = hash_object.hexdigest()[:16]
+results_dir = os.path.join(os.getcwd(), "ids")
+if not os.path.exists(results_dir):
+    os.makedirs(results_dir)
+hash_fn = os.path.join(results_dir, hash_id) + ".json"
+with io.open(hash_fn, 'w', encoding='utf-8') as fh:
+    fh.write(unicode(model))
+print "Content-type:application/json\r\n\r\n"
+print json.dumps(hash_id)
