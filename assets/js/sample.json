@@ -35,6 +35,8 @@
     "particle_size": 0.12,
     "rotation_automation": "off",
     "rotation_speed": 0.006,
+    "theta": -1.4197177798660074,
+    "phi": 1.1919572126855367,
     "classes": {
       "Lineage": [
         {

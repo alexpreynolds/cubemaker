@@ -16,6 +16,9 @@ $(function(){
     function closeOverlay(){
         $(".modal-box, .modal-overlay").fadeOut(500, function() {
             $(".modal-overlay").remove();
+            $("#export-pdf-form-warning").fadeOut("slow", function() {
+                $("#export-pdf-form-warning").html('');
+            });
         });
     }
 

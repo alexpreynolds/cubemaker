@@ -75,12 +75,12 @@ h3 {
 }
 
 #graph_settings_panel {
-  	width: 295px;
+  	width: 305px;
     font-family: ".SFNSDisplay-Regular", -apple-system, "Helvetica Neue", "Helvetica", "Calibri", sans-serif !important;
   	/* border: 1px solid rgba(33, 33, 33, 0.0933); */
   	/* background-color: rgba(33, 33, 33, 0.0933); */
   	position: fixed;
-  	left: -280px;
+  	left: -290px;
   	transition: all 0.5s ease-in-out;
   	z-index: 100;  	
 }
@@ -151,6 +151,21 @@ h3 {
     /* padding-top: 10px; */
     /* margin-top: 15px; */
 } 
+
+.export-pdf-form label {
+    font-size: 1em;
+    font-weight: bold !important;
+}
+
+.export-pdf-form input {
+    min-width: 240px;
+}
+
+.export-pdf-form-warning {
+    color: darkred;
+    font-weight: bold;
+    padding-left: 10px;
+}
 
 .particle_label, .particle_sublabel {
     /* font-family: ".SFNSDisplay-Regular", -apple-system, "Helvetica Neue", "Helvetica", "Calibri", sans-serif !important; */
@@ -397,7 +412,7 @@ canvas {
     display: none;
     position: absolute;
     z-index: 1000;
-    width: 98%;
+    max-width: 600px;
     background: white;
     border-bottom: 1px solid #aaa;
     border-radius: 4px;
@@ -405,6 +420,7 @@ canvas {
     border: 1px solid rgba(0, 0, 0, 0.1);
     background-clip: padding-box;
     padding-bottom: 10px;
+    font-family: ".SFNSDisplay-Regular", -apple-system, "Helvetica Neue", "Helvetica", "FreeSans", "Calibri", sans-serif !important;
 }
 
 @media (min-width: 32em) {
@@ -713,6 +729,13 @@ a.close:hover {
 .btn-lg-custom {
     padding: 7px 12px !important;
     font-size: 100% !important;
+}
+
+.btn-custom-success {
+    -webkit-font-smoothing: antialiased;
+    text-shadow: 0px 1px 0px black;
+    padding: 4px 8px !important;
+    min-width: 20px;
 }
 
 .btn-disabled {

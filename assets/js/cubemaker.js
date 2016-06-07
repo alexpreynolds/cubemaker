@@ -1187,6 +1187,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     function render() {
+        
+        //console.log(controls.phiCurrent * (180.0 / Math.PI));
 
         // Make foreground cube lines transparent
 
@@ -1402,6 +1404,15 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                         var id_label_rect = id_label.getBoundingClientRect();
                         id_label.style.top = (screen_object_center.y - 0.99 * (id_label_rect.height / 2)) + 'px';
                         id_label.style.left = (screen_object_center.x - (horizontal_fudge / 1.5) * (screen_object_edge.x - screen_object_center.x)) + 'px';
+                        /*
+                        if (screen_object_center.x > widthHalf) {
+                            id_label.style.left = (screen_object_center.x - (horizontal_fudge / 1.5) * (screen_object_edge.x - screen_object_center.x)) + 'px';
+                        }
+                        else {
+                            id_label.style.left = (screen_object_center.x + (horizontal_fudge / 1.5) * (screen_object_edge.x - screen_object_center.x) - id_label_rect.width) + 'px';
+                            id_label.style.textAlign = 'right';
+                        }
+                        */
                     }
                     else {
                         if (!mousedown) {
@@ -1412,6 +1423,24 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                                     left : screen_object_center.x - (horizontal_fudge / 1.5) * (screen_object_edge.x - screen_object_center.x)
                                 }
                             );
+                            /*
+                            if (screen_object_center.x > widthHalf) {
+                                $("#" + particle_mesh_data.uuid).css(
+                                    {
+                                        top : screen_object_center.y - 0.99 * (id_label_rect.height / 2),
+                                        left : screen_object_center.x - (horizontal_fudge / 1.5) * (screen_object_edge.x - screen_object_center.x)
+                                    }
+                                );
+                            }
+                            else {
+                                $("#" + particle_mesh_data.uuid).css(
+                                    {
+                                        top : screen_object_center.y - 0.99 * (id_label_rect.height / 2),
+                                        left : screen_object_center.x + (horizontal_fudge / 1.5) * (screen_object_edge.x - screen_object_center.x) - id_label_rect.width
+                                    }
+                                );
+                            }
+                            */
                         }
                     }
                 }
@@ -1483,6 +1512,11 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 }
             });
         }
+        
+        model.metadata.theta = controls.thetaCurrent;
+        model.metadata.phi = controls.phiCurrent;
+        model.metadata.radius = controls.radiusCurrent;
+        model.metadata.modified_phi = controls.modifiedPhiCurrent;
     }
 
     function activate() {
@@ -1541,6 +1575,10 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         $(document).ready(function () 
         {
             console.log("Cubemaker - ready");
+            
+            $('.modal-class').on('show.bs.modal', function (event) {
+                $("#export-pdf-form-warning").html("");
+            });
 
             $("#import-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_data'));
             $("#export-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_data'));
@@ -1755,11 +1793,21 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     function get_scene_state() {
+        
+        var theta = controls.thetaCurrent;
+        var phi = controls.phiCurrent;
+        var radius = controls.radiusCurrent;
+        var modified_phi = controls.modifiedPhiCurrent;
+        
         return {
-            position: camera.position,
-            rotation: camera.rotation,
-            center:   controls.center,
-            category: get_selected_class()
+            position : camera.position,
+            rotation : camera.rotation,
+            center :   controls.center,
+            category : get_selected_class(),
+            theta : theta,
+            phi : phi,
+            radius : radius,
+            modified_phi : modified_phi
         }
     }
 
