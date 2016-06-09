@@ -31,6 +31,10 @@ $(function () {
         }
         else if (typeof(pdf_id) !== "undefined") {
             json_model_url = "https://tools.stamlab.org/cubemaker/services/retrieve_model.py?id=" + pdf_id;
+            if (history.pushState) {
+               var new_URL = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + pdf_id;
+                window.history.pushState({ path : new_URL }, '', new_URL);
+            }
             setTimeout(function () { 
                 document.getElementById('cube-export-helper').setAttribute("src", "https://tools.stamlab.org/cubemaker/services/export_pdf.py?id=" + pdf_id)
             }, 2000);

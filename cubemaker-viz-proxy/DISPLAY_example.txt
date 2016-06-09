@@ -1,0 +1,1 @@
+export DISPLAY=/private/tmp/com.apple.launchd.mpSbzG99H7/org.macosforge.xquartz:0

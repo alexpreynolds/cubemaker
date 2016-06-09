@@ -3,6 +3,7 @@
 library("optparse")
 option_list = list(
     make_option(c("-i", "--input"), type="character", default=NULL, help="input matrix", metavar="character"),
+    make_option(c("-j", "--projmtx"), type="character", default=NULL, help="projection matrix", metavar="character"),
     make_option(c("-o", "--output"), type="character", default=NULL, help="output figure", metavar="character"),
     make_option(c("-t", "--theta"), type="numeric", default=NULL, help="theta (rotation)"),
     make_option(c("-p", "--phi"), type="numeric", default=NULL, help="phi (rotation)"),
