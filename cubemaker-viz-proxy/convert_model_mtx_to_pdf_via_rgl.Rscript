@@ -3,6 +3,7 @@
 library("optparse")
 option_list = list(
     make_option(c("-i", "--input"), type="character", default=NULL, help="input matrix", metavar="character"),
+    make_option(c("-j", "--projmtx"), type="character", default=NULL, help="projection matrix", metavar="character"),
     make_option(c("-o", "--output"), type="character", default=NULL, help="output figure", metavar="character"),
     make_option(c("-t", "--theta"), type="numeric", default=NULL, help="theta (rotation)"),
     make_option(c("-p", "--phi"), type="numeric", default=NULL, help="phi (rotation)"),
@@ -26,11 +27,24 @@ thetaStart <- opt$theta
 phiStart <- opt$phi
 radius <- opt$radius
 mphi <- opt$mphi
-phiValue <- cos(phiStart) * radius * mphi
-#print(phiStart)
+
+phiValue <- phiStart
+print(phiValue)
+print(thetaStart)
+phiValue <- -(phiStart - 90)
+if ((phiValue < 1) && (phiValue > -1)) {
+   col2 <- -df[,4]
+   df[,4] <- col2
+} 
+
+#phiValue <- cos(phiStart) * radius * mphi
+print(phiValue)
+print(thetaStart)
 #print(radius)
 #print(mphi)
 #print(phiValue)
+
+pm <- as.matrix(read.table(opt$projmtx, header=FALSE, sep="\t", as.is=TRUE))
 
 library("rgl")
 rgl.open()

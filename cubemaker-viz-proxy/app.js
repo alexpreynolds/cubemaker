@@ -72,7 +72,7 @@ https_app.use('/', function (req, res, next) {
     if (query.action) {
         query_correctly_specified = true;
         if (query.action == REQUEST_TYPES.CONVERT_MTX_TO_PDF) {
-            if (query.input && query.output && query.email && query.id) {
+            if (query.input && query.projmtx && query.output && query.email && query.id) {
                 logger.info('converting matrix input to pdf output');
 		if (query.theta) {
 		    rotation_theta = parseFloat(query.theta);
@@ -114,9 +114,10 @@ https_app.use('/', function (req, res, next) {
     else {
         if (query.action == REQUEST_TYPES.CONVERT_MTX_TO_PDF) {
 	    var mtx_fn = path.join(__dirname, 'mtxs', query.input);
+	    var proj_mtx_fn = path.join(__dirname, 'mtxs', query.projmtx);
 	    var pdf_fn = path.join(__dirname, 'pdfs', query.output);
 	    var mtx_to_pdf_script = path.join(__dirname, 'convert_model_mtx_to_pdf_via_rgl.Rscript');
-	    var cmd_options = ['--input', mtx_fn, '--output', pdf_fn, '--theta', rotation_theta, '--phi', rotation_phi, '--radius', rotation_radius, '--mphi', rotation_mphi];
+	    var cmd_options = ['--input', mtx_fn, '--projmtx', proj_mtx_fn, '--output', pdf_fn, '--theta', rotation_theta, '--phi', rotation_phi, '--radius', rotation_radius, '--mphi', rotation_mphi];
 	    logger.info(cmd_options);
 	    var cmd_process = child_process.spawn(mtx_to_pdf_script, cmd_options);
 	    var cmd_process_completed = true;
