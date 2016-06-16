@@ -38,8 +38,8 @@ if ((phiValue < 1) && (phiValue > -1)) {
 } 
 
 #phiValue <- cos(phiStart) * radius * mphi
-print(phiValue)
-print(thetaStart)
+#print(phiValue)
+#print(thetaStart)
 #print(radius)
 #print(mphi)
 #print(phiValue)
