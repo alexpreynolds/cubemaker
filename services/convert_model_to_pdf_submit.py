@@ -74,7 +74,6 @@ def main(argv):
     radius = ijsono['metadata']['radius']
     modified_phi = ijsono['metadata']['modified_phi']
     invert_y_axis = str(ijsono['metadata']['invert_y_axis'])
-    sys.stderr.write(str(ijsono['metadata']['invert_y_axis']) + '\n')
     
     # retrieve camera projection matrix (column-major order -- cf. http://threejs.org/docs/index.html#Reference/Math/Matrix4)
     camera_projection_matrix = ijsono['metadata']['camera_projection_matrix']
