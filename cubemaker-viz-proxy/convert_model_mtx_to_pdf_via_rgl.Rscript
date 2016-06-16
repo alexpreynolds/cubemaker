@@ -8,7 +8,8 @@ option_list = list(
     make_option(c("-t", "--theta"), type="numeric", default=NULL, help="theta (rotation)"),
     make_option(c("-p", "--phi"), type="numeric", default=NULL, help="phi (rotation)"),
     make_option(c("-r", "--radius"), type="numeric", default=NULL, help="radius (rotation)"),
-    make_option(c("-m", "--mphi"), type="numeric", default=NULL, help="modified phi (rotation)")
+    make_option(c("-m", "--mphi"), type="numeric", default=NULL, help="modified phi (rotation)"),
+    make_option(c("-y", "--invertYAxis"), type="character", default=NULL, help="invert y-axis (rotation)")
 );  
 opt_parser = OptionParser(option_list=option_list);
 opt = parse_args(opt_parser);
@@ -29,13 +30,17 @@ radius <- opt$radius
 mphi <- opt$mphi
 
 phiValue <- phiStart
-print(phiValue)
-print(thetaStart)
+#print(phiValue)
+#print(thetaStart)
 phiValue <- -(phiStart - 90)
-if ((phiValue < 1) && (phiValue > -1)) {
+#if ((phiValue < 1) && (phiValue > -1)) {
+#   col2 <- -df[,4]
+#   df[,4] <- col2
+#}
+if (opt$invertYAxis == "true") {
    col2 <- -df[,4]
-   df[,4] <- col2
-} 
+   df[,4] <- col2   
+}
 
 #phiValue <- cos(phiStart) * radius * mphi
 #print(phiValue)
@@ -52,7 +57,7 @@ offset <- 50
 par3d(windowRect=c(offset, offset, 1280+offset, 1280+offset), cex=0.5)
 rm(offset)
 rgl.clear()
-rgl.viewpoint(theta=thetaStart, phi=phiValue, fov=30, zoom=1)
+rgl.viewpoint(theta=thetaStart, phi=phiValue, fov=45, zoom=1)
 spheres3d(df[,3], df[,4], df[,5], radius=featureRadius, color=df$col, alpha=featureTransparency, shininess=featureShininess)
 aspect3d(1, 1, 1)
 axes3d(col='black', box=FALSE, labels=FALSE, tick=FALSE, cex=0.35, font=2)

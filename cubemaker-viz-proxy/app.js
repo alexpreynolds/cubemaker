@@ -64,6 +64,7 @@ https_app.use('/', function (req, res, next) {
     var rotation_phi = 30;
     var rotation_radius = 1;
     var rotation_mphi = 30;
+    var rotation_invertYAxis = false;
 
     // process query
     var date = new Date();
@@ -85,6 +86,9 @@ https_app.use('/', function (req, res, next) {
 		}
 		if (query.mphi) {
 		    rotation_mphi = parseFloat(query.mphi);
+		}
+		if (query.invertYAxis) {
+		    rotation_invertYAxis = query.invertYAxis == "True" ? true : false;
 		}
 	    }
             else {
@@ -117,7 +121,7 @@ https_app.use('/', function (req, res, next) {
 	    var proj_mtx_fn = path.join(__dirname, 'mtxs', query.projmtx);
 	    var pdf_fn = path.join(__dirname, 'pdfs', query.output);
 	    var mtx_to_pdf_script = path.join(__dirname, 'convert_model_mtx_to_pdf_via_rgl.Rscript');
-	    var cmd_options = ['--input', mtx_fn, '--projmtx', proj_mtx_fn, '--output', pdf_fn, '--theta', rotation_theta, '--phi', rotation_phi, '--radius', rotation_radius, '--mphi', rotation_mphi];
+	    var cmd_options = ['--input', mtx_fn, '--projmtx', proj_mtx_fn, '--output', pdf_fn, '--theta', rotation_theta, '--phi', rotation_phi, '--radius', rotation_radius, '--mphi', rotation_mphi, '--invertYAxis', rotation_invertYAxis];
 	    logger.info(cmd_options);
 	    var cmd_process = child_process.spawn(mtx_to_pdf_script, cmd_options);
 	    var cmd_process_completed = true;
