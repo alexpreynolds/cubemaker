@@ -63,6 +63,7 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
         model.metadata.phi = scene_state.phi;
         model.metadata.radius = scene_state.radius;
         model.metadata.modified_phi = scene_state.modified_phi;
+        model.metadata.camera_projection_matrix = scene_state.camera_projection_matrix;
 
         $.ajax({
             url: root_URL + "/save_model.py",
@@ -110,6 +111,7 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
         cube_model.metadata.phi = scene_state.phi;
         cube_model.metadata.radius = scene_state.radius;
         cube_model.metadata.modified_phi = scene_state.modified_phi;
+        cube_model.metadata.camera_projection_matrix = scene_state.camera_projection_matrix;
         
         var data = 'data:text/json;charset=utf-8,';
         data += escape(JSON.stringify(cube_model, null, 2));
@@ -138,12 +140,13 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
                     model: JSON.stringify(model)
                 },
                 success: function (response) {
-                    if (history.pushState) {
-                        var new_URL = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + response;
-                        window.history.pushState({ path : new_URL }, '', new_URL);
-                    }
-                    console.log(response);
+                    //if (history.pushState) {
+                    //   var new_URL = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + response;
+                    //    window.history.pushState({ path : new_URL }, '', new_URL);
+                    //}
+                    //console.log(response);
                     $("#export-pdf-cancel").trigger("click");
+                    window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname + '?pdf=' + response;
                 }
             });
         }

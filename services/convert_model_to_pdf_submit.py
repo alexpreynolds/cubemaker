@@ -3,18 +3,19 @@
 import json, io, sys, getopt, math, subprocess, os.path, requests, re
 
 def usage(fh):
-    sys.stderr.write('usage: convert_model_to_pdf_submit.py -i <input_json_model_file> -o <output_matrix_file> -p <output_pdf_file> -e <email_address> -d <id>\n')
+    sys.stderr.write('usage: convert_model_to_pdf_submit.py -i <input_json_model_file> -j <output_projection_matrix_file> -o <output_matrix_file> -p <output_pdf_file> -e <email_address> -d <id>\n')
     if int(fh) != 0:
         sys.exit(fh)
 
 def main(argv):
     ijson = None
+    jmtx = None
     omtx = None
     opdf = None
     email = None
     id = None
     try:
-        opts, args = getopt.getopt(argv,"hi:o:p:e:d:",["ijson=", "omtx=", "opdf=", "email=", "id="])
+        opts, args = getopt.getopt(argv,"hi:o:p:e:d:j:",["ijson=", "jmtx=", "omtx=", "opdf=", "email=", "id="])
     except getopt.GetoptError:
         usage(2)
     for opt, arg in opts:
@@ -22,6 +23,8 @@ def main(argv):
             usage(0)
         elif opt in ("-i", "--ijson"):
             ijson = arg
+        elif opt in ("-j", "--jmtx"):
+            jmtx = arg
         elif opt in ("-o", "--omtx"):
             omtx = arg
         elif opt in ("-p", "--opdf"):
@@ -30,7 +33,7 @@ def main(argv):
             email = arg
         elif opt in ("-d", "--id"):
             id = arg
-    if not (ijson and omtx and opdf and email and id):
+    if not (ijson and jmtx and omtx and opdf and email and id):
         usage(2)
         
     # validate email parameter
@@ -61,7 +64,7 @@ def main(argv):
         row_data.append(','.join([str(x) for x in attribute_map[attribute_map_index]['rgb']]))
         lines.append( '\t'.join(row_data) )
         
-    # write matrix to file
+    # write datapoint matrix to file
     with io.open(omtx, 'w', encoding='utf-8') as omtxh:
         omtxh.write(unicode('\n'.join(lines)))
     
@@ -71,36 +74,61 @@ def main(argv):
     radius = ijsono['metadata']['radius']
     modified_phi = ijsono['metadata']['modified_phi']
     
-    # scp file to fiddlehead
-    scp_command_components = ['/usr/bin/scp', omtx, 'alexpreynolds@fiddlehead.stamlab.org:/Users/alexpreynolds/Developer/Node/cubemaker/cubemaker-viz-proxy/mtxs/' + os.path.basename(omtx)]
-    scp_command = ' '.join(scp_command_components)
+    # retrieve camera projection matrix (column-major order -- cf. http://threejs.org/docs/index.html#Reference/Math/Matrix4)
+    camera_projection_matrix = ijsono['metadata']['camera_projection_matrix']
+    camera_projection_matrix_row_major_order = [[camera_projection_matrix[i] for i in xrange(j, len(camera_projection_matrix), 4)] for j in xrange(0, 4)]
+    
+    # write camera projection matrix to file
+    with io.open(jmtx, 'w', encoding='utf-8') as jmtxh:
+    	for row_idx in range(0, len(camera_projection_matrix_row_major_order)):
+    		jmtxh.write('%s\n' % ('\t'.join([unicode(x) for x in camera_projection_matrix_row_major_order[row_idx]])))
+    
+    # scp data matrix to fiddlehead
+    scp_mtx_command_components = ['/usr/bin/scp', omtx, 'alexpreynolds@fiddlehead.stamlab.org:/Users/alexpreynolds/Developer/Node/cubemaker/cubemaker-viz-proxy/mtxs/' + os.path.basename(omtx)]
+    scp_mtx_command = ' '.join(scp_mtx_command_components)
     try:
-        subprocess.check_call(scp_command_components)
-        sys.stderr.write( '(subprocess.check_call) scp succeeded\n' )
-        try:
-            r = requests.get('https://fiddlehead.stamlab.org', \
-                    params = { \
-                        'action' : 'convert_mtx_to_pdf', \
-                        'input'  : os.path.basename(omtx), \
-                        'output' : os.path.basename(opdf), \
-                        'email'  : email, \
-                        'id'     : id, \
-                        'theta'  : theta, \
-                        'phi'    : phi, \
-                        'radius' : radius, \
-                        'mphi'   : modified_phi
-                        }, \
-                    verify = False)
-            sys.stderr.write('%s %s %s\n' % (str(r.status_code), str(r.reason), str(r.text)))
-            return
-        except requests.exceptions.ConnectionError as ce:
-            sys.stderr.write('(requests.exceptions.ConnectionError) scp stage failed on request: [ ' + str(ce) + ' ] - request did not complete correctly?\n')
-            return
+        subprocess.check_call(scp_mtx_command_components)
+        sys.stderr.write( '(subprocess.check_call) scp of data matrix succeeded\n' )
     except subprocess.CalledProcessError:
-        sys.stderr.write('subprocess.CalledProcessError) scp stage failed on command: [ ' + scp_command + ' ] - copy did not complete correctly?\n')
+        sys.stderr.write('subprocess.CalledProcessError) scp stage failed on command: [ ' + scp_mtx_command + ' ] - copy of data matrix did not complete correctly?\n')
         return
     except OSError:
-        sys.stderr.write('(OSError) scp stage failed on command: [ ' + scp_command + ' ] - missing executable?\n')
+        sys.stderr.write('(OSError) scp stage failed on command: [ ' + scp_mtx_command + ' ] - missing executable?\n')
+        return
+    
+    # scp projection matrix to fiddlehead    
+    scp_projmtx_command_components = ['/usr/bin/scp', jmtx, 'alexpreynolds@fiddlehead.stamlab.org:/Users/alexpreynolds/Developer/Node/cubemaker/cubemaker-viz-proxy/mtxs/' + os.path.basename(jmtx)]
+    scp_projmtx_command = ' '.join(scp_projmtx_command_components)
+    try:
+        subprocess.check_call(scp_projmtx_command_components)
+        sys.stderr.write( '(subprocess.check_call) scp of projection matrix succeeded\n' )
+    except subprocess.CalledProcessError:
+        sys.stderr.write('subprocess.CalledProcessError) scp stage failed on command: [ ' + scp_projmtx_command + ' ] - copy of projection matrix did not complete correctly?\n')
+        return
+    except OSError:
+        sys.stderr.write('(OSError) scp stage failed on command: [ ' + scp_projmtx_command + ' ] - missing executable?\n')
+        return
+        
+    # send request to fiddlehead to render
+    try:
+        r = requests.get('https://fiddlehead.stamlab.org', \
+                params = { \
+                    'action'  : 'convert_mtx_to_pdf', \
+                    'input'   : os.path.basename(omtx), \
+                    'output'  : os.path.basename(opdf), \
+                    'projmtx' : os.path.basename(jmtx), \
+                    'email'   : email, \
+                    'id'      : id, \
+                    'theta'   : theta, \
+                    'phi'     : phi, \
+                    'radius'  : radius, \
+                    'mphi'    : modified_phi
+                    }, \
+                verify = False)
+        sys.stderr.write('%s %s %s\n' % (str(r.status_code), str(r.reason), str(r.text)))
+        return
+    except requests.exceptions.ConnectionError as ce:
+        sys.stderr.write('(requests.exceptions.ConnectionError) scp stage failed on request: [ ' + str(ce) + ' ] - request did not complete correctly?\n')
         return
 
 if __name__ == "__main__":

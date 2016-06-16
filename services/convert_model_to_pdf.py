@@ -33,9 +33,11 @@ else:
     with io.open(id_hash_fn, 'w', encoding='utf-8') as id_fh:
         id_fh.write(unicode(model))
     id_fh.close()
+    
+    projection_matrix_hash_fn = os.path.join(pdf_results_dir, hash_id) + ".projmtx"
         
     # convert JSON to matrix and PDF files
-    convert_command_components = [os.path.join(os.getcwd(), 'convert_model_to_pdf_submit.py'), '-i', id_hash_fn, '-o', os.path.join(pdf_results_dir, hash_id) + '.mtx', '-p', os.path.join(pdf_results_dir, hash_id) + '.pdf', '-e', email, '-d', hash_id]
+    convert_command_components = [os.path.join(os.getcwd(), 'convert_model_to_pdf_submit.py'), '-i', id_hash_fn, '-j', projection_matrix_hash_fn, '-o', os.path.join(pdf_results_dir, hash_id) + '.mtx', '-p', os.path.join(pdf_results_dir, hash_id) + '.pdf', '-e', email, '-d', hash_id]
     convert_command = ' '.join(convert_command_components)
     
     try:
