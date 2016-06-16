@@ -1515,7 +1515,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         model.metadata.phi = controls.phiCurrent;
         model.metadata.radius = controls.radiusCurrent;
         model.metadata.modified_phi = controls.modifiedPhiCurrent;
-        model.metadata.camera_projection_matrix = $.map(camera.projectionMatrix.elements, function(v) { return v; });
+        model.metadata.camera_projection_matrix = $.map(controls.object.matrixWorld.elements, function(v) { return v; });
     }
 
     function activate() {
@@ -1784,6 +1784,12 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     function get_model() {
+        model.metadata.theta = controls.thetaCurrent;
+        model.metadata.phi = controls.phiCurrent;
+        model.metadata.radius = controls.radiusCurrent;
+        model.metadata.modified_phi = controls.modifiedPhiCurrent;
+        model.metadata.camera_projection_matrix = $.map(controls.object.matrixWorld.elements, function(v) { return v; });
+        
         return model;
     }
 
@@ -1797,7 +1803,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
         var phi = controls.phiCurrent;
         var radius = controls.radiusCurrent;
         var modified_phi = controls.modifiedPhiCurrent;
-        var camera_projection_matrix = $.map(camera.projectionMatrix.elements, function(v) { return v; }); // http://threejs.org/docs/index.html#Reference/Math/Matrix4
+        var camera_projection_matrix = $.map(controls.object.matrixWorld.elements, function(v) { return v; }); // http://threejs.org/docs/index.html#Reference/Math/Matrix4
+        var invert_y_axis = model.metadata.invert_y_axis;
         
         return {
             position : camera.position,
@@ -1808,7 +1815,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             phi : phi,
             radius : radius,
             modified_phi : modified_phi,
-            camera_projection_matrix : camera_projection_matrix
+            camera_projection_matrix : camera_projection_matrix,
+            invert_y_axis : invert_y_axis
         }
     }
 

@@ -68,11 +68,13 @@ def main(argv):
     with io.open(omtx, 'w', encoding='utf-8') as omtxh:
         omtxh.write(unicode('\n'.join(lines)))
     
-    # retrieve phi and theta parameters
+    # retrieve phi, theta and other presentation parameters
     theta = math.degrees(ijsono['metadata']['theta'])
     phi = math.degrees(ijsono['metadata']['phi'])
     radius = ijsono['metadata']['radius']
     modified_phi = ijsono['metadata']['modified_phi']
+    invert_y_axis = str(ijsono['metadata']['invert_y_axis'])
+    sys.stderr.write(str(ijsono['metadata']['invert_y_axis']) + '\n')
     
     # retrieve camera projection matrix (column-major order -- cf. http://threejs.org/docs/index.html#Reference/Math/Matrix4)
     camera_projection_matrix = ijsono['metadata']['camera_projection_matrix']
@@ -113,16 +115,17 @@ def main(argv):
     try:
         r = requests.get('https://fiddlehead.stamlab.org', \
                 params = { \
-                    'action'  : 'convert_mtx_to_pdf', \
-                    'input'   : os.path.basename(omtx), \
-                    'output'  : os.path.basename(opdf), \
-                    'projmtx' : os.path.basename(jmtx), \
-                    'email'   : email, \
-                    'id'      : id, \
-                    'theta'   : theta, \
-                    'phi'     : phi, \
-                    'radius'  : radius, \
-                    'mphi'    : modified_phi
+                    'action'        : 'convert_mtx_to_pdf', \
+                    'input'         : os.path.basename(omtx), \
+                    'output'        : os.path.basename(opdf), \
+                    'projmtx'       : os.path.basename(jmtx), \
+                    'email'         : email, \
+                    'id'            : id, \
+                    'theta'         : theta, \
+                    'phi'           : phi, \
+                    'radius'        : radius, \
+                    'mphi'          : modified_phi, \
+                    'invertYAxis'   : invert_y_axis
                     }, \
                 verify = False)
         sys.stderr.write('%s %s %s\n' % (str(r.status_code), str(r.reason), str(r.text)))
