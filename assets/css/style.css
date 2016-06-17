@@ -75,12 +75,12 @@ h3 {
 }
 
 #graph_settings_panel {
-  	width: 305px;
+  	width: 325px;
     font-family: ".SFNSDisplay-Regular", -apple-system, "Helvetica Neue", "Helvetica", "Calibri", sans-serif !important;
   	/* border: 1px solid rgba(33, 33, 33, 0.0933); */
   	/* background-color: rgba(33, 33, 33, 0.0933); */
   	position: fixed;
-  	left: -290px;
+  	left: -310px;
   	transition: all 0.5s ease-in-out;
   	z-index: 100;  	
 }
@@ -224,7 +224,7 @@ h3 {
 }
 
 .title_label input {
-    width: 300px;
+    width: 320px;
 }
 
 .title_label {
