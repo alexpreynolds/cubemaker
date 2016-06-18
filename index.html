@@ -11,6 +11,24 @@
         <link rel="shortcut icon" href="assets/img/favicon.ico">
     </head>
     <body>
+        <div id="blackout" class="notification" style="display: none;">
+            <div id="blackout_indicator">
+                <p>
+                    <div class="sk-cube-grid sk-cube-grid-white">
+                        <div class="sk-cube sk-cube-white sk-cube1"></div>
+                        <div class="sk-cube sk-cube-white sk-cube2"></div>
+                        <div class="sk-cube sk-cube-white sk-cube3"></div>
+                        <div class="sk-cube sk-cube-white sk-cube4"></div>
+                        <div class="sk-cube sk-cube-white sk-cube5"></div>
+                        <div class="sk-cube sk-cube-white sk-cube6"></div>
+                        <div class="sk-cube sk-cube-white sk-cube7"></div>
+                        <div class="sk-cube sk-cube-white sk-cube8"></div>
+                        <div class="sk-cube sk-cube-white sk-cube9"></div>
+                    </div>
+                </p>
+                <p>Generating PDF...</p>
+            </div>
+        </div>
         <div class="notification" id="webgl_missing_warning">
             <div class="warning warning-webgl">
                 <span class="typcn typcn-info-outline" style="font-size: xx-large; position: relative; top: 3px;"></span> Your browser does not appear to support <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>. The <a href="https://get.webgl.org/">WebGL test site</a> may offer help with configuration.
@@ -148,7 +166,8 @@
                     <button id="export-json-btn" value="json" class="btn btn-custom" name="json">JSON</button>
                     <button id="export-png-btn" value="png" class="btn btn-custom" name="png">PNG</button>
                     <button id="export-link-btn" value="link" class="btn btn-custom" data-modal-id="export-link-dialog" name="link">Link</button>
-                    <button id="export-pdf-btn" value="link" class="btn btn-custom" data-modal-id="export-pdf-dialog" name="pdf">PDF</button>
+                    <!-- <button id="export-pdf-btn" value="pdf" class="btn btn-custom" data-modal-id="export-pdf-dialog" name="pdf">PDF</button> -->
+                    <button id="export-pdf-btn" value="pdf" class="btn btn-custom" name="pdf">PDF</button>
                 </div>
             </div>
             

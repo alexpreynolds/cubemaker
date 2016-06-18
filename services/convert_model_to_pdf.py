@@ -3,7 +3,8 @@
 import cgi, cgitb, json, hashlib, os, io, sys
 
 form = cgi.FieldStorage()
-email = form.getvalue('email')
+#email = form.getvalue('email')
+email = 'nobody@altiusinstitute.org'
 model = form.getvalue('model')
 
 cgitb.enable()

@@ -30,28 +30,30 @@ $(function () {
             json_model_url = "https://tools.stamlab.org/cubemaker/services/retrieve_model.py?id=" + id;
         }
         else if (typeof(pdf_id) !== "undefined") {
-            json_model_url = "https://tools.stamlab.org/cubemaker/services/retrieve_model.py?id=" + pdf_id;
-            if (history.pushState) {
-               var new_URL = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + pdf_id;
-                window.history.pushState({ path : new_URL }, '', new_URL);
-            }
             setTimeout(function () { 
-                document.getElementById('cube-export-helper').setAttribute("src", "https://tools.stamlab.org/cubemaker/services/export_pdf.py?id=" + pdf_id)
-            }, 2000);
+                json_model_url = "https://tools.stamlab.org/cubemaker/services/retrieve_model.py?id=" + pdf_id;
+                document.getElementById('cube-export-helper').setAttribute("src", "https://tools.stamlab.org/cubemaker/services/export_pdf.py?id=" + pdf_id);
+                setTimeout(function() {
+                    window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + pdf_id;
+                }, 2000);
+            }, 0);
         }
         
         url = matrix_url || json_model_url || "assets/js/sample.json";
         
-        var model;
         $.get(url, function (response) {
-
+            var model;
+            
             if (matrix_url) {
                 model = new MatrixParser(response).parse();
             } 
             else if (json_model_url) {
-	            model = response;
-	            if (typeof response !== "object")
-	                model = JSON.parse(response);
+                if (typeof response !== "object") {
+                    model = JSON.parse(response);
+                }
+                else {
+                    model = response;
+                }
             } 
             else {
                 model = response;
@@ -69,6 +71,7 @@ $(function () {
                 model.metadata.label_visibility = CUBE_MAKER.LabelVisibilities.MOUSEOVER;
             }
 
+            //console.log(model.metadata.theta, model.metadata.phi);
             cube_maker = new CubeMaker("cube-container", model);
             export_util = new ExportUtil(cube_maker);
 
@@ -94,7 +97,8 @@ $(function () {
             export_util.to_url("#export-link-result");
         });
         
-        $(document).on("click", "#export-pdf-form-submit", function () {
+        //$(document).on("click", "#export-pdf-form-submit", function () {
+        $(document).on("click", "#export-pdf-btn", function () {
             export_util.to_pdf();
         });
 

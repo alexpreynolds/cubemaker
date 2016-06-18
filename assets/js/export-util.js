@@ -128,6 +128,39 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
     }
     
     function export_as_pdf() {
+        
+        //alert("export_as_pdf() called");
+        setTimeout(function() {
+            document.getElementById('blackout').style.display = 'block';
+            setTimeout(function() {
+                $('#blackout_indicator').css("width", parseInt( $(window).width() ));
+                var model = cube_maker.get_model();
+                var scene_state = cube_maker.get_scene_state();
+                model.metadata.camera_position = xyz_to_str(scene_state.position);
+                model.metadata.camera_rotation = xyz_to_str(scene_state.rotation);
+                model.metadata.control_center = xyz_to_str(scene_state.center);
+                $.ajax({
+                    url: root_URL + "/convert_model_to_pdf.py",
+                    type: "post",
+                    data: {
+                        model: JSON.stringify(model)
+                    },
+                    success: function (response) {
+                        //if (history.pushState) {
+                        //   var new_URL = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + response;
+                        //    window.history.pushState({ path : new_URL }, '', new_URL);
+                        //}
+                        //console.log(response);
+                        document.getElementById('blackout').style.display = 'none';
+                        window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname + '?pdf=' + response;
+                    }
+                });
+                //document.getElementById('blackout').style.display = 'none';
+            }, 0);
+        }, 0);
+    }
+    
+    function export_as_pdf_via_email() {
         $("#export-pdf-form-submit").blur();
         var email = document.getElementById('export-pdf-form-email').value;
         var model = cube_maker.get_model();
