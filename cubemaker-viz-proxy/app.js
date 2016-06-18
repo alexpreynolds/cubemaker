@@ -150,6 +150,8 @@ https_app.use('/', function (req, res, next) {
 			}).then(function() {
 				ssh.put(pdf_fn, scp_options['path']).then(function() {
 					logger.info('scp succeeded');
+					res.sendStatus(200);
+					/*
 					var email = {
 					    from: 'areynolds@altiusinstitute.org',
 					    to: query.email,
@@ -166,6 +168,7 @@ https_app.use('/', function (req, res, next) {
 						    res.sendStatus(200);
 						}
 					    });
+					*/
 				    },
 				    function(error) {
 					logger.error("ssh failed");
