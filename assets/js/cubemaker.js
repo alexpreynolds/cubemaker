@@ -647,6 +647,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 "z" : parseFloat(control_center_els[2])
             };
         }
+        
         if (position || rotation || control_center) {
             if (position) {
                 camera.position.set(position.x, position.y, position.z);
@@ -1519,7 +1520,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
     }
 
     function activate() {
-        if(root_element && model) {
+        if (root_element && model) {
             setup_action_handlers();
             load().done(function () {
                 init();

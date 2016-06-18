@@ -26,6 +26,34 @@ ul, li {
     font-weight: bold;
 }
 
+#blackout {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0; 
+    top: 0;
+    z-index: 1000;
+    background: rgba(0, 0, 0, 0.5);
+    text-align: center;
+}
+
+#blackout_indicator {
+    position: absolute;
+    top: 33%;
+    z-index: 999;
+    font-size: 18px;
+    font-weight: 900;
+    color: rgba(255, 255, 255, 1);
+    /*-webkit-text-stroke: 0.25px black;
+    text-shadow: 0px 0px 2px black; */
+    line-height: 0.33em;
+    -webkit-user-select: none; 
+    -khtml-user-select: none; 
+    -moz-user-select: none; 
+    -o-user-select: none; 
+    user-select: none; 
+}
+
 #import-mtx-dialog, #import-json-dialog {
     top: 10px !important;
     font-family: ".SFNSDisplay-Regular", -apple-system, "Helvetica Neue", "Helvetica", "FreeSans", "Calibri", sans-serif !important;
@@ -805,6 +833,12 @@ a.close:hover {
   -webkit-animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out;
           animation: sk-cubeGridScaleDelay 1.3s infinite ease-in-out; 
 }
+
+.sk-cube-grid-white .sk-cube-white {
+  background-color: #ffffff;
+  margin: 0px auto;
+}
+
 .sk-cube-grid .sk-cube1 {
   -webkit-animation-delay: 0.2s;
           animation-delay: 0.2s; }
