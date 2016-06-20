@@ -122,23 +122,23 @@
             <footer><a href="#" class="btn btn-custom btn-lg-custom js-modal-close">Close</a></footer>
         </div>
         
-        <div id="export-pdf-dialog" class="modal-box">
+        <div id="export-gif-dialog" class="modal-box">
             <div class="modal-header">
                 <a href="#" class="js-modal-close close">&#x00D7;</a>
-                <h3 class="modal-title">Cubemaker - Export PDF</h3>
+                <h3 class="modal-title">Cubemaker - Export Animated GIF</h3>
             </div>
             <div class="modal-body">
                 <p>Please enter your email address and submit the form:</p>
-                <form class="export-pdf-form" name="export-pdf-form">
+                <form class="export-gif-form" name="export-gif-form">
                     <label class="export-form-label" for="email">Email</label>
-                    <input type="email" name="export-pdf-form-email" id="export-pdf-form-email" class="export-pdf-form-email" placeholder="abc@altiusinstitute.org" />
-                    <span id="export-pdf-form-warning" class="export-pdf-form-warning"></span>
+                    <input type="email" name="export-gif-form-email" id="export-gif-form-email" class="export-gif-form-email" placeholder="user@altiusinstitute.org" />
+                    <span id="export-gif-form-warning" class="export-gif-form-warning"></span>
                 </form>
-                <p>&nbsp;</p><p>After the PDF is generated, you will receive an email containing a download link for retrieval.</p>
+                <p>&nbsp;</p><p>A download link will be sent to the specified email address once the file is generated.</p>
             </div>
             <div class="modal-footer">
-                <input class="btn btn-success btn-custom-success btn-lg-custom" type="submit" value="Submit" id="export-pdf-form-submit" />
-                <a href="#" class="btn btn-custom btn-lg-custom js-modal-close" data-dismiss="modal-box" id="export-pdf-cancel">Cancel</a>
+                <input class="btn btn-success btn-custom-success btn-lg-custom" type="submit" value="Submit" id="export-gif-form-submit" />
+                <a href="#" class="btn btn-custom btn-lg-custom js-modal-close" data-dismiss="modal-box" id="export-gif-cancel">Cancel</a>
             </div>
         </div>
         
@@ -166,8 +166,8 @@
                     <button id="export-json-btn" value="json" class="btn btn-custom" name="json">JSON</button>
                     <button id="export-png-btn" value="png" class="btn btn-custom" name="png">PNG</button>
                     <button id="export-link-btn" value="link" class="btn btn-custom" data-modal-id="export-link-dialog" name="link">Link</button>
-                    <!-- <button id="export-pdf-btn" value="pdf" class="btn btn-custom" data-modal-id="export-pdf-dialog" name="pdf">PDF</button> -->
                     <button id="export-pdf-btn" value="pdf" class="btn btn-custom" name="pdf">PDF</button>
+                    <button id="export-gif-btn" value="pdf" class="btn btn-custom" data-modal-id="export-gif-dialog" name="gif">GIF</button>
                 </div>
             </div>
             

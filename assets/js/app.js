@@ -24,6 +24,7 @@ $(function () {
         var json_model_url = query_string["import-json"];
         var export_type = query_string["export-type"];
         var pdf_id = query_string["pdf"];
+        var gif_id = query_string["gif"];
 
         var url = "";
         if (typeof(id) !== "undefined") {
@@ -35,6 +36,15 @@ $(function () {
                 document.getElementById('cube-export-helper').setAttribute("src", "https://tools.stamlab.org/cubemaker/services/export_pdf.py?id=" + pdf_id);
                 setTimeout(function() {
                     window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + pdf_id;
+                }, 2000);
+            }, 0);
+        }
+        else if (typeof(gif_id) !== "undefined") {
+            setTimeout(function () { 
+                json_model_url = "https://tools.stamlab.org/cubemaker/services/retrieve_model.py?id=" + gif_id;
+                document.getElementById('cube-export-helper').setAttribute("src", "https://tools.stamlab.org/cubemaker/services/export_gif.py?id=" + gif_id);
+                setTimeout(function() {
+                    window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + gif_id;
                 }, 2000);
             }, 0);
         }
@@ -97,9 +107,12 @@ $(function () {
             export_util.to_url("#export-link-result");
         });
         
-        //$(document).on("click", "#export-pdf-form-submit", function () {
         $(document).on("click", "#export-pdf-btn", function () {
             export_util.to_pdf();
+        });
+        
+        $(document).on("click", "#export-gif-form-submit", function () {
+            export_util.to_gif();
         });
 
         $(document).on("click", "#json-import-btn", function () {

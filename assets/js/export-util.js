@@ -7,7 +7,8 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
         PNG:  "png",
         JSON: "json",
         LINK: "link",
-        PDF:  "pdf"
+        PDF:  "pdf",
+        GIF:  "gif"
     };
 
     return {
@@ -15,6 +16,7 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
         to_json: export_as_json,
         to_url:  generate_link_dialog,
         to_pdf:  export_as_pdf,
+        to_gif:  export_as_gif,
         export_to_format: export_to_format
     };
 
@@ -160,33 +162,32 @@ CUBE_MAKER.ExportUtil = function (cube_maker) {
         }, 0);
     }
     
-    function export_as_pdf_via_email() {
-        $("#export-pdf-form-submit").blur();
-        var email = document.getElementById('export-pdf-form-email').value;
-        var model = cube_maker.get_model();
+    function export_as_gif() {
+        $("#export-gif-form-submit").blur();
+        var email = document.getElementById('export-gif-form-email').value;
         if (validate_email(email)) {
+            $("#export-gif-cancel").trigger("click");
+            var model = cube_maker.get_model();
+            var scene_state = cube_maker.get_scene_state();
+            model.metadata.camera_position = xyz_to_str(scene_state.position);
+            model.metadata.camera_rotation = xyz_to_str(scene_state.rotation);
+            model.metadata.control_center = xyz_to_str(scene_state.center);
             $.ajax({
-                url: root_URL + "/convert_model_to_pdf.py",
+                url: root_URL + "/convert_model_to_gif.py",
                 type: "post",
                 data: {
                     email: JSON.stringify(email),
                     model: JSON.stringify(model)
                 },
                 success: function (response) {
-                    //if (history.pushState) {
-                    //   var new_URL = window.location.protocol + "//" + window.location.host + window.location.pathname + '?id=' + response;
-                    //    window.history.pushState({ path : new_URL }, '', new_URL);
-                    //}
-                    //console.log(response);
-                    $("#export-pdf-cancel").trigger("click");
-                    window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname + '?pdf=' + response;
+                    console.log(response);
                 }
             });
         }
         else {
-            $("#export-pdf-form-warning").hide();
-            $("#export-pdf-form-warning").html('Please specify email address');
-            $("#export-pdf-form-warning").fadeIn("slow", function() {});
+            $("#export-gif-form-warning").hide();
+            $("#export-gif-form-warning").html('Please specify email address');
+            $("#export-gif-form-warning").fadeIn("slow", function() {});
         }
     }
     

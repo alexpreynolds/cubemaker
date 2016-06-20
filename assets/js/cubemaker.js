@@ -1577,7 +1577,7 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
             console.log("Cubemaker - ready");
             
             $('.modal-class').on('show.bs.modal', function (event) {
-                $("#export-pdf-form-warning").html("");
+                $("#export-gif-form-warning").html("");
             });
 
             $("#import-bgroup").clone(true, true).appendTo(document.getElementById('settings_panel_data'));

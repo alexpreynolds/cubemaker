@@ -103,12 +103,12 @@ h3 {
 }
 
 #graph_settings_panel {
-  	width: 325px;
+  	width: 345px;
     font-family: ".SFNSDisplay-Regular", -apple-system, "Helvetica Neue", "Helvetica", "Calibri", sans-serif !important;
   	/* border: 1px solid rgba(33, 33, 33, 0.0933); */
   	/* background-color: rgba(33, 33, 33, 0.0933); */
   	position: fixed;
-  	left: -310px;
+  	left: -330px;
   	transition: all 0.5s ease-in-out;
   	z-index: 100;  	
 }
@@ -180,16 +180,16 @@ h3 {
     /* margin-top: 15px; */
 } 
 
-.export-pdf-form label {
+.export-gif-form label {
     font-size: 1em;
     font-weight: bold !important;
 }
 
-.export-pdf-form input {
+.export-gif-form input {
     min-width: 240px;
 }
 
-.export-pdf-form-warning {
+.export-gif-form-warning {
     color: darkred;
     font-weight: bold;
     padding-left: 10px;
