@@ -5,10 +5,11 @@ const SERVICE_URL = "https://fiddlehead.stamlab.org/"
 const CLIENT_HOST = "basquiat.stamlab.org"
 const CLIENT_PORT = "22"
 const CLIENT_USERNAME = "areynolds"
-const CLIENT_DEST_PATH = "/var/www/html.ssl/cubemaker/services/pdfs"
+const CLIENT_DEST_PATH = "/var/www/html.ssl/cubemaker/services"
 const SCP_BINARY = "/usr/bin/scp"
 const REQUEST_TYPES = {
     CONVERT_MTX_TO_PDF :  'convert_mtx_to_pdf',
+    CONVERT_MTX_TO_ANIMATED_GIF : 'convert_mtx_to_animated_gif'
 };
 
 var express = require('express');
@@ -96,6 +97,27 @@ https_app.use('/', function (req, res, next) {
                 query_correctly_specified = false;
             }
         } 
+	else if (query.action == REQUEST_TYPES.CONVERT_MTX_TO_ANIMATED_GIF) {
+	    if (query.input && query.output && query.email && query.id) {
+		logger.info('converting matrix input to gif output');
+		if (query.theta) {
+		    rotation_theta = parseFloat(query.theta);
+		}
+		if (query.phi) {
+		    rotation_phi = parseFloat(query.phi);
+		}
+		if (query.radius) {
+		    rotation_radius = parseFloat(query.radius);
+		}
+		if (query.invertYAxis) {
+		    rotation_invertYAxis = query.invertYAxis == "True" ? true : false;
+		}		
+	    }
+	    else {
+		response_errors.push('missing email, input or output variable setting');
+		query_correctly_specified = false;
+	    }
+	}
         else {
             response_errors.push('missing action variable setting');
             query_correctly_specified = false;
@@ -139,7 +161,7 @@ https_app.use('/', function (req, res, next) {
 			    user: CLIENT_USERNAME,
 			    host: CLIENT_HOST,
 			    port: CLIENT_PORT,
-			    path: CLIENT_DEST_PATH + '/' + path.basename(pdf_fn),
+			    path: CLIENT_DEST_PATH + '/pdfs/' + path.basename(pdf_fn),
 			    privateKey: SERVICE_PRIVATE_KEY
 			}
 			logger.info(scp_options);
@@ -169,6 +191,67 @@ https_app.use('/', function (req, res, next) {
 						}
 					    });
 					*/
+				    },
+				    function(error) {
+					logger.error("ssh failed");
+					res.sendStatus(400);
+				    });
+			    })
+		    }
+		    else {
+			res.sendStatus(400);
+		    }
+		});
+        }
+        else if (query.action == REQUEST_TYPES.CONVERT_MTX_TO_ANIMATED_GIF) {
+	    var mtx_fn = path.join(__dirname, 'mtxs', query.input);
+	    var gif_fn = path.join(__dirname, 'gifs', query.output);
+	    var mtx_to_gif_script = path.join(__dirname, 'convert_model_mtx_to_animated_gif.sh');
+	    var cmd_options = ['-i', mtx_fn, '-o', gif_fn, '-t', rotation_theta, '-p', rotation_phi, '-r', rotation_radius, '-y', rotation_invertYAxis];
+	    logger.info(cmd_options);
+	    var cmd_process = child_process.spawn(mtx_to_gif_script, cmd_options);
+	    var cmd_process_completed = true;
+	    cmd_process.stdout.on('data', function(output) {
+		    logger.info(output.toString('utf8'));
+		});
+	    cmd_process.stderr.on('data', function(err) {
+		    logger.error(err.toString('utf8'));
+		});
+	    cmd_process.on('close', function() {
+		    if (cmd_process_completed) {
+			logger.info('mtx-to-gif conversion finished');
+			var scp_options = {
+			    file: gif_fn,
+			    user: CLIENT_USERNAME,
+			    host: CLIENT_HOST,
+			    port: CLIENT_PORT,
+			    path: CLIENT_DEST_PATH + '/gifs/' + path.basename(gif_fn),
+			    privateKey: SERVICE_PRIVATE_KEY
+			}
+			logger.info(scp_options);
+			ssh.connect({
+			    host     : scp_options['host'],
+			    username : scp_options['user'],
+			    privateKey: scp_options['privateKey']
+			}).then(function() {
+				ssh.put(gif_fn, scp_options['path']).then(function() {
+					logger.info('scp succeeded');
+					var email = {
+					    from: 'areynolds@altiusinstitute.org',
+					    to: query.email,
+					    subject: 'Cubemaker - Animated GIF ready to download',
+					    text: 'Please visit https://tools.stamlab.org/cubemaker/?gif=' + query.id + ' to download the GIF file.'
+					};
+					mailer.sendMail(email, function(error, info) {
+						if (error) {
+						    logger.error(error);
+						    res.sendStatus(400);
+						}
+						else {
+						    logger.info('message sent: ' + JSON.stringify(info));
+						    res.sendStatus(200);
+						}
+					    });
 				    },
 				    function(error) {
 					logger.error("ssh failed");

@@ -1,0 +1,56 @@
+#!/usr/bin/env Rscript
+
+library("optparse")
+option_list = list(
+    make_option(c("-i", "--input"), type="character", default=NULL, help="input matrix", metavar="character"),
+    make_option(c("-o", "--output"), type="character", default=NULL, help="output figure", metavar="character"),
+    make_option(c("-t", "--theta"), type="numeric", default=NULL, help="theta (rotation)"),
+    make_option(c("-p", "--phi"), type="numeric", default=NULL, help="phi (rotation)"),
+    make_option(c("-r", "--radius"), type="numeric", default=NULL, help="radius (rotation)"),
+    make_option(c("-y", "--invertYAxis"), type="character", default=NULL, help="invert y-axis (rotation)")
+);  
+opt_parser = OptionParser(option_list=option_list);
+opt = parse_args(opt_parser);
+
+df <- read.table(opt$input, header=TRUE, sep="\t")
+for (i in 1:nrow(df)) {
+    c <- as.vector(unlist(strsplit(as.character(df$rgb[i]), ',')))
+    c <- as.numeric(c)
+    rgb_v <- rgb(red=c[1]/255, green=c[2]/255, blue=c[3]/255)
+    df$col[i] <- rgb_v
+}
+featureRadius <- 15
+featureShininess <- 20
+featureTransparency <- 1
+thetaStart <- opt$theta
+phiStart <- opt$phi
+radius <- opt$radius
+
+phiValue <- phiStart
+phiValue <- -(phiStart - 90)
+if (opt$invertYAxis == "true") {
+   col2 <- -df[,4]
+   df[,4] <- col2   
+}
+
+library("rgl")
+rgl.open()
+offset <- 50
+par3d(windowRect=c(offset, offset, 1280+offset, 1280+offset), cex=1)
+rm(offset)
+for (thetaIncrement in 0:359) {
+    rgl.clear()
+    rgl.viewpoint(theta=(thetaStart+thetaIncrement)%%360, phi=phiValue, fov=45, zoom=1)
+    spheres3d(df[,3], df[,4], df[,5], radius=featureRadius, color=df$col, alpha=featureTransparency, shininess=featureShininess)
+    aspect3d(1, 1, 1)
+    axes3d(col='black', box=FALSE, labels=FALSE, tick=FALSE, cex=0.35, font=2)
+    col_names <- colnames(df)
+    title3d("", "", xlab=col_names[3], ylab=col_names[4], zlab=col_names[5], col='black', line=1, cex=1, font=2)
+    #texts3d(df[,3], df[,4], df[,5], text=df$point_label, color="blue", adj=c(0,0), cex=0.25)
+    bg3d("white")
+    rgl.clear(type='lights')
+    rgl.light(-45, 20, ambient='black', diffuse='#dddddd', specular='white')
+    rgl.light(60, 30, ambient='#dddddd', diffuse='#dddddd', specular='black')
+    filename <- paste(opt$output, sprintf("%03d.png",round((thetaStart+thetaIncrement)%%360)), sep="/")
+    rgl.snapshot(filename)
+}
