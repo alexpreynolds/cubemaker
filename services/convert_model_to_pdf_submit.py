@@ -56,12 +56,12 @@ def main(argv):
     attribute_map = ijsono['metadata']['classes'][selected_class]
     for data_point in ijsono['data']:
         row_data = []
-        row_data.append(str(data_point['id']))
+        row_data.append(unicode(data_point['id']))
         attribute_map_index = data_point['type'][selected_class]
-        row_data.append(str(attribute_map[attribute_map_index]['name']))
+        row_data.append(unicode(attribute_map[attribute_map_index]['name']))
         for axis_label in ['x', 'y', 'z']:
-            row_data.append(str(data_point[axis_label]))
-        row_data.append(','.join([str(x) for x in attribute_map[attribute_map_index]['rgb']]))
+            row_data.append(unicode(data_point[axis_label]))
+        row_data.append(','.join([unicode(x) for x in attribute_map[attribute_map_index]['rgb']]))
         lines.append( '\t'.join(row_data) )
         
     # write datapoint matrix to file
