@@ -66,6 +66,7 @@ https_app.use('/', function (req, res, next) {
     var rotation_radius = 1;
     var rotation_mphi = 30;
     var rotation_invertYAxis = false;
+    var label_visibility = false;
 
     // process query
     var date = new Date();
@@ -91,6 +92,9 @@ https_app.use('/', function (req, res, next) {
 		if (query.invertYAxis) {
 		    rotation_invertYAxis = query.invertYAxis == "True" ? true : false;
 		}
+		if (query.labelVisibility) {
+		    label_visibility = query.labelVisibility == "all" ? true : false;
+		}
 	    }
             else {
                 response_errors.push('missing email, input or output variable setting');
@@ -111,7 +115,10 @@ https_app.use('/', function (req, res, next) {
 		}
 		if (query.invertYAxis) {
 		    rotation_invertYAxis = query.invertYAxis == "True" ? true : false;
-		}		
+		}
+		if (query.labelVisibility) {
+		    label_visibility = query.labelVisibility == "all" ? true : false;
+		}
 	    }
 	    else {
 		response_errors.push('missing email, input or output variable setting');
@@ -143,7 +150,7 @@ https_app.use('/', function (req, res, next) {
 	    var proj_mtx_fn = path.join(__dirname, 'mtxs', query.projmtx);
 	    var pdf_fn = path.join(__dirname, 'pdfs', query.output);
 	    var mtx_to_pdf_script = path.join(__dirname, 'convert_model_mtx_to_pdf_via_rgl.Rscript');
-	    var cmd_options = ['--input', mtx_fn, '--projmtx', proj_mtx_fn, '--output', pdf_fn, '--theta', rotation_theta, '--phi', rotation_phi, '--radius', rotation_radius, '--mphi', rotation_mphi, '--invertYAxis', rotation_invertYAxis];
+	    var cmd_options = ['--input', mtx_fn, '--projmtx', proj_mtx_fn, '--output', pdf_fn, '--theta', rotation_theta, '--phi', rotation_phi, '--radius', rotation_radius, '--mphi', rotation_mphi, '--invertYAxis', rotation_invertYAxis, '--labelsVisible', label_visibility];
 	    logger.info(cmd_options);
 	    var cmd_process = child_process.spawn(mtx_to_pdf_script, cmd_options);
 	    var cmd_process_completed = true;
@@ -207,7 +214,7 @@ https_app.use('/', function (req, res, next) {
 	    var mtx_fn = path.join(__dirname, 'mtxs', query.input);
 	    var gif_fn = path.join(__dirname, 'gifs', query.output);
 	    var mtx_to_gif_script = path.join(__dirname, 'convert_model_mtx_to_animated_gif.sh');
-	    var cmd_options = ['-i', mtx_fn, '-o', gif_fn, '-t', rotation_theta, '-p', rotation_phi, '-r', rotation_radius, '-y', rotation_invertYAxis];
+	    var cmd_options = ['-i', mtx_fn, '-o', gif_fn, '-t', rotation_theta, '-p', rotation_phi, '-r', rotation_radius, '-y', rotation_invertYAxis, '-l', label_visibility];
 	    logger.info(cmd_options);
 	    var cmd_process = child_process.spawn(mtx_to_gif_script, cmd_options);
 	    var cmd_process_completed = true;
