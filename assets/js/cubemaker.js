@@ -1421,7 +1421,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                             $("#" + particle_mesh_data.uuid).css(
                                 {
                                     top : screen_object_center.y - 0.99 * (id_label_rect.height / 2),
-                                    left : screen_object_center.x - (horizontal_fudge / 1.5) * (screen_object_edge.x - screen_object_center.x)
+                                    left : screen_object_center.x - (horizontal_fudge / 1.5) * (screen_object_edge.x - screen_object_center.x),
+                                    visibility : 'visible'
                                 }
                             );
                             /*
@@ -1442,6 +1443,13 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                                 );
                             }
                             */
+                        }
+                        else {
+                            $("#" + particle_mesh_data.uuid).css(
+                                {
+                                    visibility : 'hidden'
+                                }
+                            );
                         }
                     }
                 }
