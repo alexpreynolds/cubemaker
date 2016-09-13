@@ -56,24 +56,25 @@ def main(argv):
     attribute_map = ijsono['metadata']['classes'][selected_class]
     for data_point in ijsono['data']:
         row_data = []
-        row_data.append(str(data_point['id']))
+        row_data.append(unicode(data_point['id']))
         attribute_map_index = data_point['type'][selected_class]
-        row_data.append(str(attribute_map[attribute_map_index]['name']))
+        row_data.append(unicode(attribute_map[attribute_map_index]['name']))
         for axis_label in ['x', 'y', 'z']:
-            row_data.append(str(data_point[axis_label]))
-        row_data.append(','.join([str(x) for x in attribute_map[attribute_map_index]['rgb']]))
+            row_data.append(unicode(data_point[axis_label]))
+        row_data.append(','.join([unicode(x) for x in attribute_map[attribute_map_index]['rgb']]))
         lines.append( '\t'.join(row_data) )
         
     # write datapoint matrix to file
     with io.open(omtx, 'w', encoding='utf-8') as omtxh:
         omtxh.write(unicode('\n'.join(lines)))
     
-    # retrieve phi, theta and other presentation parameters
+    # retrieve phi, theta, y-axis inversion, label visibility and other presentation parameters
     theta = math.degrees(ijsono['metadata']['theta'])
     phi = math.degrees(ijsono['metadata']['phi'])
     radius = ijsono['metadata']['radius']
     modified_phi = ijsono['metadata']['modified_phi']
     invert_y_axis = str(ijsono['metadata']['invert_y_axis'])
+    label_visibility = str(ijsono['metadata']['label_visibility'])
     
     # retrieve camera projection matrix (column-major order -- cf. http://threejs.org/docs/index.html#Reference/Math/Matrix4)
     camera_projection_matrix = ijsono['metadata']['camera_projection_matrix']
@@ -114,17 +115,18 @@ def main(argv):
     try:
         r = requests.get('https://fiddlehead.stamlab.org', \
                 params = { \
-                    'action'        : 'convert_mtx_to_pdf', \
-                    'input'         : os.path.basename(omtx), \
-                    'output'        : os.path.basename(opdf), \
-                    'projmtx'       : os.path.basename(jmtx), \
-                    'email'         : email, \
-                    'id'            : id, \
-                    'theta'         : theta, \
-                    'phi'           : phi, \
-                    'radius'        : radius, \
-                    'mphi'          : modified_phi, \
-                    'invertYAxis'   : invert_y_axis
+                    'action'          : 'convert_mtx_to_pdf', \
+                    'input'           : os.path.basename(omtx), \
+                    'output'          : os.path.basename(opdf), \
+                    'projmtx'         : os.path.basename(jmtx), \
+                    'email'           : email, \
+                    'id'              : id, \
+                    'theta'           : theta, \
+                    'phi'             : phi, \
+                    'radius'          : radius, \
+                    'mphi'            : modified_phi, \
+                    'invertYAxis'     : invert_y_axis, \
+                    'labelVisibility' : label_visibility \
                     }, \
                 verify = False)
         sys.stderr.write('%s %s %s\n' % (str(r.status_code), str(r.reason), str(r.text)))

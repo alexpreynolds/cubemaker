@@ -584,6 +584,8 @@ CUBE_MAKER.CubeMaker = function (rootElementId, model) {
                 show: function() {
                     $(class_rect_div).minicolors('value', rgb_array_to_hex(class_value.rgb));
                 },
+                textfield: true,
+                swatchPosition: 'left',
                 position: "top left",
                 change: function (hex) {
                     var rgb = hex_to_rgb_array(hex);
